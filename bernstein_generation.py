@@ -18,13 +18,15 @@ import matplotlib.patches as mpatches
 
 
 
-def multi_bernstein_generation(X, deg):
+def multi_bernstein_generation(X, X_bar, deg):
 
 	# Def dimension, maximum degree vector Theta, possible degree list I, and basis vector
 	dim = len(X)
 	I = []
 	Theta = [deg]*dim
 	Z = []
+	ele = []
+	ele_bar = []
 
 	# Possible I generation
 	arr_comb = []
@@ -39,12 +41,22 @@ def multi_bernstein_generation(X, deg):
 
 	[I.append(x) for x in I_temp if x not in I]
 
+	# Generate the monomial vectors base on possible power
+	for i in I:
+		monomial = 1
+		monomial_bar = 1
+		for j in range(len(i)):
+			monomial = monomial*X[j]**i[j]
+			monomial_bar = monomial_bar*X_bar[j]**i[j]
+		ele.append(monomial)
+		ele_bar.append(monomial_bar)
+
 	# Bernstein basis vector generation 
 	for i in I:
 		temp = polynomial_generation(X, i, Theta)
 		Z.append(temp)
 	Z = Matrix(Z)
-	return Z, I, Theta
+	return Z, I, Theta, ele, ele_bar
 
 ## Helper Function to generate each basis bernstein polynomial
 def polynomial_generation(X, I_i, Theta):
@@ -134,13 +146,13 @@ def basis_transform_matrix_generation(I_list, Theta):
 
 ## Playground for module testing 
 
-x, y, x_d, y_d = symbols('x, y, x_d, y_d')
-# x_bar, y_bar = symbols('x_bar, y_bar')
+x, y = symbols('x, y')
+x_bar, y_bar = symbols('x_bar, y_bar')
 # u = 1
 # l = -1
 # x = l + x_bar*(u-l)
 # y = l + y_bar*(u-l)
-ele = [1, x, y, x**2, x*y, y**2]
+# ele = [1, x, y, x**2, x*y, y**2]
 # ele_bar = Matrix([1, x_bar, y_bar, x_bar**2, x_bar*y_bar, y_bar**2])
 
 # for i in ele:
@@ -155,12 +167,10 @@ ele = [1, x, y, x**2, x*y, y**2]
 # 	temp_list.append(temp_p[ele_bar[i]])
 # print(temp_list)
 
-# X = [x, y]
+X = [x, y]
+X_bar = [x_bar, y_bar]
 
-expr = Poly(1+2*x+y+y_d*x*y+x_d*x**2+2*y**2)
-for i in ele:
 
-	print(expr.coeff_monomial(i))
 # a = Poly(ele[1])
 # print(a.coeff_monomial(y_bar))
 
@@ -175,8 +185,9 @@ for i in ele:
 # temp = Matrix([1,x,x*y])
 # print(expand(x*y))
 # print(temp[0])
-# poly, I, Theta = multi_bernstein_generation(X, 2)
-# print(poly)
+poly, I, Theta, ele, ele_bar = multi_bernstein_generation(X, X_bar, 2)
+print(ele)
+print(ele_bar)
 
 
 # B = basis_transform_matrix_generation(I, Theta)
