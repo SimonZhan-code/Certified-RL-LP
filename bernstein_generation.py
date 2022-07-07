@@ -157,7 +157,9 @@ def basis_transform_matrix_generation(I_list, Theta):
 	return B
 
 
-def main(X, X_bar, deg, max_deg):
+def main(X, X_bar, deg, max_deg, u, l):
+	## Expalnation on input parameter
+	# 
 	return 0
 
 
@@ -165,43 +167,13 @@ def main(X, X_bar, deg, max_deg):
 
 x, y = symbols('x, y')
 x_bar, y_bar = symbols('x_bar, y_bar')
-# u = 1
-# l = -1
-# x = l + x_bar*(u-l)
-# y = l + y_bar*(u-l)
-# ele = [1, x, y, x**2, x*y, y**2]
-# ele_bar = Matrix([1, x_bar, y_bar, x_bar**2, x_bar*y_bar, y_bar**2])
 
-# for i in ele:
-# 	t = diff(i)
-# 	print(t)
-
-# p = expand(ele[3])
-# print(p)
-# temp_p = p.as_coefficients_dict()
-# temp_list = []
-# for i in range(len(ele_bar)):
-# 	temp_list.append(temp_p[ele_bar[i]])
-# print(temp_list)
 
 X = [x, y]
 # X_bar = [x_bar, y_bar]
 dynamics = [- x**3 + y, - x - y]
 
-# a = Poly(ele[1])
-# print(a.coeff_monomial(y_bar))
 
-# x_bar, y_bar = symbols('x_bar, y_bar')
-# x = 2*x_bar - 1
-# y = 2*y_bar - 1
-# ele = Matrix([1, x, y])
-# ele_bar = Matrix([1, x_bar, y_bar])
-# print(len(ele_bar))
-# A = cp.Variable((len(ele),len(ele)))
-# linsolve((ele, ele_bar),[x, y, x_bar, y_bar])
-# temp = Matrix([1,x,x*y])
-# print(expand(x*y))
-# print(temp[0])
 I = monomial_power_generation(X, 2)
 # print(I)
 ele = monomial_vec_generation(X, I)
@@ -212,17 +184,6 @@ ele_dev = monomial_vec_generation(X, J)
 D = lie_derivative_matrix_generation(dynamics, ele, X, ele_dev)
 print(D*Matrix(ele_dev))
 
-# B = basis_transform_matrix_generation(I, Theta)
-# t = shape(B)
-# for i in range(t[0]):
-# 	print(B.row(i))
-# print(" ")
-# basis = B*poly
-# for i in basis:
-# 	expand(i)
-# 	print(i)
-# print(temp, len(temp))
-# print(len(poly))
 
 
 
