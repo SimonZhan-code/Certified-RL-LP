@@ -16,47 +16,54 @@ from sympy import *
 import matplotlib.patches as mpatches
 
 
-
-
-def multi_bernstein_generation(X, X_bar, deg):
-
-	# Def dimension, maximum degree vector Theta, possible degree list I, and basis vector
+def monomial_power_generation(X, deg):
+	# Generate the possible power assignment for each monomial
 	dim = len(X)
 	I = []
-	Theta = [deg]*dim
-	Z = []
-	ele = []
-	ele_bar = []
-
 	# Possible I generation
 	arr_comb = []
 	for i in range(deg+1):
 		arr_comb.append(i)
-
+	# Get all possible selection
 	I_temp_comb = list(combinations_with_replacement(arr_comb, dim))
 	I_temp = []
+	# Get all possible permutation
 	for i in I_temp_comb:
 		I_temp_permut = list(permutations(i, dim))
 		I_temp += I_temp_permut
-
+	# Deduce the redundant option
 	[I.append(x) for x in I_temp if x not in I]
 
+	return I 
+
+
+
+
+def monomial_vec_generation(X, I):
+	# Generate monomial of given degree with given dimension
+	ele = []
 	# Generate the monomial vectors base on possible power
 	for i in I:
 		monomial = 1
-		monomial_bar = 1
 		for j in range(len(i)):
 			monomial = monomial*X[j]**i[j]
-			monomial_bar = monomial_bar*X_bar[j]**i[j]
 		ele.append(monomial)
-		ele_bar.append(monomial_bar)
 
+	return ele
+
+
+
+def multi_bernstein_generation(X, deg, I):
+	Z = []
+	Theta = [deg]*len(X)
 	# Bernstein basis vector generation 
 	for i in I:
 		temp = polynomial_generation(X, i, Theta)
 		Z.append(temp)
 	Z = Matrix(Z)
-	return Z, I, Theta, ele, ele_bar
+	return Z, Theta
+
+
 
 ## Helper Function to generate each basis bernstein polynomial
 def polynomial_generation(X, I_i, Theta):
@@ -88,17 +95,25 @@ def coefficient_matrix_generation(ele_bar, ele):
 
 
 
-def lie_derivative_matrix_generation(dynamics, ele, X):
+def lie_derivative_matrix_generation(dynamics, ele, X, ele_dev):
 	# Differentiate each monomial with each element in ele
 	# Store the differential in ele_der list
 	D = []
-	ele_der = [0]*len(ele)
-	for i in range(len(X)):
-		temp = [0]*len(ele)
-		for j in range(len(ele)):
-			temp[j] = diff(ele[j], X[i]) * dynamics[i]
-			ele_der[j] += ele[j]
-	# Mapping the differential of each monomial into original ele matrix
+	ele_der = []
+	for m in ele:
+		temp = [0]*len(X)
+		for i in range(len(X)):
+			temp[i] = diff(m, X[i]) * dynamics[i]
+		temp_der = sum(temp)
+		ele_der.append(expand(temp_der))
+	print(ele_der)
+	# Mapping the differential of each corresponding monomial into original ele matrix
+	for objc in ele_der:
+		temp_dict = objc.as_coefficients_dict()
+		temp_list = []
+		for i in range(len(ele_dev)):
+			temp_list.append(temp_dict[ele_dev[i]])
+		D.append(temp_list)
 
 	D = Matrix(D)
 	return D
@@ -142,6 +157,8 @@ def basis_transform_matrix_generation(I_list, Theta):
 	return B
 
 
+def main(X, X_bar, deg, max_deg):
+	return 0
 
 
 ## Playground for module testing 
@@ -168,8 +185,8 @@ x_bar, y_bar = symbols('x_bar, y_bar')
 # print(temp_list)
 
 X = [x, y]
-X_bar = [x_bar, y_bar]
-
+# X_bar = [x_bar, y_bar]
+dynamics = [- x**3 + y, - x - y]
 
 # a = Poly(ele[1])
 # print(a.coeff_monomial(y_bar))
@@ -185,10 +202,15 @@ X_bar = [x_bar, y_bar]
 # temp = Matrix([1,x,x*y])
 # print(expand(x*y))
 # print(temp[0])
-poly, I, Theta, ele, ele_bar = multi_bernstein_generation(X, X_bar, 2)
-print(ele)
-print(ele_bar)
-
+I = monomial_power_generation(X, 2)
+# print(I)
+ele = monomial_vec_generation(X, I)
+# print(ele)
+J = monomial_power_generation(X, 4)
+ele_dev = monomial_vec_generation(X, J)
+# print(ele_bar)
+D = lie_derivative_matrix_generation(dynamics, ele, X, ele_dev)
+print(D*Matrix(ele_dev))
 
 # B = basis_transform_matrix_generation(I, Theta)
 # t = shape(B)
