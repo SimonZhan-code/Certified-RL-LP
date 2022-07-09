@@ -157,9 +157,53 @@ def basis_transform_matrix_generation(I_list, Theta):
 	return B
 
 
-def main(X, X_bar, deg, max_deg, u, l):
-	## Expalnation on input parameter
-	# 
+# This equation encode the original property of bernstein polynomial into Az<=b form
+# where z stands for each polynomial basis B_{I,Theta}. The property we are going to use
+# is sum of z is 1 and z_{I,Theta}<=B_{I,Theta}(I/Theta)
+def feasibility_mastrix(I, Theta, bernstein_poly, X):
+	A = eye(len(bernstein_poly))
+	b = []
+	
+	for i in range(len(bernstein_poly)):
+		temp = 0
+		dictionary = {}
+		for j in range(len(I[i])):
+			dictionary.update({X[i]:I[i][j]/Theta[j]})
+		temp = poly.evalf(subs:dictionary)
+		b.append(temp)
+
+	return A, b
+
+
+
+
+
+
+
+
+
+def Lyapunov_func_positive(X, X_bar, deg, u, l, c):
+	## This function takes in parameter to encode the lyapunov 
+	# function positive definite and output the constrain string
+	# X: dimension of the original compact sapce
+	# X_bar: transformed back to original [0,1]^n space
+	# deg: degree required to model the certificate
+	# u: upper bound of the compact set
+	# l: lower bound of the compact set
+	# c: parameters of each monomial in the polynomial
+	
+	I = monomial_power_generation(X_bar, deg)
+	ele_bar = monomial_vec_generation(X_bar, I)
+	ele = monomial_vec_generation(X, I)
+	bernstein_poly, Theta = multi_bernstein_generation(X_bar, deg, I)
+
+	B = basis_transform_matrix_generation(I, Theta)
+
+	for i in range(len(X)):
+		X[i] = l + (u - l) * X_bar[i]
+
+	T = basis_transform_matrix_generation(ele_bar, ele)
+
 	return 0
 
 
