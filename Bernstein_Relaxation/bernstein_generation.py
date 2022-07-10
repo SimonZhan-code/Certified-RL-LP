@@ -183,7 +183,7 @@ def feasibility_mastrix(I, Theta, bernstein_poly, X):
 
 
 
-def Lyapunov_func(X, X_bar, deg, u, l):
+def Lyapunov_func(X, X_bar, deg, u, l, dynamics, max_deg):
 	## This function takes in parameter to encode the lyapunov 
 	# function positive definite and output the constrain string
 	# X: dimension of the original compact sapce
@@ -194,47 +194,71 @@ def Lyapunov_func(X, X_bar, deg, u, l):
 	# c: parameters of each monomial in the polynomial
 	
 	I = monomial_power_generation(X_bar, deg)
-	ele_bar = monomial_vec_generation(X_bar, I)
 	ele = monomial_vec_generation(X, I)
-	bernstein_poly, Theta = multi_bernstein_generation(X_bar, deg, I)
 
-	B = basis_transform_matrix_generation(I, Theta)
+	## Generate the differential matrix to represent the lie derivative of lyapunov func
+	## correspond to extended monomial basis
+	I_de = monomial_power_generation(X, max_deg)
+	ele_de = monomial_vec_generation(X, I_de)
+	D = lie_derivative_matrix_generation(dynamics, ele, X, ele_de)
+	
+	## Generate the bernstein basis matrix mapping 
+	ele_bar = monomial_vec_generation(X_bar, I_de)
+	bernstein_poly, Theta = multi_bernstein_generation(X_bar, max_deg, I_de)
+	B = basis_transform_matrix_generation(I_de, Theta)
 	# Might work or not 
 	# for i in range(len(X)):
 	# 	X[i] = l + (u - l) * X_bar[i]
 
-	T = basis_transform_matrix_generation(ele_bar, ele)
+	## Generate the basis transformation matrix mapping to the [0,1]^n domain 
+	T = basis_transform_matrix_generation(ele_bar, ele_de)
 
+	## Generate the feasiblility problem constrainst
 	A, b = feasibility_mastrix(I, Theta, bernstein_poly, X)
 
-	z = cp.Variable(1, len(ele))
+	## Define the unkown parameters and objective in later optimization 
+	## Transfer into Farkas lamma calculating the dual values
+	lambda_dual = cp.Variable(1, len(ele))
 	c = cp.Variable(1, len(ele))
-	constraints = []
-	constraints += [A @ z >= b]
+	objective = cp.Minimize()
 
-	return 0
+	## Define the constraints used in the optimization problem 
+	constraints = []
+	constraints += [np.dot(b, lambda_dual) <= 0]
+	for i in range(len(lambda_dual)):
+		constraints += [lambda_dual[i] >= 0]
+	constraints += [A.T@lambda_dual == B.T*T.T*D.T*c]
+
+	problem = cp.Problem(objective, constraints)
+	problem.solve()
+
+	return c.value[0]
 
 
 ## Playground for module testing 
 
-x, y = symbols('x, y')
-x_bar, y_bar = symbols('x_bar, y_bar')
+# x, y = symbols('x, y')
+# x_bar, y_bar = symbols('x_bar, y_bar')
 
 
-X = [x, y]
-# X_bar = [x_bar, y_bar]
-dynamics = [- x**3 + y, - x - y]
+# X = [x, y]
+# # X_bar = [x_bar, y_bar]
+# dynamics = [- x**3 + y, - x - y]
 
 
-I = monomial_power_generation(X, 2)
-# print(I)
-ele = monomial_vec_generation(X, I)
-# print(ele)
-J = monomial_power_generation(X, 4)
-ele_dev = monomial_vec_generation(X, J)
-# print(ele_bar)
-D = lie_derivative_matrix_generation(dynamics, ele, X, ele_dev)
-print(D*Matrix(ele_dev))
+# I = monomial_power_generation(X, 2)
+# # print(I)
+# ele = monomial_vec_generation(X, I)
+# # print(ele)
+# J = monomial_power_generation(X, 4)
+# ele_dev = monomial_vec_generation(X, J)
+# # print(ele_bar)
+# D = lie_derivative_matrix_generation(dynamics, ele, X, ele_dev)
+# print(D*Matrix(ele_dev))
 
-
+c = np.array([1,2])
+A = np.array([[1,1],[0,1]])
+# print(c)
+print(A.T)
+print(A.T@c)
 
