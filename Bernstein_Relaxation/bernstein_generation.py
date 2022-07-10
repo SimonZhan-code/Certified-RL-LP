@@ -60,7 +60,7 @@ def multi_bernstein_generation(X, deg, I):
 	for i in I:
 		temp = polynomial_generation(X, i, Theta)
 		Z.append(temp)
-	Z = Matrix(Z)
+	Z = np.array(Z)
 	return Z, Theta
 
 
@@ -89,7 +89,7 @@ def coefficient_matrix_generation(ele_bar, ele):
 			temp_list.append(temp_dict[ele_bar[i]])
 		I.append(temp_list)
 	# Convert list into matrix
-	T = Matrix(I)
+	T = np.array(I)
 	return T
 
 
@@ -115,7 +115,7 @@ def lie_derivative_matrix_generation(dynamics, ele, X, ele_dev):
 			temp_list.append(temp_dict[ele_dev[i]])
 		D.append(temp_list)
 
-	D = Matrix(D)
+	D = np.array(D)
 	return D
 
 
@@ -152,7 +152,7 @@ def basis_transform_matrix_generation(I_list, Theta):
 				# print("curr value is:" + str(curr))
 			temp_list.append(curr)	
 		B.append(temp_list)
-	B = Matrix(B)
+	B = np.array(B)
 
 	return B
 
@@ -161,7 +161,9 @@ def basis_transform_matrix_generation(I_list, Theta):
 # where z stands for each polynomial basis B_{I,Theta}. The property we are going to use
 # is sum of z is 1 and z_{I,Theta}<=B_{I,Theta}(I/Theta)
 def feasibility_mastrix(I, Theta, bernstein_poly, X):
-	A = eye(len(bernstein_poly))
+	A = np.identity(len(bernstein_poly))
+	# Sum of the bernstein polynomial should be 1
+	#A.row_insert(-1, ones(1, len(bernstein_poly)))
 	b = []
 	
 	for i in range(len(bernstein_poly)):
@@ -169,20 +171,19 @@ def feasibility_mastrix(I, Theta, bernstein_poly, X):
 		dictionary = {}
 		for j in range(len(I[i])):
 			dictionary.update({X[i]:I[i][j]/Theta[j]})
-		temp = poly.evalf(subs:dictionary)
+		temp = poly.evalf(subs=dictionary)
 		b.append(temp)
+	# last row takes in count of the sum of the bernstein polynomial
+	#b.append(1)
+	b = np.array(b)
+
 
 	return A, b
 
 
 
 
-
-
-
-
-
-def Lyapunov_func_positive(X, X_bar, deg, u, l, c):
+def Lyapunov_func(X, X_bar, deg, u, l):
 	## This function takes in parameter to encode the lyapunov 
 	# function positive definite and output the constrain string
 	# X: dimension of the original compact sapce
@@ -198,11 +199,18 @@ def Lyapunov_func_positive(X, X_bar, deg, u, l, c):
 	bernstein_poly, Theta = multi_bernstein_generation(X_bar, deg, I)
 
 	B = basis_transform_matrix_generation(I, Theta)
-
-	for i in range(len(X)):
-		X[i] = l + (u - l) * X_bar[i]
+	# Might work or not 
+	# for i in range(len(X)):
+	# 	X[i] = l + (u - l) * X_bar[i]
 
 	T = basis_transform_matrix_generation(ele_bar, ele)
+
+	A, b = feasibility_mastrix(I, Theta, bernstein_poly, X)
+
+	z = cp.Variable(1, len(ele))
+	c = cp.Variable(1, len(ele))
+	constraints = []
+	constraints += [A @ z >= b]
 
 	return 0
 
@@ -227,8 +235,6 @@ ele_dev = monomial_vec_generation(X, J)
 # print(ele_bar)
 D = lie_derivative_matrix_generation(dynamics, ele, X, ele_dev)
 print(D*Matrix(ele_dev))
-
-
 
 
 
