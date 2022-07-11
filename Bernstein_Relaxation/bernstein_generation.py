@@ -81,6 +81,7 @@ def coefficient_matrix_generation(ele_bar, ele):
 	for objc in ele:
 		temp_list = []
 		temp_poly = expand(objc)
+		print(temp_poly)
 		# Convert into mononial dictionary with coefficients
 		temp_dict = temp_poly.as_coefficients_dict()
 		temp_list = []
@@ -106,7 +107,7 @@ def lie_derivative_matrix_generation(dynamics, ele, X, ele_dev):
 			temp[i] = diff(m, X[i]) * dynamics[i]
 		temp_der = sum(temp)
 		ele_der.append(expand(temp_der))
-	print(ele_der)
+	# print(ele_der)
 	# Mapping the differential of each corresponding monomial into original ele matrix
 	for objc in ele_der:
 		temp_dict = objc.as_coefficients_dict()
@@ -168,10 +169,14 @@ def feasibility_mastrix(I, Theta, bernstein_poly, X):
 	
 	for i in range(len(bernstein_poly)):
 		temp = 0
+		# for j in range(len(X)):
+		# 	func = lambdify()
 		dictionary = {}
 		for j in range(len(I[i])):
-			dictionary.update({X[i]:I[i][j]/Theta[j]})
-		temp = poly.evalf(subs=dictionary)
+			# print(I[i][j]/Theta[j])
+			dictionary.update({X[j]:I[i][j]/Theta[j]})
+			# print(dictionary)
+		temp = bernstein_poly[i].evalf(subs=dictionary)
 		b.append(temp)
 	# last row takes in count of the sum of the bernstein polynomial
 	#b.append(1)
@@ -183,7 +188,7 @@ def feasibility_mastrix(I, Theta, bernstein_poly, X):
 
 
 
-def Lyapunov_func(X, X_bar, deg, u, l, dynamics, max_deg):
+def Lyapunov_func(X, X_bar, deg, dynamics, max_deg):
 	## This function takes in parameter to encode the lyapunov 
 	# function positive definite and output the constrain string
 	# X: dimension of the original compact sapce
@@ -195,39 +200,45 @@ def Lyapunov_func(X, X_bar, deg, u, l, dynamics, max_deg):
 	
 	I = monomial_power_generation(X_bar, deg)
 	ele = monomial_vec_generation(X, I)
+	bernstein_poly_o, Theta_o = multi_bernstein_generation(X_bar, deg, I)
 
 	## Generate the differential matrix to represent the lie derivative of lyapunov func
 	## correspond to extended monomial basis
 	I_de = monomial_power_generation(X, max_deg)
 	ele_de = monomial_vec_generation(X, I_de)
 	D = lie_derivative_matrix_generation(dynamics, ele, X, ele_de)
+	# print(D)
+	# print("")
 	
 	## Generate the bernstein basis matrix mapping 
 	ele_bar = monomial_vec_generation(X_bar, I_de)
 	bernstein_poly, Theta = multi_bernstein_generation(X_bar, max_deg, I_de)
 	B = basis_transform_matrix_generation(I_de, Theta)
+	# print(B)
+	# print("")
 	# Might work or not 
 	# for i in range(len(X)):
 	# 	X[i] = l + (u - l) * X_bar[i]
 
 	## Generate the basis transformation matrix mapping to the [0,1]^n domain 
-	T = basis_transform_matrix_generation(ele_bar, ele_de)
+	T = coefficient_matrix_generation(ele_bar, ele_de)
+	# print(T)
 
 	## Generate the feasiblility problem constrainst
-	A, b = feasibility_mastrix(I, Theta, bernstein_poly, X)
+	A, b = feasibility_mastrix(I, Theta_o, bernstein_poly_o, X_bar)
+	# print(B.T@T.T@D.T)
 
 	## Define the unkown parameters and objective in later optimization 
 	## Transfer into Farkas lamma calculating the dual values
-	lambda_dual = cp.Variable(1, len(ele))
-	c = cp.Variable(1, len(ele))
-	objective = cp.Minimize()
+	lambda_dual = cp.Variable(len(ele))
+	c = cp.Variable(len(ele))
+	objective = cp.Minimize(0)
 
 	## Define the constraints used in the optimization problem 
 	constraints = []
-	constraints += [np.dot(b, lambda_dual) <= 0]
-	for i in range(len(lambda_dual)):
-		constraints += [lambda_dual[i] >= 0]
-	constraints += [A.T@lambda_dual == B.T*T.T*D.T*c]
+	constraints += [b.T @ lambda_dual <= 0]
+	constraints += [lambda_dual >= 0]
+	constraints += [A.T@lambda_dual == B.T@T.T@D.T@c]
 
 	problem = cp.Problem(objective, constraints)
 	problem.solve()
@@ -237,14 +248,19 @@ def Lyapunov_func(X, X_bar, deg, u, l, dynamics, max_deg):
 
 ## Playground for module testing 
 
-# x, y = symbols('x, y')
-# x_bar, y_bar = symbols('x_bar, y_bar')
+x, y = symbols('x, y')
+x_bar, y_bar = symbols('x_bar, y_bar')
 
 
-# X = [x, y]
-# # X_bar = [x_bar, y_bar]
-# dynamics = [- x**3 + y, - x - y]
-
+X = [x, y]
+X_bar = [x_bar, y_bar]
+dynamics = [- x**3 + y, - x - y]
+u = 1
+l = -1
+x = l + x_bar*(u-l)
+y = l + y_bar*(u-l)
+t = Lyapunov_func(X, X_bar, 2, dynamics, 4)
+print(t)
 
 # I = monomial_power_generation(X, 2)
 # # print(I)
@@ -256,9 +272,9 @@ def Lyapunov_func(X, X_bar, deg, u, l, dynamics, max_deg):
 # D = lie_derivative_matrix_generation(dynamics, ele, X, ele_dev)
 # print(D*Matrix(ele_dev))
 
-c = np.array([1,2])
-A = np.array([[1,1],[0,1]])
-# print(c)
-print(A.T)
-print(A.T@c)
+# c = np.array([1,2])
+# A = np.array([[1,1],[0,1]])
+# # print(c)
+# print(A.T)
+# print(A.T@c)
 
