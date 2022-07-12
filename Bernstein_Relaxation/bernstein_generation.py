@@ -196,7 +196,7 @@ def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, u, l):
 	
 	I = monomial_power_generation(X_bar, deg)
 	ele = monomial_vec_generation(X, I)
-	bernstein_poly_o, Theta_o = multi_bernstein_generation(X_bar, deg, I)
+	# bernstein_poly_o, Theta_o = multi_bernstein_generation(X_bar, deg, I)
 
 	## Generate the differential matrix to represent the lie derivative of lyapunov func
 	## correspond to extended monomial basis
@@ -219,22 +219,27 @@ def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, u, l):
 	T = coefficient_matrix_generation(ele_bar, ele_sub)
 
 	## Generate the feasiblility problem constrainst
-	A, b = feasibility_mastrix(I, Theta_o, bernstein_poly_o, X_bar)
+	A, b = feasibility_mastrix(I_de, Theta, bernstein_poly, X_bar)
 	val = B.T@T.T@D.T
-	print(np.shape(val))
-	print(np.shape(A))
+	t_1 = np.ones(9)
+	t_2 = np.ones(25)
+	# print(np.shape(val))
+	print(np.shape(A@t_2))
+	print(np.shape(b))
+	temp = (val@t_1).T@t_2
+	print(temp<=0)
 
 	## Define the unkown parameters and objective in later optimization 
 	## Transfer into Farkas lamma calculating the dual values
-	lambda_dual = cp.Variable(len(ele))
+	lambda_dual = cp.Variable(len(ele_de), pos=True)
 	c = cp.Variable(len(ele))
 	objective = cp.Minimize(0)
 
 	## Define the constraints used in the optimization problem 
 	constraints = []
-	constraints += [b.T @ lambda_dual <= 0]
-	constraints += [lambda_dual >= 0]
-	# constraints += [A.T@lambda_dual == B.T@T.T@D.T@c]
+	constraints += [A.T @ lambda_dual == val@c ]
+	# constraints += [cp.sum(lambda_dual) == 1]
+	
 
 	problem = cp.Problem(objective, constraints)
 	problem.solve()
