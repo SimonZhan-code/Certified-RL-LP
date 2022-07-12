@@ -81,7 +81,6 @@ def coefficient_matrix_generation(ele_bar, ele):
 	for objc in ele:
 		temp_list = []
 		temp_poly = expand(objc)
-		print(temp_poly)
 		# Convert into mononial dictionary with coefficients
 		temp_dict = temp_poly.as_coefficients_dict()
 		temp_list = []
@@ -169,11 +168,8 @@ def feasibility_mastrix(I, Theta, bernstein_poly, X):
 	
 	for i in range(len(bernstein_poly)):
 		temp = 0
-		# for j in range(len(X)):
-		# 	func = lambdify()
 		dictionary = {}
 		for j in range(len(I[i])):
-			# print(I[i][j]/Theta[j])
 			dictionary.update({X[j]:I[i][j]/Theta[j]})
 			# print(dictionary)
 		temp = bernstein_poly[i].evalf(subs=dictionary)
@@ -188,7 +184,7 @@ def feasibility_mastrix(I, Theta, bernstein_poly, X):
 
 
 
-def Lyapunov_func(X, X_bar, deg, dynamics, max_deg):
+def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, u, l):
 	## This function takes in parameter to encode the lyapunov 
 	# function positive definite and output the constrain string
 	# X: dimension of the original compact sapce
@@ -207,26 +203,26 @@ def Lyapunov_func(X, X_bar, deg, dynamics, max_deg):
 	I_de = monomial_power_generation(X, max_deg)
 	ele_de = monomial_vec_generation(X, I_de)
 	D = lie_derivative_matrix_generation(dynamics, ele, X, ele_de)
-	# print(D)
-	# print("")
+	
 	
 	## Generate the bernstein basis matrix mapping 
-	ele_bar = monomial_vec_generation(X_bar, I_de)
+	
 	bernstein_poly, Theta = multi_bernstein_generation(X_bar, max_deg, I_de)
 	B = basis_transform_matrix_generation(I_de, Theta)
-	# print(B)
-	# print("")
-	# Might work or not 
-	# for i in range(len(X)):
-	# 	X[i] = l + (u - l) * X_bar[i]
+	
 
 	## Generate the basis transformation matrix mapping to the [0,1]^n domain 
-	T = coefficient_matrix_generation(ele_bar, ele_de)
-	# print(T)
+	for i in range(len(X)):
+		X[i] = l + (u-l)*X_bar[i]
+	ele_bar = monomial_vec_generation(X_bar, I_de)
+	ele_sub = monomial_vec_generation(X, I_de)
+	T = coefficient_matrix_generation(ele_bar, ele_sub)
 
 	## Generate the feasiblility problem constrainst
 	A, b = feasibility_mastrix(I, Theta_o, bernstein_poly_o, X_bar)
-	# print(B.T@T.T@D.T)
+	val = B.T@T.T@D.T
+	print(np.shape(val))
+	print(np.shape(A))
 
 	## Define the unkown parameters and objective in later optimization 
 	## Transfer into Farkas lamma calculating the dual values
@@ -238,12 +234,12 @@ def Lyapunov_func(X, X_bar, deg, dynamics, max_deg):
 	constraints = []
 	constraints += [b.T @ lambda_dual <= 0]
 	constraints += [lambda_dual >= 0]
-	constraints += [A.T@lambda_dual == B.T@T.T@D.T@c]
+	# constraints += [A.T@lambda_dual == B.T@T.T@D.T@c]
 
 	problem = cp.Problem(objective, constraints)
 	problem.solve()
 
-	return c.value[0]
+	return c.value
 
 
 ## Playground for module testing 
@@ -251,20 +247,24 @@ def Lyapunov_func(X, X_bar, deg, dynamics, max_deg):
 x, y = symbols('x, y')
 x_bar, y_bar = symbols('x_bar, y_bar')
 
+# u = 1
+# l = -1
+# x = l + x_bar*(u-l)
+# y = l + y_bar*(u-l)
 
 X = [x, y]
 X_bar = [x_bar, y_bar]
 dynamics = [- x**3 + y, - x - y]
-u = 1
-l = -1
-x = l + x_bar*(u-l)
-y = l + y_bar*(u-l)
-t = Lyapunov_func(X, X_bar, 2, dynamics, 4)
+
+
+t = Lyapunov_func(X, X_bar, 2, dynamics, 4, -1, 1)
 print(t)
 
 # I = monomial_power_generation(X, 2)
 # # print(I)
 # ele = monomial_vec_generation(X, I)
+# ele_bar = monomial_vec_generation(X_bar, I)
+# print(coefficient_matrix_generation(ele_bar, ele))
 # # print(ele)
 # J = monomial_power_generation(X, 4)
 # ele_dev = monomial_vec_generation(X, J)
