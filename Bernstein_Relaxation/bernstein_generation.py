@@ -162,6 +162,9 @@ def basis_transform_matrix_generation(I_list, Theta):
 # is sum of z is 1 and z_{I,Theta}<=B_{I,Theta}(I/Theta)
 def feasibility_mastrix(I, Theta, bernstein_poly, X):
 	A = np.identity(len(bernstein_poly))
+	temp_1 = np.ones(len(bernstein_poly))
+	temp_2 = -np.ones(len(bernstein_poly))
+	A = np.vstack([np.vstack([A, temp_1]), temp_2])
 	# Sum of the bernstein polynomial should be 1
 	#A.row_insert(-1, ones(1, len(bernstein_poly)))
 	b = []
@@ -175,16 +178,28 @@ def feasibility_mastrix(I, Theta, bernstein_poly, X):
 		temp = bernstein_poly[i].evalf(subs=dictionary)
 		b.append(temp)
 	# last row takes in count of the sum of the bernstein polynomial
-	#b.append(1)
+	b.append(1)
+	b.append(-1)
 	b = np.array(b)
 
 
 	return A, b
 
+# This function adding the x'Ax into the derivative to ensure the negative definite
+# of the Lie derivative
+def negative_definite(c, alpha, X, ele):
+	add_on = []
+	square = []
+	for x in X:
+		square.append(x**2)
+	# print(square)
+	for i in range(len(ele)):
+		if ele[i] in square:
+			c[i] += alpha
+	return c
 
 
-
-def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, u, l):
+def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, u, l, alpha):
 	## This function takes in parameter to encode the lyapunov 
 	# function positive definite and output the constrain string
 	# X: dimension of the original compact sapce
@@ -192,6 +207,7 @@ def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, u, l):
 	# deg: degree required to model the certificate
 	# u: upper bound of the compact set
 	# l: lower bound of the compact set
+	# alpha: positive definite x'Ax add-on
 	# c: parameters of each monomial in the polynomial
 	
 	I = monomial_power_generation(X_bar, deg)
@@ -202,6 +218,7 @@ def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, u, l):
 	## correspond to extended monomial basis
 	I_de = monomial_power_generation(X, max_deg)
 	ele_de = monomial_vec_generation(X, I_de)
+	print(ele)
 	D = lie_derivative_matrix_generation(dynamics, ele, X, ele_de)
 	
 	
@@ -216,35 +233,55 @@ def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, u, l):
 		X[i] = l + (u-l)*X_bar[i]
 	ele_bar = monomial_vec_generation(X_bar, I_de)
 	ele_sub = monomial_vec_generation(X, I_de)
+	ele_sub_normal = monomial_vec_generation(X, I)
 	T = coefficient_matrix_generation(ele_bar, ele_sub)
 
 	## Generate the feasiblility problem constrainst
 	A, b = feasibility_mastrix(I_de, Theta, bernstein_poly, X_bar)
 	val = B.T@T.T@D.T
-	t_1 = np.ones(9)
-	t_2 = np.ones(25)
-	# print(np.shape(val))
-	print(np.shape(A@t_2))
-	print(np.shape(b))
-	temp = (val@t_1).T@t_2
-	print(temp<=0)
 
 	## Define the unkown parameters and objective in later optimization 
 	## Transfer into Farkas lamma calculating the dual values
-	lambda_dual = cp.Variable(len(ele_de), pos=True)
+	lambda_dual = cp.Variable(len(ele_de)+2, pos=True)
 	c = cp.Variable(len(ele))
 	objective = cp.Minimize(0)
 
 	## Define the constraints used in the optimization problem 
 	constraints = []
 	constraints += [A.T @ lambda_dual == val@c ]
-	# constraints += [cp.sum(lambda_dual) == 1]
+	constraints += [b.T@lambda_dual <= 0]
 	
 
 	problem = cp.Problem(objective, constraints)
 	problem.solve()
 
-	return c.value
+	# Testing whether the intial condition is satisfied
+	c_final = negative_definite(c.value, alpha, X, ele_sub_normal)
+	test = InitValidTest(c_final)
+
+	return c_final, test
+
+
+# Testing Lyapunov function is valid 
+def InitValidTest(L):
+	Test = True
+	# L = np.reshape(L, (1, 6))
+	# assert L.shape == (6, )
+	for _ in range(10000):
+		x = np.random.uniform(low=-1, high=1, size=1)[0]
+		y = np.random.uniform(low=-1, high=1, size=1)[0]
+		Lyapunov = L.dot(np.array([1, y, x, y**2, x**2, x*y, x*y**2, x**2*y, x**2*y**2]))
+		if Lyapunov < 0:
+			Test = False
+	x, y = 0, 0
+	Lyapunov = L.dot(np.array([1, y, x, y**2, x**2, x*y, x*y**2, x**2*y, x**2*y**2]))
+	if abs(Lyapunov)>=5e-4:
+		Test = False
+		print("Evoked!")
+	return Test 
+
+
+
 
 
 ## Playground for module testing 
@@ -252,18 +289,16 @@ def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, u, l):
 x, y = symbols('x, y')
 x_bar, y_bar = symbols('x_bar, y_bar')
 
-# u = 1
-# l = -1
-# x = l + x_bar*(u-l)
-# y = l + y_bar*(u-l)
 
 X = [x, y]
 X_bar = [x_bar, y_bar]
 dynamics = [- x**3 + y, - x - y]
 
+# print(-np.ones(3))
 
-t = Lyapunov_func(X, X_bar, 2, dynamics, 4, -1, 1)
+t, test = Lyapunov_func(X, X_bar, 2, dynamics, 4, -1, 1, 0.1)
 print(t)
+print(test)
 
 # I = monomial_power_generation(X, 2)
 # # print(I)
