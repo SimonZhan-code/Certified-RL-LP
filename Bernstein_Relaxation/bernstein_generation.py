@@ -48,7 +48,6 @@ def monomial_vec_generation(X, I):
 		for j in range(len(i)):
 			monomial = monomial*X[j]**i[j]
 		ele.append(monomial)
-
 	return ele
 
 
@@ -102,11 +101,11 @@ def lie_derivative_matrix_generation(dynamics, ele, X, ele_dev):
 	ele_der = []
 	for m in ele:
 		temp = [0]*len(X)
+		temp_der = 0
 		for i in range(len(X)):
 			temp[i] = diff(m, X[i]) * dynamics[i]
 		temp_der = sum(temp)
 		ele_der.append(expand(temp_der))
-	# print(ele_der)
 	# Mapping the differential of each corresponding monomial into original ele matrix
 	for objc in ele_der:
 		temp_dict = objc.as_coefficients_dict()
@@ -114,20 +113,17 @@ def lie_derivative_matrix_generation(dynamics, ele, X, ele_dev):
 		for i in range(len(ele_dev)):
 			temp_list.append(temp_dict[ele_dev[i]])
 		D.append(temp_list)
-
 	D = np.array(D)
 	return D
 
 
 
 def basis_transform_matrix_generation(I_list, Theta):
-
 	# Initialize the coefficient matrix
 	B = []
-	# keep track of monomials of different degree
+	# Keep track of monomials of different degree
 	for I in I_list:
 		temp_list = []
-		# print("current monomial degree is:" + str(I))
 		for J in I_list:
 			# Extract the degree smaller than current I
 			coeff_list = []
@@ -138,22 +134,18 @@ def basis_transform_matrix_generation(I_list, Theta):
 				if np.less_equal(temp_coeff, I_np).all():
 					coeff_list.append(I_list[i])
 			# Calculate the bernstein coefficient of each monomial
-			# print("current j list pass in:" + str(coeff_list))
 			curr = 0
 			for j in coeff_list:
 				if np.array_equal(j, I):
 					temp = 1
 				else:
 					temp = 0
-				# print("current J iterate is:" + str(j))
 				a = np.prod(special.comb(J, j))
 				b = np.prod(special.comb(Theta, j))
 				curr += a/b*temp
-				# print("curr value is:" + str(curr))
 			temp_list.append(curr)	
 		B.append(temp_list)
 	B = np.array(B)
-
 	return B
 
 
@@ -166,18 +158,15 @@ def feasibility_mastrix(I, Theta, bernstein_poly, X):
 	temp_2 = -np.ones(len(bernstein_poly))
 	A = np.vstack((np.vstack((A, temp_1)), temp_2))
 	# Sum of the bernstein polynomial should be 1
-	#A.row_insert(-1, ones(1, len(bernstein_poly)))
-	b = []
-	
+	b = []	
 	for i in range(len(bernstein_poly)):
 		temp = 0
 		dictionary = {}
 		for j in range(len(I[i])):
 			dictionary.update({X[j]:I[i][j]/Theta[j]})
-			# print(dictionary)
 		temp = bernstein_poly[i].evalf(subs=dictionary)
 		b.append(temp)
-	# last row takes in count of the sum of the bernstein polynomial
+	# Last row takes in count of the sum of the bernstein polynomial
 	b.append(1)
 	b.append(-1)
 	b = np.array(b)
@@ -192,7 +181,7 @@ def negative_definite(c, alpha, X, ele):
 	square = []
 	for x in X:
 		square.append(x**2)
-	# print(square)
+	# Add the alpha to the corresponding ele terms
 	for i in range(len(ele)):
 		if ele[i] in square:
 			c[i] += alpha
@@ -218,7 +207,7 @@ def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, u, l, alpha):
 	## correspond to extended monomial basis
 	I_de = monomial_power_generation(X, max_deg)
 	ele_de = monomial_vec_generation(X, I_de)
-	print(ele)
+	
 	D = lie_derivative_matrix_generation(dynamics, ele, X, ele_de)
 	
 	## Generate the bernstein basis matrix mapping 
@@ -233,9 +222,11 @@ def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, u, l, alpha):
 	ele_sub_normal = monomial_vec_generation(X, I)
 	T = coefficient_matrix_generation(ele_bar, ele_sub)
 
+
 	## Generate the feasiblility problem constrainst
 	A, b = feasibility_mastrix(I_de, Theta, bernstein_poly, X_bar)
 	val = B.T@T.T@D.T
+	
 
 	## Define the unkown parameters and objective in later optimization 
 	## Transfer into Farkas lamma calculating the dual values
@@ -252,6 +243,7 @@ def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, u, l, alpha):
 
 	problem = cp.Problem(objective, constraints)
 	problem.solve(solver=cp.OSQP)
+	print(c.value)
 
 	# Testing whether the intial condition is satisfied
 	c_final = negative_definite(c.value, alpha, X, ele_sub_normal)
@@ -283,7 +275,6 @@ def InitValidTest(L):
 
 
 
-
 ## Playground for module testing 
 
 x, y = symbols('x, y')
@@ -296,13 +287,16 @@ dynamics = [- x**3 + y, - x - y]
 # dynamics = [- x**3 - y**2, x*y - y**3]
 # dynamics = [- x - 1.5*x**2*y**3, - y**3 + 0.5*x**2*y**2]
 
+
 # print(-np.ones(3))
-t, test = Lyapunov_func(X, X_bar, 2, dynamics, 4, -100, 100, 0.1)
+t, test = Lyapunov_func(X, X_bar, 2, dynamics, 4, 1, -1, 0.1)
 print(t)
 print(test)
 
+
 # I = monomial_power_generation(X, 2)
-# # print(I)
+# for i in range(len(X)):
+# 	X[i] = -1 + 2*X_bar[i]
 # ele = monomial_vec_generation(X, I)
 # ele_bar = monomial_vec_generation(X_bar, I)
 # print(coefficient_matrix_generation(ele_bar, ele))
