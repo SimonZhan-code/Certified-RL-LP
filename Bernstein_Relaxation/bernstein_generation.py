@@ -164,7 +164,7 @@ def feasibility_mastrix(I, Theta, bernstein_poly, X):
 	A = np.identity(len(bernstein_poly))
 	temp_1 = np.ones(len(bernstein_poly))
 	temp_2 = -np.ones(len(bernstein_poly))
-	A = np.vstack([np.vstack([A, temp_1]), temp_2])
+	A = np.vstack((np.vstack((A, temp_1)), temp_2))
 	# Sum of the bernstein polynomial should be 1
 	#A.row_insert(-1, ones(1, len(bernstein_poly)))
 	b = []
@@ -221,11 +221,9 @@ def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, u, l, alpha):
 	print(ele)
 	D = lie_derivative_matrix_generation(dynamics, ele, X, ele_de)
 	
-	
 	## Generate the bernstein basis matrix mapping 
 	bernstein_poly, Theta = multi_bernstein_generation(X_bar, max_deg, I_de)
 	B = basis_transform_matrix_generation(I_de, Theta)
-	
 
 	## Generate the basis transformation matrix mapping to the [0,1]^n domain 
 	for i in range(len(X)):
@@ -242,6 +240,7 @@ def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, u, l, alpha):
 	## Define the unkown parameters and objective in later optimization 
 	## Transfer into Farkas lamma calculating the dual values
 	lambda_dual = cp.Variable(len(ele_de)+2, pos=True)
+	objc = cp.Variable(pos=True)
 	c = cp.Variable(len(ele))
 	objective = cp.Minimize(0)
 
@@ -259,6 +258,8 @@ def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, u, l, alpha):
 	test = InitValidTest(c_final)
 
 	return c_final, test
+
+
 
 
 # Testing Lyapunov function is valid 
@@ -291,12 +292,12 @@ x_bar, y_bar = symbols('x_bar, y_bar')
 
 X = [x, y]
 X_bar = [x_bar, y_bar]
-# dynamics = [- x**3 + y, - x - y]
-dynamics = [- x**3 - y**2, x*y - y**3]
+dynamics = [- x**3 + y, - x - y]
+# dynamics = [- x**3 - y**2, x*y - y**3]
 # dynamics = [- x - 1.5*x**2*y**3, - y**3 + 0.5*x**2*y**2]
 
 # print(-np.ones(3))
-t, test = Lyapunov_func(X, X_bar, 2, dynamics, 4, -1, 1, 0.1)
+t, test = Lyapunov_func(X, X_bar, 2, dynamics, 4, -100, 100, 0.1)
 print(t)
 print(test)
 
