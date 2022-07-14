@@ -75,7 +75,8 @@ def polynomial_generation(X, I_i, Theta):
 
 
 def coefficient_matrix_generation(ele_bar, ele):
-
+	# The coefficient matrix to transfer a function from 
+	# [l,u] compact region into a [0,1] unit region
 	I = []
 	for objc in ele:
 		temp_list = []
@@ -226,7 +227,6 @@ def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, u, l, alpha):
 	## Generate the feasiblility problem constrainst
 	A, b = feasibility_mastrix(I_de, Theta, bernstein_poly, X_bar)
 	val = B.T@T.T@D.T
-	
 
 	## Define the unkown parameters and objective in later optimization 
 	## Transfer into Farkas lamma calculating the dual values
@@ -240,18 +240,14 @@ def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, u, l, alpha):
 	constraints += [A.T @ lambda_dual == val@c ]
 	constraints += [b.T@lambda_dual <= 0]
 	
-
 	problem = cp.Problem(objective, constraints)
 	problem.solve(solver=cp.OSQP)
-	print(c.value)
 
 	# Testing whether the intial condition is satisfied
 	c_final = negative_definite(c.value, alpha, X, ele_sub_normal)
 	test = InitValidTest(c_final)
 
 	return c_final, test
-
-
 
 
 # Testing Lyapunov function is valid 
@@ -271,7 +267,6 @@ def InitValidTest(L):
 		Test = False
 		print("Evoked!")
 	return Test 
-
 
 
 
