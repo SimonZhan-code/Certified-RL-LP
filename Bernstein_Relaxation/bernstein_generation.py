@@ -38,7 +38,6 @@ def monomial_power_generation(X, deg):
 
 
 
-
 def monomial_vec_generation(X, I):
 	# Generate monomial of given degree with given dimension
 	ele = []
@@ -91,7 +90,6 @@ def coefficient_matrix_generation(ele_bar, ele):
 	# Convert list into matrix
 	T = np.array(I)
 	return T
-
 
 
 
@@ -245,9 +243,9 @@ def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, u, l, alpha):
 
 	# Testing whether the intial condition is satisfied
 	c_final = negative_definite(c.value, alpha, X, ele_sub_normal)
-	test = InitValidTest(c_final)
+	# test = InitValidTest(c_final)
 
-	return c_final, test
+	return c_final
 
 
 # Testing Lyapunov function is valid 
@@ -284,9 +282,9 @@ dynamics = [- x**3 + y, - x - y]
 
 
 # print(-np.ones(3))
-t, test = Lyapunov_func(X, X_bar, 2, dynamics, 4, 1, -1, 0.1)
-print(t)
-print(test)
+# t, test = Lyapunov_func(X, X_bar, 2, dynamics, 4, 1, -1, 0.1)
+# print(t)
+# print(test)
 
 
 # I = monomial_power_generation(X, 2)
