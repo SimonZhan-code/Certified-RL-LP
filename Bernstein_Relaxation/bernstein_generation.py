@@ -200,6 +200,7 @@ def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, u, l, alpha):
 	
 	I = monomial_power_generation(X_bar, deg)
 	ele = monomial_vec_generation(X, I)
+	print(ele)
 	# bernstein_poly_o, Theta_o = multi_bernstein_generation(X_bar, deg, I)
 
 	## Generate the differential matrix to represent the lie derivative of lyapunov func
@@ -208,10 +209,16 @@ def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, u, l, alpha):
 	ele_de = monomial_vec_generation(X, I_de)
 	
 	D = lie_derivative_matrix_generation(dynamics, ele, X, ele_de)
+	# print(D)
 	
 	## Generate the bernstein basis matrix mapping 
 	bernstein_poly, Theta = multi_bernstein_generation(X_bar, max_deg, I_de)
 	B = basis_transform_matrix_generation(I_de, Theta)
+	# print(bernstein_poly)
+	# print("")
+	# print(B)
+	# print("")
+	# print(B@bernstein_poly)
 
 	## Generate the basis transformation matrix mapping to the [0,1]^n domain 
 	for i in range(len(X)):
@@ -220,11 +227,16 @@ def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, u, l, alpha):
 	ele_sub = monomial_vec_generation(X, I_de)
 	ele_sub_normal = monomial_vec_generation(X, I)
 	T = coefficient_matrix_generation(ele_bar, ele_sub)
+	# print(T)
 
 
 	## Generate the feasiblility problem constrainst
 	A, b = feasibility_mastrix(I_de, Theta, bernstein_poly, X_bar)
+	# print(A)
+	# print("")
+	# print(b)
 	val = B.T@T.T@D.T
+	# print(val)
 
 	## Define the unkown parameters and objective in later optimization 
 	## Transfer into Farkas lamma calculating the dual values
@@ -239,6 +251,7 @@ def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, u, l, alpha):
 	constraints += [b.T@lambda_dual <= 0]
 	
 	problem = cp.Problem(objective, constraints)
+	assert problem.is_dcp()
 	problem.solve(solver=cp.OSQP)
 
 	# Testing whether the intial condition is satisfied
@@ -274,16 +287,16 @@ x, y = symbols('x, y')
 x_bar, y_bar = symbols('x_bar, y_bar')
 
 
-X = [x, y]
-X_bar = [x_bar, y_bar]
-dynamics = [- x**3 + y, - x - y]
+X = [x]
+X_bar = [x_bar]
+dynamics = [2*x]
 # dynamics = [- x**3 - y**2, x*y - y**3]
 # dynamics = [- x - 1.5*x**2*y**3, - y**3 + 0.5*x**2*y**2]
 
 
 # print(-np.ones(3))
-# t, test = Lyapunov_func(X, X_bar, 2, dynamics, 4, 1, -1, 0.1)
-# print(t)
+t = Lyapunov_func(X, X_bar, 2, dynamics, 2, 1, -1, 0.1)
+print(t)
 # print(test)
 
 
