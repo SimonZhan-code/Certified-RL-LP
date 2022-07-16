@@ -32,7 +32,7 @@ def monomial_power_generation(X, deg):
 		I_temp_permut = list(permutations(i, dim))
 		I_temp += I_temp_permut
 	# Deduce the redundant option
-	[I.append(x) for x in I_temp if x not in I]
+	[I.append(x) for x in I_temp if x not in I and sum(x) <= deg]
 
 	return I 
 
@@ -241,25 +241,25 @@ def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, u, l, alpha):
 	## Define the unkown parameters and objective in later optimization 
 	## Transfer into Farkas lamma calculating the dual values
 	lambda_dual = cp.Variable(len(ele_de)+2, pos=True)
-	objc = cp.Variable(pos=True)
+	# objc = cp.Variable(pos=True)
 	c = cp.Variable(len(ele))
 	objective = cp.Minimize(0)
 
 	## Define the constraints used in the optimization problem 
 	constraints = []
 	constraints += [A.T @ lambda_dual == val@c ]
-	constraints += [b.T@lambda_dual <= 0]
+	constraints += [b.T@lambda_dual <= -0.001]
 	
 	problem = cp.Problem(objective, constraints)
 	assert problem.is_dcp()
-	problem.solve(solver=cp.OSQP)
+	problem.solve(solver=cp.GLPK, verbose=True)
+	print(problem.status)
 
 	# Testing whether the intial condition is satisfied
-	c_final = negative_definite(c.value, alpha, X, ele_sub_normal)
+	# c_final = negative_definite(c.value, alpha, X, ele_sub_normal)
 	# test = InitValidTest(c_final)
 
-	return c_final
-
+	return 0
 
 # Testing Lyapunov function is valid 
 def InitValidTest(L):
@@ -287,9 +287,9 @@ x, y = symbols('x, y')
 x_bar, y_bar = symbols('x_bar, y_bar')
 
 
-X = [x]
-X_bar = [x_bar]
-dynamics = [2*x]
+X = [x, y]
+X_bar = [x_bar, y_bar]
+dynamics = [-x**3+y, -x-y]
 # dynamics = [- x**3 - y**2, x*y - y**3]
 # dynamics = [- x - 1.5*x**2*y**3, - y**3 + 0.5*x**2*y**2]
 
