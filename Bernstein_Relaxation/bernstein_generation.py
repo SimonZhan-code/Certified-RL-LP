@@ -210,6 +210,8 @@ def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, u, l, alpha):
 	
 	D = lie_derivative_matrix_generation(dynamics, ele, X, ele_de)
 	# print(D)
+	# print("")
+	# print(D@ele_de)
 	
 	## Generate the bernstein basis matrix mapping 
 	bernstein_poly, Theta = multi_bernstein_generation(X_bar, max_deg, I_de)
@@ -240,7 +242,7 @@ def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, u, l, alpha):
 
 	## Define the unkown parameters and objective in later optimization 
 	## Transfer into Farkas lamma calculating the dual values
-	lambda_dual = cp.Variable(len(ele_de)+2, pos=True)
+	lambda_dual = cp.Variable(len(ele_de)+2)
 	# objc = cp.Variable(pos=True)
 	c = cp.Variable(len(ele))
 	objective = cp.Minimize(0)
@@ -248,18 +250,21 @@ def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, u, l, alpha):
 	## Define the constraints used in the optimization problem 
 	constraints = []
 	constraints += [A.T @ lambda_dual == val@c ]
-	constraints += [b.T@lambda_dual <= -0.001]
-	
+	constraints += [b.T@lambda_dual <= -0.000001]
+	constraints += [lambda_dual >= 0]
+
+
 	problem = cp.Problem(objective, constraints)
 	assert problem.is_dcp()
-	problem.solve(solver=cp.GLPK, verbose=True)
-	print(problem.status)
+	assert problem.is_dpp()
+	problem.solve()
+	# print(problem.status)
 
 	# Testing whether the intial condition is satisfied
 	# c_final = negative_definite(c.value, alpha, X, ele_sub_normal)
 	# test = InitValidTest(c_final)
 
-	return 0
+	return c.value
 
 # Testing Lyapunov function is valid 
 def InitValidTest(L):
@@ -283,13 +288,13 @@ def InitValidTest(L):
 
 ## Playground for module testing 
 
-x, y = symbols('x, y')
-x_bar, y_bar = symbols('x_bar, y_bar')
+x, y, z = symbols('x, y, z')
+x_bar, y_bar, z_bar = symbols('x_bar, y_bar, z_bar')
 
 
-X = [x, y]
-X_bar = [x_bar, y_bar]
-dynamics = [-x**3+y, -x-y]
+X = [x, y, z]
+X_bar = [x_bar, y_bar, z_bar]
+dynamics = [-x, -y, -z]
 # dynamics = [- x**3 - y**2, x*y - y**3]
 # dynamics = [- x - 1.5*x**2*y**3, - y**3 + 0.5*x**2*y**2]
 
