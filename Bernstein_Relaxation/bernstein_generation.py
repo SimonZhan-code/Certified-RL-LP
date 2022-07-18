@@ -176,7 +176,6 @@ def feasibility_mastrix(I, Theta, bernstein_poly, X):
 # This function adding the x'Ax into the derivative to ensure the negative definite
 # of the Lie derivative
 def negative_definite(c, alpha, X, ele):
-	add_on = []
 	square = []
 	for x in X:
 		square.append(x**2)
@@ -201,7 +200,6 @@ def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, u, l, alpha):
 	I = monomial_power_generation(X_bar, deg)
 	ele = monomial_vec_generation(X, I)
 	print(ele)
-	# bernstein_poly_o, Theta_o = multi_bernstein_generation(X_bar, deg, I)
 
 	## Generate the differential matrix to represent the lie derivative of lyapunov func
 	## correspond to extended monomial basis
@@ -209,19 +207,12 @@ def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, u, l, alpha):
 	ele_de = monomial_vec_generation(X, I_de)
 	
 	D = lie_derivative_matrix_generation(dynamics, ele, X, ele_de)
-	# print(D)
-	# print("")
-	# print(D@ele_de)
+	
 	
 	## Generate the bernstein basis matrix mapping 
 	bernstein_poly, Theta = multi_bernstein_generation(X_bar, max_deg, I_de)
 	B = basis_transform_matrix_generation(I_de, Theta)
-	# print(bernstein_poly)
-	# print("")
-	# print(B)
-	# print("")
-	# print(B@bernstein_poly)
-
+	
 	## Generate the basis transformation matrix mapping to the [0,1]^n domain 
 	for i in range(len(X)):
 		X[i] = l + (u-l)*X_bar[i]
@@ -229,42 +220,23 @@ def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, u, l, alpha):
 	ele_sub = monomial_vec_generation(X, I_de)
 	ele_sub_normal = monomial_vec_generation(X, I)
 	T = coefficient_matrix_generation(ele_bar, ele_sub)
-	# print(T)
 
 
 	## Generate the feasiblility problem constrainst
 	A, b = feasibility_mastrix(I_de, Theta, bernstein_poly, X_bar)
-	# print(A)
-	# print("")
-	# print(b)
 	val = B.T@T.T@D.T
-	# print(val)
-
-	## Define the unkown parameters and objective in later optimization 
-	## Transfer into Farkas lamma calculating the dual values
-	lambda_dual = cp.Variable(len(ele_de)+2)
-	# objc = cp.Variable(pos=True)
-	c = cp.Variable(len(ele))
-	objective = cp.Minimize(0)
-
-	## Define the constraints used in the optimization problem 
-	constraints = []
-	constraints += [A.T @ lambda_dual == val@c ]
-	constraints += [b.T@lambda_dual <= -0.000001]
-	constraints += [lambda_dual >= 0]
-
-
-	problem = cp.Problem(objective, constraints)
-	assert problem.is_dcp()
-	assert problem.is_dpp()
-	problem.solve()
-	# print(problem.status)
-
-	# Testing whether the intial condition is satisfied
-	# c_final = negative_definite(c.value, alpha, X, ele_sub_normal)
-	# test = InitValidTest(c_final)
+	
 
 	return c.value
+
+def generateConstraints(exp1, exp2, degree, constraints):
+		# constraints = []
+		for i in range(degree+1):
+			for j in range(degree+1):
+				if i + j <= degree:
+					print('constraints += [', exp1.coeff(x, i).coeff(y, j), ' == ', exp2.coeff(x, i).coeff(y, j), ']')
+
+
 
 # Testing Lyapunov function is valid 
 def InitValidTest(L):
@@ -288,39 +260,37 @@ def InitValidTest(L):
 
 ## Playground for module testing 
 
-x, y, z = symbols('x, y, z')
-x_bar, y_bar, z_bar = symbols('x_bar, y_bar, z_bar')
+x, y = symbols('x, y')
+x_bar, y_bar = symbols('x_bar, y_bar')
 
 
-X = [x, y, z]
-X_bar = [x_bar, y_bar, z_bar]
-dynamics = [-x, -y, -z]
+X = [x, y]
+X_bar = [x_bar, y_bar]
+dynamics = [-x**3+y, -x-y]
 # dynamics = [- x**3 - y**2, x*y - y**3]
 # dynamics = [- x - 1.5*x**2*y**3, - y**3 + 0.5*x**2*y**2]
 
 
-# print(-np.ones(3))
-t = Lyapunov_func(X, X_bar, 2, dynamics, 2, 1, -1, 0.1)
-print(t)
-# print(test)
+## Define the unkown parameters and objective in later optimization 
+## Transfer into Farkas lamma calculating the dual values
+lambda_dual = cp.Variable(len(ele_de)+2)
+c = cp.Variable(len(ele))
+c = negative_definite(c.value, alpha, X, ele_sub_normal)
+objective = cp.Minimize(0)
+
+## Define the constraints used in the optimization problem 
+# constraints = []
+# constraints += [A.T @ lambda_dual == val@c ]
+# constraints += [b.T@lambda_dual <= -0.000001]
+# constraints += [lambda_dual >= 0]
 
 
-# I = monomial_power_generation(X, 2)
-# for i in range(len(X)):
-# 	X[i] = -1 + 2*X_bar[i]
-# ele = monomial_vec_generation(X, I)
-# ele_bar = monomial_vec_generation(X_bar, I)
-# print(coefficient_matrix_generation(ele_bar, ele))
-# # print(ele)
-# J = monomial_power_generation(X, 4)
-# ele_dev = monomial_vec_generation(X, J)
-# # print(ele_bar)
-# D = lie_derivative_matrix_generation(dynamics, ele, X, ele_dev)
-# print(D*Matrix(ele_dev))
+problem = cp.Problem(objective, constraints)
+assert problem.is_dcp()
+assert problem.is_dpp()
+problem.solve()
+# print(problem.status)
 
-# c = np.array([1,2])
-# A = np.array([[1,1],[0,1]])
-# # print(c)
-# print(A.T)
-# print(A.T@c)
-
+	# Testing whether the intial condition is satisfied
+	# c_final = negative_definite(c.value, alpha, X, ele_sub_normal)
+	# test = InitValidTest(c_final)
