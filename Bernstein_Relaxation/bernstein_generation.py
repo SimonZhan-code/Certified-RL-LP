@@ -93,12 +93,15 @@ def coefficient_matrix_generation(ele_bar, ele):
 
 
 
-def lie_derivative_matrix_generation(dynamics, ele, X, ele_dev):
+def lie_derivative_matrix_generation(dynamics, ele, X, ele_dev, alpha):
 	# Differentiate each monomial with each element in ele
 	# Store the differential in ele_der list
 	D = []
 	ele_der = []
+	square = [x**2 for x in X]
 	for m in ele:
+		if m in square:
+			m = m + alpha * m
 		temp = [0]*len(X)
 		temp_der = 0
 		for i in range(len(X)):
@@ -113,6 +116,7 @@ def lie_derivative_matrix_generation(dynamics, ele, X, ele_dev):
 			temp_list.append(temp_dict[ele_dev[i]])
 		D.append(temp_list)
 	D = np.array(D)
+	print(D)
 	return D
 
 
@@ -206,7 +210,7 @@ def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, bounds, alpha):
 	I_de = monomial_power_generation(X, max_deg)
 	ele_de = monomial_vec_generation(X, I_de)
 	
-	D = lie_derivative_matrix_generation(dynamics, ele, X, ele_de)
+	D = lie_derivative_matrix_generation(dynamics, ele, X, ele_de, alpha)
 	
 	
 	## Generate the bernstein basis matrix mapping 
@@ -240,7 +244,7 @@ def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, bounds, alpha):
 	## Define the constraints used in the optimization problem 
 	constraints = []
 	for T in T_list:
-		print(T)
+		# print(T)
 		constraints += [A.T @ lambda_dual == B.T@T.T@D.T@c ]
 	constraints += [b.T@lambda_dual <= 0]
 	constraints += [lambda_dual >= 0]
@@ -249,11 +253,11 @@ def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, bounds, alpha):
 	problem = cp.Problem(objective, constraints)
 	assert problem.is_dcp()
 	assert problem.is_dpp()
-	problem.solve(solver=cp.GLPK)
+	problem.solve(verbose=True)
 	# print(problem.status)
 
 	# Testing whether the intial condition is satisfied
-	c_final = negative_definite(c.value, alpha, X, ele_sub_normal)
+	# c_final = negative_definite(c.value, alpha, X, ele_sub_normal)
 	# test = InitValidTest(c_final)
 
 	return c.value
