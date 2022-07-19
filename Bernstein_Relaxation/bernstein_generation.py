@@ -186,7 +186,7 @@ def negative_definite(c, alpha, X, ele):
 	return c
 
 
-def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, u, l, alpha):
+def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, bounds, alpha):
 	## This function takes in parameter to encode the lyapunov 
 	# function positive definite and output the constrain string
 	# X: dimension of the original compact sapce
@@ -214,29 +214,49 @@ def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, u, l, alpha):
 	B = basis_transform_matrix_generation(I_de, Theta)
 	
 	## Generate the basis transformation matrix mapping to the [0,1]^n domain 
-	for i in range(len(X)):
-		X[i] = l + (u-l)*X_bar[i]
-	ele_bar = monomial_vec_generation(X_bar, I_de)
-	ele_sub = monomial_vec_generation(X, I_de)
-	ele_sub_normal = monomial_vec_generation(X, I)
-	T = coefficient_matrix_generation(ele_bar, ele_sub)
+	T_list = []
+	for bound in bounds:
+		for i in range(len(X)):
+			l, u = bound[0], bound[1]
+			X[i] = l + (u-l)*X_bar[i]
+		ele_bar = monomial_vec_generation(X_bar, I_de)
+		ele_sub = monomial_vec_generation(X, I_de)
+		ele_sub_normal = monomial_vec_generation(X, I)
+		T_list.append(coefficient_matrix_generation(ele_bar, ele_sub))
 
 
 	## Generate the feasiblility problem constrainst
 	A, b = feasibility_mastrix(I_de, Theta, bernstein_poly, X_bar)
-	val = B.T@T.T@D.T
+	# val = B.T@T.T@D.T
 	
 
+	## Define the unkown parameters and objective in later optimization 
+	## Transfer into Farkas lamma calculating the dual values
+	lambda_dual = cp.Variable(len(ele_de)+2)
+	c = cp.Variable(len(ele))
+	# c = negative_definite(c.value, alpha, X, ele_sub_normal)
+	objective = cp.Minimize(0)
+
+	## Define the constraints used in the optimization problem 
+	constraints = []
+	for T in T_list:
+		print(T)
+		constraints += [A.T @ lambda_dual == B.T@T.T@D.T@c ]
+	constraints += [b.T@lambda_dual <= 0]
+	constraints += [lambda_dual >= 0]
+
+
+	problem = cp.Problem(objective, constraints)
+	assert problem.is_dcp()
+	assert problem.is_dpp()
+	problem.solve(solver=cp.GLPK)
+	# print(problem.status)
+
+	# Testing whether the intial condition is satisfied
+	c_final = negative_definite(c.value, alpha, X, ele_sub_normal)
+	# test = InitValidTest(c_final)
+
 	return c.value
-
-def generateConstraints(exp1, exp2, degree, constraints):
-		# constraints = []
-		for i in range(degree+1):
-			for j in range(degree+1):
-				if i + j <= degree:
-					print('constraints += [', exp1.coeff(x, i).coeff(y, j), ' == ', exp2.coeff(x, i).coeff(y, j), ']')
-
-
 
 # Testing Lyapunov function is valid 
 def InitValidTest(L):
@@ -246,51 +266,48 @@ def InitValidTest(L):
 	for _ in range(10000):
 		x = np.random.uniform(low=-1, high=1, size=1)[0]
 		y = np.random.uniform(low=-1, high=1, size=1)[0]
-		Lyapunov = L.dot(np.array([1, y, x, y**2, x**2, x*y, x*y**2, x**2*y, x**2*y**2]))
+		z = np.random.uniform(low=-1, high=1, size=1)[0]
+		Lyapunov = L.dot(np.array([1, z, y, x, z**2, y**2, x**2, y*z, x*z, x*y]))
 		if Lyapunov < 0:
 			Test = False
-	x, y = 0, 0
-	Lyapunov = L.dot(np.array([1, y, x, y**2, x**2, x*y, x*y**2, x**2*y, x**2*y**2]))
+	x, y, z = 0, 0, 0
+	Lyapunov = L.dot(np.array([1, z, y, x, z**2, y**2, x**2, y*z, x*z, x*y]))
 	if abs(Lyapunov)>=5e-4:
 		Test = False
 		print("Evoked!")
 	return Test 
 
+def lieTest(L):
+	Test = True
+	# L = np.reshape(L, (1, 6))
+	# assert L.shape == (6, )
+	for _ in range(10000):
+		x = np.random.uniform(low=-1, high=1, size=1)[0]
+		y = np.random.uniform(low=-1, high=1, size=1)[0]
+		z = np.random.uniform(low=-1, high=1, size=1)[0]
+		Lyapunov = L.dot(np.array([0, -z, -y, -x, -2*z**2, -2*y**2, -2*x**2, -2*y*z, -2*x*z, -2*x*y]))
+		if Lyapunov > 0:
+			Test = False
+	return Test
+
 
 
 ## Playground for module testing 
 
-x, y = symbols('x, y')
-x_bar, y_bar = symbols('x_bar, y_bar')
+x, y, z = symbols('x, y, z')
+x_bar, y_bar, z_bar = symbols('x_bar, y_bar, z_bar')
 
 
 X = [x, y]
 X_bar = [x_bar, y_bar]
 dynamics = [-x**3+y, -x-y]
+
+
 # dynamics = [- x**3 - y**2, x*y - y**3]
 # dynamics = [- x - 1.5*x**2*y**3, - y**3 + 0.5*x**2*y**2]
 
+t = Lyapunov_func(X, X_bar, 2, dynamics, 4, [[-1,0],[0,1]], 0.1)
+print(t)
+# print(test)
 
-## Define the unkown parameters and objective in later optimization 
-## Transfer into Farkas lamma calculating the dual values
-lambda_dual = cp.Variable(len(ele_de)+2)
-c = cp.Variable(len(ele))
-c = negative_definite(c.value, alpha, X, ele_sub_normal)
-objective = cp.Minimize(0)
-
-## Define the constraints used in the optimization problem 
-# constraints = []
-# constraints += [A.T @ lambda_dual == val@c ]
-# constraints += [b.T@lambda_dual <= -0.000001]
-# constraints += [lambda_dual >= 0]
-
-
-problem = cp.Problem(objective, constraints)
-assert problem.is_dcp()
-assert problem.is_dpp()
-problem.solve()
-# print(problem.status)
-
-	# Testing whether the intial condition is satisfied
-	# c_final = negative_definite(c.value, alpha, X, ele_sub_normal)
-	# test = InitValidTest(c_final)
+# print(lieTest(t))
