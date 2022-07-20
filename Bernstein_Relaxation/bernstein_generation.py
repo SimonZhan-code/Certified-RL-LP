@@ -147,7 +147,7 @@ def basis_transform_matrix_generation(I_list, Theta):
 				curr += a/b*temp
 			temp_list.append(curr)	
 		B.append(temp_list)
-	B = np.array(B)
+	# B = np.array(B)
 	return B
 
 
@@ -200,29 +200,30 @@ def B_diff_box(B, I_de):
 	# and the dimensions of the system
 	B_list = []
 	B_1 = []
-	print(B)
 	# Keep track of monomials of different degree
 	for i in range(len(B)):
+		# print(B[i])
 		temp_list = []
 		for J in I_de:
+			# print(B)
 			# Extract the degree smaller than current I
 			coeff_list = []
 			I_np = np.array(J)
-			for i in range(len(I_de)):
-				temp_coeff = np.array(I_de[i])
+			for s in range(len(I_de)):
+				temp_coeff = np.array(I_de[s])
 				# Put all the I power smaller than the current I
 				if np.less_equal(temp_coeff, I_np).all():
-					coeff_list.append(I_de[i])
+					coeff_list.append(I_de[s])
 			# Calculate the bernstein coefficient of each monomial
 			curr = 0
 			for j in coeff_list:
-				print(j)
 				temp = B[i][I_de.index(j)]
 				a = np.prod(special.comb(J, j))
 				curr += a*temp
 			temp_list.append(2**(-sum(J))*curr)	
 		B_1.append(temp_list)
-	# print(B_1)
+	print(B_1)
+	print(B)
 	return B_list
 
 
