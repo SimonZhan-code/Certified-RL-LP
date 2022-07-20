@@ -147,7 +147,7 @@ def basis_transform_matrix_generation(I_list, Theta):
 				curr += a/b*temp
 			temp_list.append(curr)	
 		B.append(temp_list)
-	# B = np.array(B)
+	B = np.array(B)
 	return B
 
 
@@ -188,18 +188,27 @@ def negative_definite(c, alpha, X, ele):
 			c[i] += alpha
 	return c
 
-def DvideBoxs(bound, boxs):
+def DvideBoxs(bound, X):
 	# This function takes in the lower and upper bounds of the region
 	# and number of boxs desired and return the bounds of each box
 	# This function might need alter depends on changes in the dimension and desired boxs
-	return 0
+	theta = sum(bound)/2
+	eta = sum(bound)/2
+	boxs = []
+	for i in range(len(X)):
+		for j in range(len(X)):
+			temp = 0
 
-def B_diff_box(B, I_de):
+	return [[[-1,0],[-1,0]],[[0,1],[-1,0]],[[-1,0],[0,1]],[[0,1],[0,1]]]
+
+def B_diff_box(B, I_de, deg):
 	# Derive the corresponding B matrix of each box 
 	# The shift in the bernstein polynomial is determined by the way we devide the boxs
 	# and the dimensions of the system
-	B_list = []
 	B_1 = []
+	B_2 = []
+	B_3 = []
+	B_4 = []
 	# Keep track of monomials of different degree
 	for i in range(len(B)):
 		# print(B[i])
@@ -222,13 +231,96 @@ def B_diff_box(B, I_de):
 				curr += a*temp
 			temp_list.append(2**(-sum(J))*curr)	
 		B_1.append(temp_list)
-	print(B_1)
-	print(B)
+	B_1 = np.array(B_1)
+
+	for i in range(len(B)):
+		# print(B[i])
+		temp_list = []
+		for J in I_de:
+			# print(B)
+			# Extract the degree smaller than current I
+			coeff_list = []
+			I_np = np.array(J)
+			for s in range(len(I_de)):
+				temp_coeff = np.array(I_de[s])
+				# Put all the I power smaller than the current I
+				if np.less_equal(temp_coeff, I_np).all():
+					coeff_list.append(I_de[s])
+			# Calculate the bernstein coefficient of each monomial
+			curr = 0
+			for j in coeff_list:
+				temp_j = list(j)
+				temp_j[0] = deg - temp_j[0]
+				temp_j = tuple(temp_j)
+				temp = B[i][I_de.index(temp_j)]
+				a = np.prod(special.comb(J, j))
+				curr += a*temp
+			temp_list.append(2**(-sum(J))*curr)	
+		B_2.append(temp_list)
+	# print(B_2)
+	B_2 = np.array(B_2)
+
+	for i in range(len(B)):
+		# print(B[i])
+		temp_list = []
+		for J in I_de:
+			# print(B)
+			# Extract the degree smaller than current I
+			coeff_list = []
+			I_np = np.array(J)
+			for s in range(len(I_de)):
+				temp_coeff = np.array(I_de[s])
+				# Put all the I power smaller than the current I
+				if np.less_equal(temp_coeff, I_np).all():
+					coeff_list.append(I_de[s])
+			# Calculate the bernstein coefficient of each monomial
+			curr = 0
+			for j in coeff_list:
+				temp_j = list(j)
+				temp_j[1] = deg - temp_j[1]
+				temp_j = tuple(temp_j)
+				temp = B[i][I_de.index(temp_j)]
+				a = np.prod(special.comb(J, j))
+				curr += a*temp
+			temp_list.append(2**(-sum(J))*curr)	
+		B_3.append(temp_list)
+	# print(B_3)
+	B_3 = np.array(B_3)	
+
+	for i in range(len(B)):
+			# print(B[i])
+			temp_list = []
+			for J in I_de:
+				# print(B)
+				# Extract the degree smaller than current I
+				coeff_list = []
+				I_np = np.array(J)
+				for s in range(len(I_de)):
+					temp_coeff = np.array(I_de[s])
+					# Put all the I power smaller than the current I
+					if np.less_equal(temp_coeff, I_np).all():
+						coeff_list.append(I_de[s])
+				# Calculate the bernstein coefficient of each monomial
+				curr = 0
+				for j in coeff_list:
+					temp_j = list(j)
+					temp_j[0] = deg - temp_j[0]
+					temp_j[1] = deg - temp_j[1]
+					temp_j = tuple(temp_j)
+					temp = B[i][I_de.index(temp_j)]
+					a = np.prod(special.comb(J, j))
+					curr += a*temp
+				temp_list.append(2**(-sum(J))*curr)	
+			B_4.append(temp_list)
+	# print(B_4)
+	B_4 = np.array(B_4)
+
+	B_list = [B_1, B_2, B_3, B_4]
 	return B_list
 
 
 
-def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, bound, alpha, boxs):
+def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, bound, alpha):
 	## This function takes in parameter to encode the lyapunov 
 	# function positive definite and output the constrain string
 	# X: dimension of the original compact sapce
@@ -255,16 +347,29 @@ def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, bound, alpha, boxs):
 	## Generate the bernstein basis matrix mapping 
 	bernstein_poly, Theta = multi_bernstein_generation(X_bar, max_deg, I_de)
 	B = basis_transform_matrix_generation(I_de, Theta)
-	# print(B)
-	
+	B_list = B_diff_box(B, I_de, max_deg)
+
 	## Generate the basis transformation matrix mapping to the [0,1]^n domain 
-	for i in range(len(X)):
-		l, u = bound[0], bound[1]
-		X[i] = l + (u-l)*X_bar[i]
-	ele_bar = monomial_vec_generation(X_bar, I_de)
-	ele_sub = monomial_vec_generation(X, I_de)
+	boxs = DvideBoxs(bound, X)
+	T_list = []
 	ele_sub_normal = monomial_vec_generation(X, I)
-	T = coefficient_matrix_generation(ele_bar, ele_sub)
+	for box in boxs:
+		for i in range(len(X)):
+			l, u = box[i][0], box[i][1]
+			X[i] = l + (u-l)*X_bar[i]
+		ele_bar = monomial_vec_generation(X_bar, I_de)
+		ele_sub = monomial_vec_generation(X, I_de)
+		T_list.append(coefficient_matrix_generation(ele_bar, ele_sub))
+
+	# print(T_list)
+
+	# for i in range(len(X)):
+	# 	l, u = bound[0], bound[1]
+	# 	X[i] = l + (u-l)*X_bar[i]
+	# ele_bar = monomial_vec_generation(X_bar, I_de)
+	# ele_sub = monomial_vec_generation(X, I_de)
+	# ele_sub_normal = monomial_vec_generation(X, I)
+	# T = coefficient_matrix_generation(ele_bar, ele_sub)
 
 
 	## Generate the feasiblility problem constrainst
@@ -281,8 +386,8 @@ def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, bound, alpha, boxs):
 
 	## Define the constraints used in the optimization problem 
 	constraints = []
-	
-	constraints += [A.T @ lambda_dual == B.T@T.T@D.T@c ]
+	for i in range(len(B_list)):
+		constraints += [A.T @ lambda_dual == B_list[i].T@T_list[i].T@D.T@c ]
 	constraints += [b.T@lambda_dual <= 0]
 	constraints += [lambda_dual >= 0]
 
@@ -290,14 +395,14 @@ def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, bound, alpha, boxs):
 	problem = cp.Problem(objective, constraints)
 	assert problem.is_dcp()
 	assert problem.is_dpp()
-	problem.solve(solver=cp.GLPK,verbose=True)
+	problem.solve(solver=cp.OSQP, verbose=True)
 	# print(problem.status)
 
 	# Testing whether the intial condition is satisfied
 	c_final = negative_definite(c.value, alpha, X, ele_sub_normal)
 	# test = InitValidTest(c_final)
 
-	return c_final
+	return c.value
 
 # Testing Lyapunov function is valid 
 def InitValidTest(L):
@@ -347,15 +452,15 @@ dynamics = [-x**3+y, -x-y]
 # dynamics = [- x**3 - y**2, x*y - y**3]
 # dynamics = [- x - 1.5*x**2*y**3, - y**3 + 0.5*x**2*y**2]
 
-# t = Lyapunov_func(X, X_bar, 2, dynamics, 4, [0,1], 0.1)
-# print(t)
+t = Lyapunov_func(X, X_bar, 2, dynamics, 4, [0,1], 0.1)
+print(t)
 # print(test)
 
-I_de = monomial_power_generation(X, 2)
+# I_de = monomial_power_generation(X, 2)
 
-bernstein_poly, Theta = multi_bernstein_generation(X_bar, 2, I_de)
-B = basis_transform_matrix_generation(I_de, Theta)
-# print(B)
-t = B_diff_box(B, I_de)
+# bernstein_poly, Theta = multi_bernstein_generation(X_bar, 2, I_de)
+# B = basis_transform_matrix_generation(I_de, Theta)
+# # print(B)
+# t = B_diff_box(B, I_de)
 
 # print(lieTest(t))
