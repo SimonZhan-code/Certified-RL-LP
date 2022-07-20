@@ -32,7 +32,7 @@ def monomial_power_generation(X, deg):
 		I_temp_permut = list(permutations(i, dim))
 		I_temp += I_temp_permut
 	# Deduce the redundant option
-	[I.append(x) for x in I_temp if x not in I and sum(x) <= deg]
+	[I.append(x) for x in I_temp if x not in I]
 
 	return I 
 
@@ -188,8 +188,46 @@ def negative_definite(c, alpha, X, ele):
 			c[i] += alpha
 	return c
 
+def DvideBoxs(bound, boxs):
+	# This function takes in the lower and upper bounds of the region
+	# and number of boxs desired and return the bounds of each box
+	# This function might need alter depends on changes in the dimension and desired boxs
+	return 0
 
-def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, bound, alpha):
+def B_diff_box(B, I_de):
+	# Derive the corresponding B matrix of each box 
+	# The shift in the bernstein polynomial is determined by the way we devide the boxs
+	# and the dimensions of the system
+	B_list = []
+	B_1 = []
+	print(B)
+	# Keep track of monomials of different degree
+	for i in range(len(B)):
+		temp_list = []
+		for J in I_de:
+			# Extract the degree smaller than current I
+			coeff_list = []
+			I_np = np.array(J)
+			for i in range(len(I_de)):
+				temp_coeff = np.array(I_de[i])
+				# Put all the I power smaller than the current I
+				if np.less_equal(temp_coeff, I_np).all():
+					coeff_list.append(I_de[i])
+			# Calculate the bernstein coefficient of each monomial
+			curr = 0
+			for j in coeff_list:
+				print(j)
+				temp = B[i][I_de.index(j)]
+				a = np.prod(special.comb(J, j))
+				curr += a*temp
+			temp_list.append(2**(-sum(J))*curr)	
+		B_1.append(temp_list)
+	# print(B_1)
+	return B_list
+
+
+
+def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, bound, alpha, boxs):
 	## This function takes in parameter to encode the lyapunov 
 	# function positive definite and output the constrain string
 	# X: dimension of the original compact sapce
@@ -199,6 +237,7 @@ def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, bound, alpha):
 	# l: lower bound of the compact set
 	# alpha: positive definite x'Ax add-on
 	# c: parameters of each monomial in the polynomial
+	# boxs: number of the sub boxs needed to devide the I domain
 	
 	I = monomial_power_generation(X_bar, deg)
 	ele = monomial_vec_generation(X, I)
@@ -307,8 +346,15 @@ dynamics = [-x**3+y, -x-y]
 # dynamics = [- x**3 - y**2, x*y - y**3]
 # dynamics = [- x - 1.5*x**2*y**3, - y**3 + 0.5*x**2*y**2]
 
-t = Lyapunov_func(X, X_bar, 2, dynamics, 4, [0,1], 0.1)
-print(t)
+# t = Lyapunov_func(X, X_bar, 2, dynamics, 4, [0,1], 0.1)
+# print(t)
 # print(test)
+
+I_de = monomial_power_generation(X, 2)
+
+bernstein_poly, Theta = multi_bernstein_generation(X_bar, 2, I_de)
+B = basis_transform_matrix_generation(I_de, Theta)
+# print(B)
+t = B_diff_box(B, I_de)
 
 # print(lieTest(t))
