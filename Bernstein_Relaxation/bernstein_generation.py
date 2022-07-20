@@ -98,10 +98,10 @@ def lie_derivative_matrix_generation(dynamics, ele, X, ele_dev, alpha):
 	# Store the differential in ele_der list
 	D = []
 	ele_der = []
-	square = [x**2 for x in X]
+	# square = [x**2 for x in X]
 	for m in ele:
-		if m in square:
-			m = m + alpha * m
+		# if m in square:
+		# 	m = m + alpha * m
 		temp = [0]*len(X)
 		temp_der = 0
 		for i in range(len(X)):
@@ -116,7 +116,6 @@ def lie_derivative_matrix_generation(dynamics, ele, X, ele_dev, alpha):
 			temp_list.append(temp_dict[ele_dev[i]])
 		D.append(temp_list)
 	D = np.array(D)
-	print(D)
 	return D
 
 
@@ -190,7 +189,7 @@ def negative_definite(c, alpha, X, ele):
 	return c
 
 
-def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, bounds, alpha):
+def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, bound, alpha):
 	## This function takes in parameter to encode the lyapunov 
 	# function positive definite and output the constrain string
 	# X: dimension of the original compact sapce
@@ -216,17 +215,16 @@ def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, bounds, alpha):
 	## Generate the bernstein basis matrix mapping 
 	bernstein_poly, Theta = multi_bernstein_generation(X_bar, max_deg, I_de)
 	B = basis_transform_matrix_generation(I_de, Theta)
+	# print(B)
 	
 	## Generate the basis transformation matrix mapping to the [0,1]^n domain 
-	T_list = []
-	for bound in bounds:
-		for i in range(len(X)):
-			l, u = bound[0], bound[1]
-			X[i] = l + (u-l)*X_bar[i]
-		ele_bar = monomial_vec_generation(X_bar, I_de)
-		ele_sub = monomial_vec_generation(X, I_de)
-		ele_sub_normal = monomial_vec_generation(X, I)
-		T_list.append(coefficient_matrix_generation(ele_bar, ele_sub))
+	for i in range(len(X)):
+		l, u = bound[0], bound[1]
+		X[i] = l + (u-l)*X_bar[i]
+	ele_bar = monomial_vec_generation(X_bar, I_de)
+	ele_sub = monomial_vec_generation(X, I_de)
+	ele_sub_normal = monomial_vec_generation(X, I)
+	T = coefficient_matrix_generation(ele_bar, ele_sub)
 
 
 	## Generate the feasiblility problem constrainst
@@ -243,9 +241,8 @@ def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, bounds, alpha):
 
 	## Define the constraints used in the optimization problem 
 	constraints = []
-	for T in T_list:
-		# print(T)
-		constraints += [A.T @ lambda_dual == B.T@T.T@D.T@c ]
+	
+	constraints += [A.T @ lambda_dual == B.T@T.T@D.T@c ]
 	constraints += [b.T@lambda_dual <= 0]
 	constraints += [lambda_dual >= 0]
 
@@ -253,14 +250,14 @@ def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, bounds, alpha):
 	problem = cp.Problem(objective, constraints)
 	assert problem.is_dcp()
 	assert problem.is_dpp()
-	problem.solve(verbose=True)
+	problem.solve(solver=cp.GLPK,verbose=True)
 	# print(problem.status)
 
 	# Testing whether the intial condition is satisfied
-	# c_final = negative_definite(c.value, alpha, X, ele_sub_normal)
+	c_final = negative_definite(c.value, alpha, X, ele_sub_normal)
 	# test = InitValidTest(c_final)
 
-	return c.value
+	return c_final
 
 # Testing Lyapunov function is valid 
 def InitValidTest(L):
@@ -310,7 +307,7 @@ dynamics = [-x**3+y, -x-y]
 # dynamics = [- x**3 - y**2, x*y - y**3]
 # dynamics = [- x - 1.5*x**2*y**3, - y**3 + 0.5*x**2*y**2]
 
-t = Lyapunov_func(X, X_bar, 2, dynamics, 4, [[-1,0],[0,1]], 0.1)
+t = Lyapunov_func(X, X_bar, 2, dynamics, 4, [0,1], 0.1)
 print(t)
 # print(test)
 
