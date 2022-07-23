@@ -372,10 +372,12 @@ if __name__ == '__main__':
 		print(control_param, Lyapunov_param)
 		# plot(control_param, Lyapunov_param, 'Tra_Lyapunov.pdf')
 
-	print('baseline starts here')
-	baselineSVG()
+	# print('baseline starts here')
+	# baselineSVG()
 
-	print('')
-	print('Ours approach starts here')
-	Ours()
-	plot(0, 0, figname='Tra_Ball.pdf')
+	# print('')
+	# print('Ours approach starts here')
+	# Ours()
+	# plot(0, 0, figname='Tra_Ball.pdf')
+
+	constraintsAutoGenerate()
