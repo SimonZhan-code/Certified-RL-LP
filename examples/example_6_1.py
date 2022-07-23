@@ -503,89 +503,48 @@ def plot(control_param, Barrier_param, figname, N=5, Barrier=True):
 	plt.savefig(figname, bbox_inches='tight')
 
 
-def constraintsAutoGenerate_SDP():
-	### Barrier certificate varibale declaration ###
+def constraintsAutoGenerate():
+	### Lyapunov function varibale declaration ###
 	def generateConstraints(exp1, exp2, degree):
+		constraints = []
 		for i in range(degree+1):
 			for j in range(degree+1):
-				if i + j <= degree:
-					print('constraints += [', exp1.coeff(s, i).coeff(v, j), ' == ', exp2.coeff(s, i).coeff(v, j), ']')
+					if i + j <= degree:
+						if exp1.coeff(x, i).coeff(y, j) != 0:
+							print('constraints += [', exp1.coeff(x, i).coeff(y, j), ' == ', exp2.coeff(x, i).coeff(y, j), ']')
 
 
-	def SOSConstraints(exp1, exp2):
-		for i in range(3):
-			for j in range(3):
-				if i + j <= 2:
-					print('constraints += [', exp1.coeff(s, i).coeff(v, j), ' == ', exp2.coeff(s, i).coeff(v, j), ']')
 	
-	
-
-
-	X = MatrixSymbol('X', 6, 6)
-	Y = MatrixSymbol('Y', 6, 6)
-	Z = MatrixSymbol('Z', 6, 6)
-	M = MatrixSymbol('M', 3, 3)
-	N = MatrixSymbol('N', 3, 3)
-	Q = MatrixSymbol('Q', 3, 3)
-	P = MatrixSymbol('P', 3, 3)	
-	x, y, l = symbols('x, y, l')
-	l = -1
-
-	ele = Matrix([1, x, y, x**2, x*y, y**2])	
-	base = Matrix([1, x, y])
-
-	B = MatrixSymbol('B', 1, 6)
-	a = MatrixSymbol('a', 1, 6)
-	c = MatrixSymbol('c', 1, 6)
-	d = MatrixSymbol('d', 1, 6)
-	e = MatrixSymbol('e', 1, 6)
-	f, g = symbols('f, g') 
+	X = MatrixSymbol('X', 2, 2)
+	Y = MatrixSymbol('Y', 4, 4)
+	x, y, f, g = symbols('x, y, f, g')
+	Vbase = Matrix([x**2, y**2])	
+	V4base = Matrix([x, y, x**2, y**2])
+	ele = Matrix([x, y])
+	V = MatrixSymbol('V', 1, 2)
 	theta = MatrixSymbol('t', 1, 2)
-
-	## initial space barrier
-	# rhsX = ele.T*X*ele
-	# rhsX = expand(rhsX[0, 0])
-	# lshX = B*ele - (a*ele*(0.25 - (x - 1.5)**2 - y**2))
-	# lshX = expand(lshX[0, 0])
-	a_SOS_right = base.T*M*base
-	a_SOS_right = expand(a_SOS_right[0, 0])
-	a_SOS_left = a*ele
-	a_SOS_left = expand(a_SOS_left[0, 0])
-	SOSConstraints(a_SOS_right, a_SOS_left)
-
-	# rhsY = ele.T*Y*ele
-	# rhsY = expand(rhsY[0, 0])   
-	# lshY = -B*ele - c*ele*(0.25 - (s + 0.8)**2 - (v + 1)**2) - Matrix([0.1])
-	# lshY = expand(lshY[0, 0]) 
-	c_SOS_right = base.T*N*base
-	c_SOS_right = expand(c_SOS_right[0, 0])
-	c_SOS_left = c*ele
-	c_SOS_left = expand(c_SOS_left[0, 0])
-	SOSConstraints(c_SOS_right, c_SOS_left)
+ 
+ 	# # # state space
+	rhsX = ele.T*X*ele
+	rhsX = expand(rhsX[0, 0])
+	lhsX = V*Vbase
+	lhsX = expand(lhsX[0, 0])
+	generateConstraints(rhsX, lhsX, degree=2)
 	
-	# # lie derivative
-	# rshZ = ele.T*Z*ele
-	# rshZ = expand(rshZ[0, 0])
-	# gradBtox = Matrix([[B[0,1] + 2*B[0,3]*s + B[0,4]*v],[B[0,2]+B[0,4]*s+2*B[0,5]*v]]).T
-	# controlInput = theta*Matrix([[s], [v]])
-	# controlInput = expand(controlInput[0,0])
-	# dynamics = Matrix([[f*v], [(s**3) * g / 3 + controlInput]])
-	# lhsZ = gradBtox*dynamics - l *B*ele
-	# lhsZ = expand(lhsZ[0, 0])
-	d_SOS_right = base.T*Q*base
-	d_SOS_right = expand(d_SOS_right[0, 0])
-	d_SOS_left = d*ele
-	d_SOS_left = expand(d_SOS_left[0, 0])
-	SOSConstraints(d_SOS_right, d_SOS_left)
-	# assert False
-	# print(rshZ)
-	# print('')
-	# print(lhsZ)
-	# generateConstraints(rshZ, lhsZ, degree=4)
-
-
-
-
+	# # # lie derivative
+	rhsY = V4base.T*Y*V4base
+	rhsY = expand(rhsY[0, 0])
+	Lyapunov = V*Vbase
+	partialx = diff(Lyapunov[0, 0], x)
+	partialy = diff(Lyapunov[0, 0], y)
+	# partialq = diff(Lyapunov[0, 0], q)
+	gradVtox = Matrix([[partialx, partialy]])
+	controlInput = theta*Matrix([[x], [y]])
+	controlInput = expand(controlInput[0,0])
+	dynamics = Matrix([[-x**3 + y], [controlInput]])
+	lhsY = -gradVtox*dynamics
+	lhsY = expand(lhsY[0, 0])
+	generateConstraints(rhsY, lhsY, degree=4)
 
 
 
