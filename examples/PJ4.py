@@ -16,7 +16,7 @@ SVG_patch = mpatches.Patch(color='#ff7f0e', label='SVG w/ CMDP')
 Ours_patch = mpatches.Patch(color='#2ca02c', label='Ours')
 
 EPR = []
-class PJ:
+class PP:
 	deltaT = 0.1
 	max_iteration = 100
 
@@ -506,7 +506,6 @@ def plot(control_param, Barrier_param, figname, N=5, Barrier=True):
 def constraintsAutoGenerate_SDP():
 	### Barrier certificate varibale declaration ###
 	def generateConstraints(exp1, exp2, degree):
-		constraints = []
 		for i in range(degree+1):
 			for j in range(degree+1):
 				if i + j <= degree:
