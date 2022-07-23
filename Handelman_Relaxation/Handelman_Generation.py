@@ -94,6 +94,7 @@ def Lyapunov_func_encoding(deg, Poly, dynamics, X, alpha, D, Interval_Poly, dev_
 	# Generate the possible polynomial power product
 	poly_list = possible_handelman_generation(D, Poly)
 	poly_list = Matrix(poly_list+Interval_Poly)
+	print(poly_list)
 	# Generate the possible monomial power product 
 	monomial_list = monomial_generation(deg, X)
 	# Coefficients of polynomial power product
@@ -128,27 +129,41 @@ def Lyapunov_func_encoding(deg, Poly, dynamics, X, alpha, D, Interval_Poly, dev_
 	
 	generateConstraints(rhs_der, lhs_der, dev_deg)
 
-	return constraints
+	return poly_list, monomial_list
 
 
-def FindLyapunov(deg, Poly, X, D):
+def FindLyapunov(monomial_list, poly_list):
 	# Return constraints of the LP question
 	# Generate the possible polynomial power product
-	poly_list = possible_polynomial_generation(D, Poly)
 	# Generate the possible monomial power product 
-	monomial_list = monomial_generation(deg, X)
 	c = cp.Variable((1, len(monomial_list)))
 	lambda_1 = cp.Variable((1, len(poly_list)), pos = True)
 	lambda_2 = cp.Variable((1, len(poly_list)), pos = True)
 	objective = cp.Minimize(0)
 	
 	constraints = []
+	constraints += [ lambda_1[0, 2] + lambda_1[0, 3]  ==  c[0, 0] ]
+	constraints += [ 0  ==  c[0, 1] ]
+	constraints += [ lambda_1[0, 1] - lambda_1[0, 3] + 0.1  ==  c[0, 3] ]
+	constraints += [ 0  ==  c[0, 2] ]
+	constraints += [ 0  ==  c[0, 5] ]
+	constraints += [ lambda_1[0, 0] - lambda_1[0, 2] + 0.1  ==  c[0, 4] ]
+
+	constraints += [ -lambda_2[0, 2] - lambda_2[0, 3]  ==  0 ]
+	constraints += [ 0  ==  -c[0, 1] + c[0, 2] ]
+	constraints += [ -lambda_2[0, 1] + lambda_2[0, 3] - 0.2  ==  -2*c[0, 3] + c[0, 5] ]
+	constraints += [ 0  ==  -c[0, 1] ]
+	constraints += [ 0  ==  -2*c[0, 3] + 2*c[0, 4] - c[0, 5] ]
+	constraints += [ -lambda_2[0, 0] + lambda_2[0, 2]  ==  -c[0, 5] ]
+	constraints += [ 0  ==  -c[0, 2] ]
+	constraints += [ 0  ==  -c[0, 5] ]
+	constraints += [ -0.200000000000000  ==  -2*c[0, 4] ]
 
 	# constraints = Lyapunov_func_encoding(deg, Poly, dynamics, X, alpha, max_deg, poly_list, monomial_list)
 	problem = cp.Problem(objective, constraints)
 	assert problem.is_dcp()
 	assert problem.is_dpp()
-	problem.solve(solver=cp.GLPK)
+	problem.solve(solver=cp.SCS)
 
 
 	return c.value[0]
@@ -165,10 +180,10 @@ dynamics = [-x**3+y, -x-y]
 Poly=[x+1, 1-x, y+1, 1-y]
 # print(possible_polynomial_generation(4, Poly))
 l = [x**2, y**2, 1-x**2, 1-y**2]
-_ = Lyapunov_func_encoding(2, Poly, dynamics, X, 0.1, 0, l, 4)
+poly, monomial = Lyapunov_func_encoding(2, Poly, dynamics, X, 0.1, 0, l, 4)
 
 
-# t = FindLyapunov(2, Poly, X, 4)
+t = FindLyapunov(monomial, poly)
 
 print(t)
 

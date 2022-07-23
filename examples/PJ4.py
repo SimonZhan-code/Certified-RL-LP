@@ -23,12 +23,13 @@ class PJ:
 	def __init__(self, x0=None, x1=None):
 		if x0 is None or x1 is None:
 			# Should be winthin 100 from the original paper? 
-			x0 = np.random.uniform(low=1, high=2, size=1)[0]
-			x1 = np.random.uniform(low=-0.5, high=0.5, size=1)[0]
+			x0 = np.random.uniform(low=-1, high=1, size=1)[0]
+			x1 = np.random.uniform(low=-1, high=1, size=1)[0]
 			# Entering the unsafe set for initial conditions
-			while (x0 - 1.5)**2 + x1**2 - 0.25 > 0:
-				x0 = np.random.uniform(low=1, high=2, size=1)[0]
-				x1 = np.random.uniform(low=-0.5, high=0.5, size=1)[0]
+
+			# while (x0 - 1.5)**2 + x1**2 - 0.25 > 0:
+			# 	x0 = np.random.uniform(low=1, high=2, size=1)[0]
+			# 	x1 = np.random.uniform(low=-0.5, high=0.5, size=1)[0]
 
 			self.x0 = x0
 			self.x1 = x1
@@ -41,11 +42,12 @@ class PJ:
 
 	def reset(self, x0=None, x1=None):
 		if x0 is None or x1 is None:
-			x0 = np.random.uniform(low=1, high=2, size=1)[0]
-			x1 = np.random.uniform(low=-0.5, high=0.5, size=1)[0]
-			while (x0 - 1.5)**2 + x1**2 - 0.25 > 0:
-				x0 = np.random.uniform(low=1, high=2, size=1)[0]
-				x1 = np.random.uniform(low=-0.5, high=0.5, size=1)[0]
+			x0 = np.random.uniform(low=-1, high=1, size=1)[0]
+			x1 = np.random.uniform(low=-1, high=1, size=1)[0]
+
+			# while (x0 - 1.5)**2 + x1**2 - 0.25 > 0:
+			# 	x0 = np.random.uniform(low=1, high=2, size=1)[0]
+			# 	x1 = np.random.uniform(low=-0.5, high=0.5, size=1)[0]
 			
 			self.x0 = x0
 			self.x1 = x1
@@ -60,9 +62,9 @@ class PJ:
 	def step(self, action):
 		u = action 
 		# x_dot = f(x), x0_tmp and x1_tmp is the x_dot here
-		x0_tmp = self.state[0] + self.state[1]*self.deltaT
+		x0_tmp = (-self.state[0]**3 + self.state[1])*self.deltaT + self.state[0]
 		# why divide over 3 here?
-		x1_tmp = self.state[1] + self.deltaT*(u + self.state[0]**3 /3 )
+		x1_tmp = self.state[1] + self.deltaT*(u)
 		# time stamp increment by 1
 		self.t = self.t + 1
 		# update the new state parameter

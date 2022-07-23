@@ -387,6 +387,9 @@ def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, bound, alpha):
 	## Define the constraints used in the optimization problem 
 	constraints = []
 	for i in range(len(B_list)):
+		print(B_list[i])
+		print("")
+		print(T_list[i])
 		constraints += [A.T @ lambda_dual == B_list[i].T@T_list[i].T@D.T@c ]
 	constraints += [b.T@lambda_dual <= 0]
 	constraints += [lambda_dual >= 0]
@@ -395,7 +398,7 @@ def Lyapunov_func(X, X_bar, deg, dynamics, max_deg, bound, alpha):
 	problem = cp.Problem(objective, constraints)
 	assert problem.is_dcp()
 	assert problem.is_dpp()
-	problem.solve(solver=cp.OSQP, verbose=True)
+	problem.solve(solver=cp.OSQP)
 	# print(problem.status)
 
 	# Testing whether the intial condition is satisfied
