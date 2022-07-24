@@ -82,7 +82,7 @@ class PP:
 
 	@property
 	# checking whether we reach the X_u set
-	def unsafedis(self, goal=np.array([-0.8, -1])):
+	def unsafedis(self, goal=np.array([0, 0])):
 		dis = (np.sqrt((self.state[0] - goal[0])**2 + (self.state[1] - goal[1])**2)) 
 		return dis		
 
@@ -107,16 +107,16 @@ def senGradSDP(control_param, f, g, SVGOnly=False):
 	constraints = []
 	if SVGOnly:
 		constraints += [ objc == 0 ]
-	constraints += [ X >> 0.01]
+	constraints += [ X >> 0.001]
 	constraints += [ Y >> 0.0]
 
 	constraints += [ X[1, 1]  >=  V[0, 1] - objc]
 	constraints += [ X[1, 1]  <=  V[0, 1] + objc]
 	constraints += [ X[0, 1] + X[1, 0]  ==  0 ]
-	constraints += [ X[0, 0]  ==  V[0, 0] - 0.25 ]
+	constraints += [ X[0, 0]  ==  V[0, 0] - 0.24 ]
 
-	constraints += [ Y[1, 1]  >=  -2*V[0, 1]*t[0, 1] - objc -0.15]
-	constraints += [ Y[1, 1]  <=  -2*V[0, 1]*t[0, 1] + objc -0.15]
+	constraints += [ Y[1, 1]  >=  -2*V[0, 1]*t[0, 1] - objc - 0.13]
+	constraints += [ Y[1, 1]  <=  -2*V[0, 1]*t[0, 1] + objc - 0.13]
 	constraints += [ Y[1, 3] + Y[3, 1]  ==  0 ]
 	constraints += [ Y[3, 3]  ==  0 ]
 	constraints += [ Y[0, 1] + Y[1, 0]  ==  -2*V[0, 0] - 2*V[0, 1]*t[0, 0] ]
@@ -414,7 +414,7 @@ if __name__ == '__main__':
 			vtheta, final_state, f, g = SVG(control_param, f, g)
 			try:
 				Lyapunov_param, theta_gard, slack_star, initTest, lieTest = senGradSDP(control_param, f, g)
-				if initTest and lieTest and abs(slack_star) <= 3e-4 and abs(final_state[1])< 5e-5 and abs(final_state[2])<5e-4:
+				if initTest and lieTest and abs(slack_star) <= 3e-4 and abs(final_state[1])< 5e-4 and abs(final_state[2])<5e-4:
 					print('Successfully synthesis a controller with its Lyapunov function within ' +str(i)+' iterations.')
 					print('controller: ', control_param, 'Lyapunov: ', Lyapunov_param)
 					break
