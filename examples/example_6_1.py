@@ -414,15 +414,16 @@ if __name__ == '__main__':
 			vtheta, final_state, f, g = SVG(control_param, f, g)
 			try:
 				Lyapunov_param, theta_gard, slack_star, initTest, lieTest = senGradSDP(control_param, f, g)
-				if initTest and lieTest and abs(slack_star) <= 3e-4 and abs(final_state[1]) < 5e-4 and abs(final_state[2]) < 5e-4:
+				if initTest and lieTest and abs(slack_star) <= 3e-4 and abs(final_state[0]) < 5e-2 and abs(final_state[1]) < 5e-2:
 					print('Successfully synthesis a controller with its Lyapunov function within ' +str(i)+' iterations.')
 					print('controller: ', control_param, 'Lyapunov: ', Lyapunov_param)
 					break
-			except:
+			except Exception as e:
+				print(e)
 				print('SOS failed')
 			# learning rate of the controller 
-			control_param -=  5*np.clip(theta_gard, -1, 1)
-			control_param += 9e-4 * np.clip(vtheta, -2e3, 2e3)
+			control_param -=  np.clip(theta_gard, -1, 1)
+			control_param += 3e-3 * np.clip(vtheta, -2e3, 2e3)
 			if i % 1 == 0:
 				print(slack_star, theta_gard, vtheta, final_state)
 		print(control_param, Lyapunov_param)
