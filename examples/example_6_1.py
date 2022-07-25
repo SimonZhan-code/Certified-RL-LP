@@ -110,13 +110,13 @@ def senGradSDP(control_param, f, g, SVGOnly=False):
 	constraints += [ X >> 0.001]
 	constraints += [ Y >> 0.0]
 
-	constraints += [ X[1, 1]  >=  V[0, 1] - objc]
-	constraints += [ X[1, 1]  <=  V[0, 1] + objc]
+	constraints += [ X[1, 1]  >=  V[0, 1] - objc - 0.1]
+	constraints += [ X[1, 1]  <=  V[0, 1] + objc - 0.1]
 	constraints += [ X[0, 1] + X[1, 0]  ==  0 ]
-	constraints += [ X[0, 0]  ==  V[0, 0] - 0.24 ]
+	constraints += [ X[0, 0]  ==  V[0, 0] - 0.1]
 
-	constraints += [ Y[1, 1]  >=  -2*V[0, 1]*t[0, 1] - objc - 0.13]
-	constraints += [ Y[1, 1]  <=  -2*V[0, 1]*t[0, 1] + objc - 0.13]
+	constraints += [ Y[1, 1]  >=  -2*V[0, 1]*t[0, 1] - objc ]
+	constraints += [ Y[1, 1]  <=  -2*V[0, 1]*t[0, 1] + objc ]
 	constraints += [ Y[1, 3] + Y[3, 1]  ==  0 ]
 	constraints += [ Y[3, 3]  ==  0 ]
 	constraints += [ Y[0, 1] + Y[1, 0]  ==  -2*V[0, 0] - 2*V[0, 1]*t[0, 0] ]
@@ -341,7 +341,7 @@ def constraintsAutoGenerate():
 	X = MatrixSymbol('X', 2, 2)
 	Y = MatrixSymbol('Y', 4, 4)
 	x, y, f, g = symbols('x, y, f, g')
-	Vbase = Matrix([x**2, y**2])	
+	Vbase = Matrix([x**2, x*y, y**2])	
 	V4base = Matrix([x, y, x**2, y**2])
 	ele = Matrix([x, y])
 	V = MatrixSymbol('V', 1, 2)
@@ -414,23 +414,24 @@ if __name__ == '__main__':
 			vtheta, final_state, f, g = SVG(control_param, f, g)
 			try:
 				Lyapunov_param, theta_gard, slack_star, initTest, lieTest = senGradSDP(control_param, f, g)
-				if initTest and lieTest and abs(slack_star) <= 3e-4 and abs(final_state[1])< 5e-4 and abs(final_state[2])<5e-4:
+				if initTest and lieTest and abs(slack_star) <= 3e-4 and abs(final_state[1]) < 5e-4 and abs(final_state[2]) < 5e-4:
 					print('Successfully synthesis a controller with its Lyapunov function within ' +str(i)+' iterations.')
 					print('controller: ', control_param, 'Lyapunov: ', Lyapunov_param)
 					break
 			except:
 				print('SOS failed')
-			control_param -=  np.clip(theta_gard, -1, 1)
-			control_param += 5e-3 * np.clip(vtheta, -2e3, 2e3)
+			# learning rate of the controller 
+			control_param -=  5*np.clip(theta_gard, -1, 1)
+			control_param += 9e-4 * np.clip(vtheta, -2e3, 2e3)
 			if i % 1 == 0:
-				print(control_param, slack_star, theta_gard, final_state)
+				print(slack_star, theta_gard, vtheta, final_state)
 		print(control_param, Lyapunov_param)
 		# plot(control_param, Lyapunov_param, 'Tra_Lyapunov.pdf')
 
 	# print('baseline starts here')
 	# baselineSVG()
 
-	print('')
+	# print('')
 	print('Ours approach starts here')
 	Ours()
 	# plot(0, 0, figname='Tra_Ball.pdf')
