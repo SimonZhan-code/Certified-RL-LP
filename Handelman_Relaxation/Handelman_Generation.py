@@ -109,8 +109,8 @@ def Lyapunov_func_encoding(deg, Poly, dynamics, X, alpha, D, Interval_Poly, dev_
 	lhs_init = expand(lhs_init[0,0])
 	rhs_init = lambda_poly_init * poly_list
 	rhs_init = expand(rhs_init[0,0])
-	for x in X:
-		rhs_init = rhs_init + alpha*x**2
+	# for x in X:
+	# 	rhs_init = rhs_init + alpha*x**2
 	
 	generateConstraints(rhs_init, lhs_init, deg)
 	print("")
@@ -124,8 +124,8 @@ def Lyapunov_func_encoding(deg, Poly, dynamics, X, alpha, D, Interval_Poly, dev_
 	lhs_der = expand(lhs_der[0,0])
 	rhs_der = -lambda_poly_der * poly_list
 	rhs_der = expand(rhs_der[0,0])
-	for temp in square_der:
-		rhs_der += temp
+	# for temp in square_der:
+	# 	rhs_der += temp
 	
 	generateConstraints(rhs_der, lhs_der, dev_deg)
 
@@ -144,20 +144,20 @@ def FindLyapunov(monomial_list, poly_list):
 	constraints = []
 	constraints += [ lambda_1[0, 2] + lambda_1[0, 3]  ==  c[0, 0] ]
 	constraints += [ 0  ==  c[0, 1] ]
-	constraints += [ lambda_1[0, 1] - lambda_1[0, 3] + 0.1  ==  c[0, 3] ]
+	constraints += [ lambda_1[0, 1] - lambda_1[0, 3]  ==  c[0, 3] ]
 	constraints += [ 0  ==  c[0, 2] ]
-	constraints += [ 0  ==  c[0, 5] ]
-	constraints += [ lambda_1[0, 0] - lambda_1[0, 2] + 0.1  ==  c[0, 4] ]
+	constraints += [ 0  ==  c[0, 5] - 0.1 ]
+	constraints += [ lambda_1[0, 0] - lambda_1[0, 2]  ==  c[0, 4] - 0.1]
 
 	constraints += [ -lambda_2[0, 2] - lambda_2[0, 3]  ==  0 ]
 	constraints += [ 0  ==  -c[0, 1] + c[0, 2] ]
-	constraints += [ -lambda_2[0, 1] + lambda_2[0, 3] - 0.2  ==  -2*c[0, 3] + c[0, 5] ]
+	constraints += [ -lambda_2[0, 1] + lambda_2[0, 3]  ==  -2*c[0, 3] + c[0, 5] - 0.1]
 	constraints += [ 0  ==  -c[0, 1] ]
 	constraints += [ 0  ==  -2*c[0, 3] + 2*c[0, 4] - c[0, 5] ]
 	constraints += [ -lambda_2[0, 0] + lambda_2[0, 2]  ==  -c[0, 5] ]
 	constraints += [ 0  ==  -c[0, 2] ]
-	constraints += [ 0  ==  -c[0, 5] ]
-	constraints += [ -0.200000000000000  ==  -2*c[0, 4] ]
+	constraints += [ 0  ==  -c[0, 5] + 0.1]
+	constraints += [ 0  ==  -2*c[0, 4] + 0.2]
 
 	# constraints = Lyapunov_func_encoding(deg, Poly, dynamics, X, alpha, max_deg, poly_list, monomial_list)
 	problem = cp.Problem(objective, constraints)
@@ -167,6 +167,38 @@ def FindLyapunov(monomial_list, poly_list):
 
 
 	return c.value[0]
+
+
+def initValidTest(V):
+	Test = True
+	assert V.shape == (6, )
+	for _ in range(10000):
+		m = np.random.uniform(low=-1, high=1, size=1)[0]
+		n = np.random.uniform(low=-1, high=1, size=1)[0]
+		# q = np.random.uniform(low=-3, high=3, size=1)[0]
+
+		Lya = V.dot(np.array([1, m, n, m**2, n**2, m*n]))
+		if Lya <= 0:
+			Test = False
+	return Test
+
+
+
+def lieValidTest(V):
+	assert V.shape == (6, )
+	Test = True
+	for i in range(10000):
+		m = np.random.uniform(low=-1, high=1, size=1)[0]
+		n = np.random.uniform(low=-1, high=1, size=1)[0]
+		# q = np.random.uniform(low=-3, high=3, size=1)[0]
+		m_dot = -m - n
+		n_dot = -n**3 + m
+		gradBtox = np.array([0, V[1]*m_dot, V[2]*n_dot, 2*m*V[3]*m_dot, 2*n*V[4]*n_dot, V[5]*(m*n_dot+n*m_dot)])
+		# dynamics = np.array([-n**3 + m, -m - n])
+		LieV = sum(gradBtox)
+		if LieV > 0:
+			Test = False
+	return Test
 
 
 
@@ -181,11 +213,13 @@ Poly=[x+1, 1-x, y+1, 1-y]
 # print(possible_polynomial_generation(4, Poly))
 l = [x**2, y**2, 1-x**2, 1-y**2]
 poly, monomial = Lyapunov_func_encoding(2, Poly, dynamics, X, 0.1, 0, l, 4)
-
+# print(monomial)
 
 t = FindLyapunov(monomial, poly)
 
 print(t)
+print(initValidTest(t))
+print(lieValidTest(t))
 
 
 
