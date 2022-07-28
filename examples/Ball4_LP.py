@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from sympy import MatrixSymbol, Matrix
 from sympy import *
 from numpy import linalg as LA
-from Handelman_Generation import *
+from handelman_utils import *
 import matplotlib.patches as mpatches
 
 EPR = []
@@ -280,7 +280,6 @@ def plot(control_param, V, figname, N=10):
 def constraintsAutoGenerate():
 	### Lyapunov function varibale declaration ###
 	def generateConstraints(exp1, exp2, degree):
-	
 		for i in range(degree+1):
 			for j in range(degree+1):
 				for k in range(degree+1):
