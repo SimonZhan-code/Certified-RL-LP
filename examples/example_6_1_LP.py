@@ -13,6 +13,8 @@ from itertools import *
 import matplotlib.patches as mpatches
 from numpy import linalg as LA
 
+
+
 # print(cp.__version__, np.__version__, scipy.__version__, cvxpylayers.__version__, torch.__version__)
 # assert False
 SVG_patch = mpatches.Patch(color='#ff7f0e', label='SVG w/ CMDP')
@@ -144,7 +146,7 @@ def senGradSDP(control_param, f, g, SVGOnly=False):
 	constraints += [ -lambda_2[0, 38] + lambda_2[0, 39] + lambda_2[0, 43] - lambda_2[0, 44] + lambda_2[0, 63] - lambda_2[0, 64] - lambda_2[0, 66] + lambda_2[0, 67]  ==  0 ]
 	constraints += [ -lambda_2[0, 14] - lambda_2[0, 15] + lambda_2[0, 42] + lambda_2[0, 45] - lambda_2[0, 51]  ==  -2*V[0, 0] + 0.2]
 	
-	# constraints += [objc>=0]
+	constraints += [objc>=0]
 
 	problem = cp.Problem(objective, constraints)
 	assert problem.is_dcp()
@@ -397,8 +399,10 @@ def constraintsAutoGenerate():
  
  	# # # state space
 	lhs_init = V * monomial_list
+	# print(lhs_init[0,0])
 	lhs_init = expand(lhs_init[0,0])
 	rhs_init = lambda_poly_init * poly_list
+	print(rhs_init[0,0])
 	rhs_init = expand(rhs_init[0,0])
 	generateConstraints(rhs_init, lhs_init, degree=2)
 	print("")
@@ -479,7 +483,7 @@ if __name__ == '__main__':
 
 	# print('')
 	# print('Ours approach starts here')
-	Ours()
+	# Ours()
 	# plot(0, 0, figname='Tra_Ball.pdf')
 
-	# constraintsAutoGenerate()	
+	constraintsAutoGenerate()	

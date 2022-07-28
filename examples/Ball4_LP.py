@@ -3,13 +3,15 @@ import numpy as np
 import numpy.random as npr
 import scipy.sparse as sp
 import torch
+import scipy
+import cvxpylayers
 from cvxpylayers.torch.cvxpylayer import CvxpyLayer
 import matplotlib.pyplot as plt
 from sympy import MatrixSymbol, Matrix
 from sympy import *
-from numpy import linalg as LA
-from handelman_utils import *
+from itertools import *
 import matplotlib.patches as mpatches
+from numpy import linalg as LA
 
 EPR = []
 SVG_patch = mpatches.Patch(color='#ff7f0e', label='SVG')
@@ -76,6 +78,8 @@ def senGradSDP(control_param, f, g, SVGOnly=False):
 	Y = cp.Variable((6, 6), symmetric=True) #Q2
 
 	objc = cp.Variable(pos=True) 
+	lambda_1 = cp.Variable((1, 3))
+	lambda_2 = cp.Variable((1, 3))
 	V = cp.Variable((1, 3)) #Laypunov parameters for SOS rings
 	t = cp.Parameter((1, 3)) #controller parameters
 
@@ -83,38 +87,56 @@ def senGradSDP(control_param, f, g, SVGOnly=False):
 	constraints = []
 	if SVGOnly:
 		constraints += [ objc == 0 ]
-	constraints += [ X >> 0.01]
-	constraints += [ Y >> 0.0]
-	constraints += [ X[2, 2]  >=  V[0, 2] - objc ]
-	constraints += [ X[2, 2]  <=  V[0, 2] + objc ]
-	constraints += [ X[1, 2] + X[2, 1]  ==  0 ]
-	constraints += [ X[1, 1]  ==  V[0, 1] ]
-	constraints += [ X[0, 2] + X[2, 0]  ==  0 ]
-	constraints += [ X[0, 1] + X[1, 0]  ==  0 ]
-	constraints += [ X[0, 0]  ==  V[0, 0] - 0.3]
+	
+	constraints += [ lambda_1 >= 0 ]
+	constraints += [ lambda_2 >= 0 ]
 
-	constraints += [ Y[2, 2]  >=  -2*V[0, 2]*t[0, 2] - objc -0.2]
-	constraints += [ Y[2, 2]  <=  -2*V[0, 2]*t[0, 2] + objc -0.2]
-	constraints += [ Y[2, 5] + Y[5, 2]  ==  0 ]
-	constraints += [ Y[5, 5]  ==  0 ]
-	constraints += [ Y[1, 2] + Y[2, 1]  ==  -2*V[0, 2]*t[0, 1] ]
-	constraints += [ Y[1, 5] + Y[5, 1]  ==  0 ]
-	constraints += [ Y[1, 1]  ==  2*V[0, 1] ]
-	constraints += [ Y[2, 4] + Y[4, 2]  ==  0 ]
-	constraints += [ Y[4, 5] + Y[5, 4]  ==  0 ]
-	constraints += [ Y[1, 4] + Y[4, 1]  ==  0 ]
-	constraints += [ Y[4, 4]  ==  0 ]
-	constraints += [ Y[0, 2] + Y[2, 0]  ==  -2*V[0, 2]*t[0, 0] ]
-	constraints += [ Y[0, 5] + Y[5, 0]  ==  0 ]
-	constraints += [ Y[0, 1] + Y[1, 0]  ==  0 ]
-	constraints += [ Y[0, 4] + Y[4, 0]  ==  0 ]
-	constraints += [ Y[0, 0]  ==  0 ]
-	constraints += [ Y[2, 3] + Y[3, 2]  ==  0 ]
-	constraints += [ Y[3, 5] + Y[5, 3]  ==  -2*f*V[0, 0] - 2*g*V[0, 2] ]
-	constraints += [ Y[1, 3] + Y[3, 1]  ==  0 ]
-	constraints += [ Y[3, 4] + Y[4, 3]  ==  2*V[0, 1] ]
-	constraints += [ Y[0, 3] + Y[3, 0]  ==  0 ]
-	constraints += [ Y[3, 3]  ==  2*V[0, 0] ]
+	constraints += [ 3*lambda_1[0, 0] + 3*lambda_1[0, 1] + 3*lambda_1[0, 2] + 9*lambda_1[0, 3] + 9*lambda_1[0, 4] + 9*lambda_1[0, 5] + 27*lambda_1[0, 6] + 27*lambda_1[0, 7] + 27*lambda_1[0, 8] + 81*lambda_1[0, 9] + 81*lambda_1[0, 10] + 81*lambda_1[0, 11] + 9*lambda_1[0, 12] + 9*lambda_1[0, 13] + 9*lambda_1[0, 14] + 27*lambda_1[0, 15] + 27*lambda_1[0, 16] + 27*lambda_1[0, 17] + 27*lambda_1[0, 18] + 27*lambda_1[0, 19] + 27*lambda_1[0, 20] + 81*lambda_1[0, 21] + 81*lambda_1[0, 22] + 81*lambda_1[0, 23] + 81*lambda_1[0, 24] + 81*lambda_1[0, 25] + 81*lambda_1[0, 26] + 81*lambda_1[0, 27] + 81*lambda_1[0, 28] + 81*lambda_1[0, 29] + 27*lambda_1[0, 30] + 81*lambda_1[0, 31] + 81*lambda_1[0, 32] + 81*lambda_1[0, 33]  ==  0 ]
+	constraints += [ lambda_1[0, 0] + 6*lambda_1[0, 3] + 27*lambda_1[0, 6] + 108*lambda_1[0, 9] + 3*lambda_1[0, 12] + 3*lambda_1[0, 13] + 18*lambda_1[0, 15] + 9*lambda_1[0, 16] + 18*lambda_1[0, 17] + 9*lambda_1[0, 19] + 81*lambda_1[0, 21] + 27*lambda_1[0, 22] + 81*lambda_1[0, 23] + 27*lambda_1[0, 25] + 54*lambda_1[0, 27] + 54*lambda_1[0, 28] + 9*lambda_1[0, 30] + 54*lambda_1[0, 31] + 27*lambda_1[0, 32] + 27*lambda_1[0, 33]  ==  0 ]
+	constraints += [ lambda_1[0, 3] + 9*lambda_1[0, 6] + 54*lambda_1[0, 9] + 3*lambda_1[0, 15] + 3*lambda_1[0, 17] + 27*lambda_1[0, 21] + 27*lambda_1[0, 23] + 9*lambda_1[0, 27] + 9*lambda_1[0, 28] + 9*lambda_1[0, 31]  ==  V[0, 2] ]
+	constraints += [ lambda_1[0, 1] + 6*lambda_1[0, 4] + 27*lambda_1[0, 7] + 108*lambda_1[0, 10] + 3*lambda_1[0, 12] + 3*lambda_1[0, 14] + 9*lambda_1[0, 15] + 18*lambda_1[0, 16] + 18*lambda_1[0, 18] + 9*lambda_1[0, 20] + 27*lambda_1[0, 21] + 81*lambda_1[0, 22] + 81*lambda_1[0, 24] + 27*lambda_1[0, 26] + 54*lambda_1[0, 27] + 54*lambda_1[0, 29] + 9*lambda_1[0, 30] + 27*lambda_1[0, 31] + 54*lambda_1[0, 32] + 27*lambda_1[0, 33]  ==  0 ]
+	constraints += [ lambda_1[0, 12] + 6*lambda_1[0, 15] + 6*lambda_1[0, 16] + 27*lambda_1[0, 21] + 27*lambda_1[0, 22] + 36*lambda_1[0, 27] + 3*lambda_1[0, 30] + 18*lambda_1[0, 31] + 18*lambda_1[0, 32] + 9*lambda_1[0, 33]  ==  0 ]
+	constraints += [ lambda_1[0, 4] + 9*lambda_1[0, 7] + 54*lambda_1[0, 10] + 3*lambda_1[0, 16] + 3*lambda_1[0, 18] + 27*lambda_1[0, 22] + 27*lambda_1[0, 24] + 9*lambda_1[0, 27] + 9*lambda_1[0, 29] + 9*lambda_1[0, 32]  ==  V[0, 1] ]
+	constraints += [ lambda_1[0, 2] + 6*lambda_1[0, 5] + 27*lambda_1[0, 8] + 108*lambda_1[0, 11] + 3*lambda_1[0, 13] + 3*lambda_1[0, 14] + 9*lambda_1[0, 17] + 9*lambda_1[0, 18] + 18*lambda_1[0, 19] + 18*lambda_1[0, 20] + 27*lambda_1[0, 23] + 27*lambda_1[0, 24] + 81*lambda_1[0, 25] + 81*lambda_1[0, 26] + 54*lambda_1[0, 28] + 54*lambda_1[0, 29] + 9*lambda_1[0, 30] + 27*lambda_1[0, 31] + 27*lambda_1[0, 32] + 54*lambda_1[0, 33]  ==  0 ]
+	constraints += [ lambda_1[0, 13] + 6*lambda_1[0, 17] + 6*lambda_1[0, 19] + 27*lambda_1[0, 23] + 27*lambda_1[0, 25] + 36*lambda_1[0, 28] + 3*lambda_1[0, 30] + 18*lambda_1[0, 31] + 9*lambda_1[0, 32] + 18*lambda_1[0, 33]  ==  0 ]
+	constraints += [ lambda_1[0, 14] + 6*lambda_1[0, 18] + 6*lambda_1[0, 20] + 27*lambda_1[0, 24] + 27*lambda_1[0, 26] + 36*lambda_1[0, 29] + 3*lambda_1[0, 30] + 9*lambda_1[0, 31] + 18*lambda_1[0, 32] + 18*lambda_1[0, 33]  ==  0 ]
+	constraints += [ lambda_1[0, 5] + 9*lambda_1[0, 8] + 54*lambda_1[0, 11] + 3*lambda_1[0, 19] + 3*lambda_1[0, 20] + 27*lambda_1[0, 25] + 27*lambda_1[0, 26] + 9*lambda_1[0, 28] + 9*lambda_1[0, 29] + 9*lambda_1[0, 33]  ==  V[0, 0] ]
+
+	constraints += [ 3*lambda_2[0, 0] + 3*lambda_2[0, 1] + 3*lambda_2[0, 2] + 9*lambda_2[0, 3] + 9*lambda_2[0, 4] + 9*lambda_2[0, 5] + 27*lambda_2[0, 6] + 27*lambda_2[0, 7] + 27*lambda_2[0, 8] + 81*lambda_2[0, 9] + 81*lambda_2[0, 10] + 81*lambda_2[0, 11] + 9*lambda_2[0, 12] + 9*lambda_2[0, 13] + 9*lambda_2[0, 14] + 27*lambda_2[0, 15] + 27*lambda_2[0, 16] + 27*lambda_2[0, 17] + 27*lambda_2[0, 18] + 27*lambda_2[0, 19] + 27*lambda_2[0, 20] + 81*lambda_2[0, 21] + 81*lambda_2[0, 22] + 81*lambda_2[0, 23] + 81*lambda_2[0, 24] + 81*lambda_2[0, 25] + 81*lambda_2[0, 26] + 81*lambda_2[0, 27] + 81*lambda_2[0, 28] + 81*lambda_2[0, 29] + 27*lambda_2[0, 30] + 81*lambda_2[0, 31] + 81*lambda_2[0, 32] + 81*lambda_2[0, 33]  ==  0 ]
+	constraints += [ lambda_2[0, 0] + 6*lambda_2[0, 3] + 27*lambda_2[0, 6] + 108*lambda_2[0, 9] + 3*lambda_2[0, 12] + 3*lambda_2[0, 13] + 18*lambda_2[0, 15] + 9*lambda_2[0, 16] + 18*lambda_2[0, 17] + 9*lambda_2[0, 19] + 81*lambda_2[0, 21] + 27*lambda_2[0, 22] + 81*lambda_2[0, 23] + 27*lambda_2[0, 25] + 54*lambda_2[0, 27] + 54*lambda_2[0, 28] + 9*lambda_2[0, 30] + 54*lambda_2[0, 31] + 27*lambda_2[0, 32] + 27*lambda_2[0, 33]  ==  0 ]
+	constraints += [ lambda_2[0, 3] + 9*lambda_2[0, 6] + 54*lambda_2[0, 9] + 3*lambda_2[0, 15] + 3*lambda_2[0, 17] + 27*lambda_2[0, 21] + 27*lambda_2[0, 23] + 9*lambda_2[0, 27] + 9*lambda_2[0, 28] + 9*lambda_2[0, 31]  ==  -2*V[0, 2]*t[0, 2] ]
+	constraints += [ lambda_2[0, 6] + 12*lambda_2[0, 9] + 3*lambda_2[0, 21] + 3*lambda_2[0, 23]  ==  0 ]
+	constraints += [ lambda_2[0, 9]  ==  0 ]
+	constraints += [ lambda_2[0, 1] + 6*lambda_2[0, 4] + 27*lambda_2[0, 7] + 108*lambda_2[0, 10] + 3*lambda_2[0, 12] + 3*lambda_2[0, 14] + 9*lambda_2[0, 15] + 18*lambda_2[0, 16] + 18*lambda_2[0, 18] + 9*lambda_2[0, 20] + 27*lambda_2[0, 21] + 81*lambda_2[0, 22] + 81*lambda_2[0, 24] + 27*lambda_2[0, 26] + 54*lambda_2[0, 27] + 54*lambda_2[0, 29] + 9*lambda_2[0, 30] + 27*lambda_2[0, 31] + 54*lambda_2[0, 32] + 27*lambda_2[0, 33]  ==  0 ]
+	constraints += [ lambda_2[0, 12] + 6*lambda_2[0, 15] + 6*lambda_2[0, 16] + 27*lambda_2[0, 21] + 27*lambda_2[0, 22] + 36*lambda_2[0, 27] + 3*lambda_2[0, 30] + 18*lambda_2[0, 31] + 18*lambda_2[0, 32] + 9*lambda_2[0, 33]  ==  -2*V[0, 2]*t[0, 1] ]
+	constraints += [ lambda_2[0, 15] + 9*lambda_2[0, 21] + 6*lambda_2[0, 27] + 3*lambda_2[0, 31]  ==  0 ]
+	constraints += [ lambda_2[0, 21]  ==  0 ]
+	constraints += [ lambda_2[0, 4] + 9*lambda_2[0, 7] + 54*lambda_2[0, 10] + 3*lambda_2[0, 16] + 3*lambda_2[0, 18] + 27*lambda_2[0, 22] + 27*lambda_2[0, 24] + 9*lambda_2[0, 27] + 9*lambda_2[0, 29] + 9*lambda_2[0, 32]  ==  2*V[0, 1] ]
+	constraints += [ lambda_2[0, 16] + 9*lambda_2[0, 22] + 6*lambda_2[0, 27] + 3*lambda_2[0, 32]  ==  0 ]
+	constraints += [ lambda_2[0, 27]  ==  0 ]
+	constraints += [ lambda_2[0, 7] + 12*lambda_2[0, 10] + 3*lambda_2[0, 22] + 3*lambda_2[0, 24]  ==  0 ]
+	constraints += [ lambda_2[0, 22]  ==  0 ]
+	constraints += [ lambda_2[0, 10]  ==  0 ]
+	constraints += [ lambda_2[0, 2] + 6*lambda_2[0, 5] + 27*lambda_2[0, 8] + 108*lambda_2[0, 11] + 3*lambda_2[0, 13] + 3*lambda_2[0, 14] + 9*lambda_2[0, 17] + 9*lambda_2[0, 18] + 18*lambda_2[0, 19] + 18*lambda_2[0, 20] + 27*lambda_2[0, 23] + 27*lambda_2[0, 24] + 81*lambda_2[0, 25] + 81*lambda_2[0, 26] + 54*lambda_2[0, 28] + 54*lambda_2[0, 29] + 9*lambda_2[0, 30] + 27*lambda_2[0, 31] + 27*lambda_2[0, 32] + 54*lambda_2[0, 33]  ==  0 ]
+	constraints += [ lambda_2[0, 13] + 6*lambda_2[0, 17] + 6*lambda_2[0, 19] + 27*lambda_2[0, 23] + 27*lambda_2[0, 25] + 36*lambda_2[0, 28] + 3*lambda_2[0, 30] + 18*lambda_2[0, 31] + 9*lambda_2[0, 32] + 18*lambda_2[0, 33]  ==  -2*V[0, 2]*t[0, 0] ]
+	constraints += [ lambda_2[0, 17] + 9*lambda_2[0, 23] + 6*lambda_2[0, 28] + 3*lambda_2[0, 31]  ==  0 ]
+	constraints += [ lambda_2[0, 23]  ==  0 ]
+	constraints += [ lambda_2[0, 14] + 6*lambda_2[0, 18] + 6*lambda_2[0, 20] + 27*lambda_2[0, 24] + 27*lambda_2[0, 26] + 36*lambda_2[0, 29] + 3*lambda_2[0, 30] + 9*lambda_2[0, 31] + 18*lambda_2[0, 32] + 18*lambda_2[0, 33]  ==  0 ]
+	constraints += [ lambda_2[0, 30] + 6*lambda_2[0, 31] + 6*lambda_2[0, 32] + 6*lambda_2[0, 33]  ==  0 ]
+	constraints += [ lambda_2[0, 31]  ==  0 ]
+	constraints += [ lambda_2[0, 18] + 9*lambda_2[0, 24] + 6*lambda_2[0, 29] + 3*lambda_2[0, 32]  ==  0 ]
+	constraints += [ lambda_2[0, 32]  ==  0 ]
+	constraints += [ lambda_2[0, 24]  ==  0 ]
+	constraints += [ lambda_2[0, 5] + 9*lambda_2[0, 8] + 54*lambda_2[0, 11] + 3*lambda_2[0, 19] + 3*lambda_2[0, 20] + 27*lambda_2[0, 25] + 27*lambda_2[0, 26] + 9*lambda_2[0, 28] + 9*lambda_2[0, 29] + 9*lambda_2[0, 33]  ==  2*V[0, 0] ]
+	constraints += [ lambda_2[0, 19] + 9*lambda_2[0, 25] + 6*lambda_2[0, 28] + 3*lambda_2[0, 33]  ==  0 ]
+	constraints += [ lambda_2[0, 28]  ==  -2*f*V[0, 0] - 2*g*V[0, 2] ]
+	constraints += [ lambda_2[0, 20] + 9*lambda_2[0, 26] + 6*lambda_2[0, 29] + 3*lambda_2[0, 33]  ==  0 ]
+	constraints += [ lambda_2[0, 33]  ==  0 ]
+	constraints += [ lambda_2[0, 29]  ==  2*V[0, 1] ]
+	constraints += [ lambda_2[0, 8] + 12*lambda_2[0, 11] + 3*lambda_2[0, 25] + 3*lambda_2[0, 26]  ==  0 ]
+	constraints += [ lambda_2[0, 25]  ==  0 ]
+	constraints += [ lambda_2[0, 26]  ==  0 ]
+	constraints += [ lambda_2[0, 11]  ==  0 ]
 
 	constraints += [objc>=0]
 
@@ -274,7 +296,64 @@ def plot(control_param, V, figname, N=10):
 	plt.savefig(figname, bbox_inches='tight')
 
 
+def power_generation(deg, dim):
+	I = []
+	# Possible I generation
+	arr_comb = []
+	for i in range(deg+1):
+		arr_comb.append(i)
+	# Get all possible selection
+	I_temp_comb = list(combinations_with_replacement(arr_comb, dim))
+	I_temp = []
+	# Get all possible permutation
+	for i in I_temp_comb:
+		I_temp_permut = list(permutations(i, dim))
+		I_temp += I_temp_permut
+	# Deduce the redundant option and exceeding power terms
+	[I.append(x) for x in I_temp if x not in I and sum(x) <= deg]
+	return I 
 
+
+def monomial_generation(deg, X):
+	dim = len(X)
+	I = power_generation(deg, dim)
+	# Generate monomial of given degree with given dimension
+	ele = []
+	# Generate the monomial vectors base on possible power
+	for i in I:
+		monomial = 1
+		for j in range(len(i)):
+			monomial = monomial*X[j]**i[j]
+		ele.append(monomial)
+	return Matrix(ele)
+
+
+def possible_handelman_generation(deg, Poly):
+	# Creating possible positive power product and ensure each one
+	# is positive
+	p = []
+	dim = len(Poly)
+	I = power_generation(deg, dim)
+	I.pop(0)
+	# Generate possible terms from the I given
+	for i in I:
+		poly = 1
+		for j in range(len(i)):
+			poly = poly*Poly[j]**i[j]
+		p.append(expand(poly))
+	return p
+
+
+def GetDerivative(dynamics, polymonial_terms, X):
+	ele_der = []
+	for m in polymonial_terms:
+		temp = [0]*len(X)
+		temp_der = 0
+		for i in range(len(X)):
+			temp[i] = diff(m, X[i]) * dynamics[i]
+		temp_der = sum(temp)
+		ele_der.append(expand(temp_der))
+	return Matrix(ele_der)
 
 
 def constraintsAutoGenerate():
@@ -293,9 +372,9 @@ def constraintsAutoGenerate():
 	Vbase = Matrix([m**2, n**2, q**2])	
 	V = MatrixSymbol('V', 1, 3)
 	theta = MatrixSymbol('t', 1, 3)
-	Poly = [-m, -n, -q, m+3, n+3, q+3]
-	poly_list = possible_handelman_generation(4, Poly)
-	poly_list = Matrix(poly_list)
+	Poly = [m+3, n+3, q+3]
+	poly_list = Matrix(possible_handelman_generation(4, Poly))
+	print(len(poly_list))
 	lambda_1 = MatrixSymbol('lambda_1', 1, len(poly_list))
 	lambda_2 = MatrixSymbol('lambda_2', 1, len(poly_list))
 
@@ -303,14 +382,17 @@ def constraintsAutoGenerate():
  	# # # state space
 	
 	rhsX = lambda_1 * poly_list
-	rhsX = expand(rhsX[0, 0])
+	# print(type(rhsX[0,0]))
+	rhsX = expand(rhsX[0,0])
 	lhsX = V*Vbase
-	lhsX = expand(lhsX[0, 0])
-	generateConstraints(rhsX, lhsX, degree=2)
+	# print(lhsX[0,0])
+	lhsX = expand(lhsX[0,0])
+	# generateConstraints(rhsX, lhsX, degree=2)
+	print(" ")
 	
 	# # # lie derivative
 	rhsY = lambda_2 * poly_list
-	rhsY = expand(rhsY[0, 0])
+	rhsY = expand(rhsY[0,0])
 	Lyapunov = V*Vbase
 	partialm = diff(Lyapunov[0, 0], m)
 	partialn = diff(Lyapunov[0, 0], n)
@@ -321,7 +403,7 @@ def constraintsAutoGenerate():
 	dynamics = Matrix([[-m + f* m*q**2], [-n - m**2*n], [controlInput + g*m**2*q]])
 	lhsY = -gradVtox*dynamics
 	lhsY = expand(lhsY[0, 0])
-	generateConstraints(rhsY, lhsY, degree=4)
+	# generateConstraints(rhsY, lhsY, degree=4)
 
 if __name__ == '__main__':
 
