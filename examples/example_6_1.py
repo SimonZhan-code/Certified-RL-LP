@@ -10,6 +10,9 @@ import matplotlib.pyplot as plt
 from sympy import MatrixSymbol, Matrix
 from sympy import *
 import matplotlib.patches as mpatches
+from numpy import linalg as LA
+
+
 # print(cp.__version__, np.__version__, scipy.__version__, cvxpylayers.__version__, torch.__version__)
 # assert False
 SVG_patch = mpatches.Patch(color='#ff7f0e', label='SVG w/ CMDP')
@@ -384,12 +387,12 @@ if __name__ == '__main__':
 			vtheta, final_state, f, g = SVG(control_param, f, g)
 			control_param += 1e-3 * np.clip(vtheta, -1e2, 1e2)
 			if i % 1 == 0:
-				print(control_param, vtheta, theta_gard, final_state)
+				print(control_param, vtheta, theta_gard, LA.norm(final_state))
 			Lyapunov_param = np.array([0, 0])		
 			try:
 				Lyapunov_param, theta_gard, slack_star, initTest, lieTest = senGradSDP(control_param, f, g, SVGOnly=True)
-				print(initTest, lieTest, final_state)
-				if initTest and lieTest and abs(slack_star) <= 3e-4 and abs(final_state[1])< 5e-2 and abs(final_state[2])<5e-2:
+				print(initTest, lieTest)
+				if initTest and lieTest and abs(slack_star) <= 3e-4 and LA.norm(final_state)< 5e-2:
 					print('Successfully synthesis a controller with its Lyapunov function')
 					print('controller: ', control_param, 'Lyapunov: ', Lyapunov_param)
 					break
