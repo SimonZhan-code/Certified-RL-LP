@@ -116,7 +116,7 @@ def senGradSDP(control_param, f, g, SVGOnly=False):
 	constraints += [ X[1, 1]  >=  V[0, 1] - objc - 0.1]
 	constraints += [ X[1, 1]  <=  V[0, 1] + objc - 0.1]
 	constraints += [ X[0, 1] + X[1, 0]  ==  0 ]
-	constraints += [ X[0, 0]  ==  V[0, 0] - 0.1]
+	constraints += [ X[0, 0]  ==  V[0, 0] - 0.3]
 
 	constraints += [ Y[1, 1]  >=  -2*V[0, 1]*t[0, 1] - objc ]
 	constraints += [ Y[1, 1]  <=  -2*V[0, 1]*t[0, 1] + objc ]

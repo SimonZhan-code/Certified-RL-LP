@@ -73,16 +73,12 @@ class Ball4:
 
 
 def senGradSDP(control_param, f, g, SVGOnly=False):
-
-	X = cp.Variable((3, 3), symmetric=True) #Q1
-	Y = cp.Variable((6, 6), symmetric=True) #Q2
-
 	objc = cp.Variable(pos=True) 
-	lambda_1 = cp.Variable((1, 3))
-	lambda_2 = cp.Variable((1, 3))
+	lambda_1 = cp.Variable((1, 34))
+	lambda_2 = cp.Variable((1, 34))
 	V = cp.Variable((1, 3)) #Laypunov parameters for SOS rings
 	t = cp.Parameter((1, 3)) #controller parameters
-
+	# print("approach here 1!")
 	objective = cp.Minimize(objc)
 	constraints = []
 	if SVGOnly:
@@ -90,25 +86,27 @@ def senGradSDP(control_param, f, g, SVGOnly=False):
 	
 	constraints += [ lambda_1 >= 0 ]
 	constraints += [ lambda_2 >= 0 ]
-
+	# print("approach here 2!")
 	constraints += [ 3*lambda_1[0, 0] + 3*lambda_1[0, 1] + 3*lambda_1[0, 2] + 9*lambda_1[0, 3] + 9*lambda_1[0, 4] + 9*lambda_1[0, 5] + 27*lambda_1[0, 6] + 27*lambda_1[0, 7] + 27*lambda_1[0, 8] + 81*lambda_1[0, 9] + 81*lambda_1[0, 10] + 81*lambda_1[0, 11] + 9*lambda_1[0, 12] + 9*lambda_1[0, 13] + 9*lambda_1[0, 14] + 27*lambda_1[0, 15] + 27*lambda_1[0, 16] + 27*lambda_1[0, 17] + 27*lambda_1[0, 18] + 27*lambda_1[0, 19] + 27*lambda_1[0, 20] + 81*lambda_1[0, 21] + 81*lambda_1[0, 22] + 81*lambda_1[0, 23] + 81*lambda_1[0, 24] + 81*lambda_1[0, 25] + 81*lambda_1[0, 26] + 81*lambda_1[0, 27] + 81*lambda_1[0, 28] + 81*lambda_1[0, 29] + 27*lambda_1[0, 30] + 81*lambda_1[0, 31] + 81*lambda_1[0, 32] + 81*lambda_1[0, 33]  ==  0 ]
 	constraints += [ lambda_1[0, 0] + 6*lambda_1[0, 3] + 27*lambda_1[0, 6] + 108*lambda_1[0, 9] + 3*lambda_1[0, 12] + 3*lambda_1[0, 13] + 18*lambda_1[0, 15] + 9*lambda_1[0, 16] + 18*lambda_1[0, 17] + 9*lambda_1[0, 19] + 81*lambda_1[0, 21] + 27*lambda_1[0, 22] + 81*lambda_1[0, 23] + 27*lambda_1[0, 25] + 54*lambda_1[0, 27] + 54*lambda_1[0, 28] + 9*lambda_1[0, 30] + 54*lambda_1[0, 31] + 27*lambda_1[0, 32] + 27*lambda_1[0, 33]  ==  0 ]
-	constraints += [ lambda_1[0, 3] + 9*lambda_1[0, 6] + 54*lambda_1[0, 9] + 3*lambda_1[0, 15] + 3*lambda_1[0, 17] + 27*lambda_1[0, 21] + 27*lambda_1[0, 23] + 9*lambda_1[0, 27] + 9*lambda_1[0, 28] + 9*lambda_1[0, 31]  ==  V[0, 2] ]
+	constraints += [ lambda_1[0, 3] + 9*lambda_1[0, 6] + 54*lambda_1[0, 9] + 3*lambda_1[0, 15] + 3*lambda_1[0, 17] + 27*lambda_1[0, 21] + 27*lambda_1[0, 23] + 9*lambda_1[0, 27] + 9*lambda_1[0, 28] + 9*lambda_1[0, 31]  <=  V[0, 2] + objc]
+	constraints += [ lambda_1[0, 3] + 9*lambda_1[0, 6] + 54*lambda_1[0, 9] + 3*lambda_1[0, 15] + 3*lambda_1[0, 17] + 27*lambda_1[0, 21] + 27*lambda_1[0, 23] + 9*lambda_1[0, 27] + 9*lambda_1[0, 28] + 9*lambda_1[0, 31]  >=  V[0, 2] - objc]
 	constraints += [ lambda_1[0, 1] + 6*lambda_1[0, 4] + 27*lambda_1[0, 7] + 108*lambda_1[0, 10] + 3*lambda_1[0, 12] + 3*lambda_1[0, 14] + 9*lambda_1[0, 15] + 18*lambda_1[0, 16] + 18*lambda_1[0, 18] + 9*lambda_1[0, 20] + 27*lambda_1[0, 21] + 81*lambda_1[0, 22] + 81*lambda_1[0, 24] + 27*lambda_1[0, 26] + 54*lambda_1[0, 27] + 54*lambda_1[0, 29] + 9*lambda_1[0, 30] + 27*lambda_1[0, 31] + 54*lambda_1[0, 32] + 27*lambda_1[0, 33]  ==  0 ]
 	constraints += [ lambda_1[0, 12] + 6*lambda_1[0, 15] + 6*lambda_1[0, 16] + 27*lambda_1[0, 21] + 27*lambda_1[0, 22] + 36*lambda_1[0, 27] + 3*lambda_1[0, 30] + 18*lambda_1[0, 31] + 18*lambda_1[0, 32] + 9*lambda_1[0, 33]  ==  0 ]
 	constraints += [ lambda_1[0, 4] + 9*lambda_1[0, 7] + 54*lambda_1[0, 10] + 3*lambda_1[0, 16] + 3*lambda_1[0, 18] + 27*lambda_1[0, 22] + 27*lambda_1[0, 24] + 9*lambda_1[0, 27] + 9*lambda_1[0, 29] + 9*lambda_1[0, 32]  ==  V[0, 1] ]
 	constraints += [ lambda_1[0, 2] + 6*lambda_1[0, 5] + 27*lambda_1[0, 8] + 108*lambda_1[0, 11] + 3*lambda_1[0, 13] + 3*lambda_1[0, 14] + 9*lambda_1[0, 17] + 9*lambda_1[0, 18] + 18*lambda_1[0, 19] + 18*lambda_1[0, 20] + 27*lambda_1[0, 23] + 27*lambda_1[0, 24] + 81*lambda_1[0, 25] + 81*lambda_1[0, 26] + 54*lambda_1[0, 28] + 54*lambda_1[0, 29] + 9*lambda_1[0, 30] + 27*lambda_1[0, 31] + 27*lambda_1[0, 32] + 54*lambda_1[0, 33]  ==  0 ]
 	constraints += [ lambda_1[0, 13] + 6*lambda_1[0, 17] + 6*lambda_1[0, 19] + 27*lambda_1[0, 23] + 27*lambda_1[0, 25] + 36*lambda_1[0, 28] + 3*lambda_1[0, 30] + 18*lambda_1[0, 31] + 9*lambda_1[0, 32] + 18*lambda_1[0, 33]  ==  0 ]
 	constraints += [ lambda_1[0, 14] + 6*lambda_1[0, 18] + 6*lambda_1[0, 20] + 27*lambda_1[0, 24] + 27*lambda_1[0, 26] + 36*lambda_1[0, 29] + 3*lambda_1[0, 30] + 9*lambda_1[0, 31] + 18*lambda_1[0, 32] + 18*lambda_1[0, 33]  ==  0 ]
-	constraints += [ lambda_1[0, 5] + 9*lambda_1[0, 8] + 54*lambda_1[0, 11] + 3*lambda_1[0, 19] + 3*lambda_1[0, 20] + 27*lambda_1[0, 25] + 27*lambda_1[0, 26] + 9*lambda_1[0, 28] + 9*lambda_1[0, 29] + 9*lambda_1[0, 33]  ==  V[0, 0] ]
-
+	constraints += [ lambda_1[0, 5] + 9*lambda_1[0, 8] + 54*lambda_1[0, 11] + 3*lambda_1[0, 19] + 3*lambda_1[0, 20] + 27*lambda_1[0, 25] + 27*lambda_1[0, 26] + 9*lambda_1[0, 28] + 9*lambda_1[0, 29] + 9*lambda_1[0, 33]  ==  V[0, 0] - 0.1 ]
+	# print("approach here 3!")
 	constraints += [ 3*lambda_2[0, 0] + 3*lambda_2[0, 1] + 3*lambda_2[0, 2] + 9*lambda_2[0, 3] + 9*lambda_2[0, 4] + 9*lambda_2[0, 5] + 27*lambda_2[0, 6] + 27*lambda_2[0, 7] + 27*lambda_2[0, 8] + 81*lambda_2[0, 9] + 81*lambda_2[0, 10] + 81*lambda_2[0, 11] + 9*lambda_2[0, 12] + 9*lambda_2[0, 13] + 9*lambda_2[0, 14] + 27*lambda_2[0, 15] + 27*lambda_2[0, 16] + 27*lambda_2[0, 17] + 27*lambda_2[0, 18] + 27*lambda_2[0, 19] + 27*lambda_2[0, 20] + 81*lambda_2[0, 21] + 81*lambda_2[0, 22] + 81*lambda_2[0, 23] + 81*lambda_2[0, 24] + 81*lambda_2[0, 25] + 81*lambda_2[0, 26] + 81*lambda_2[0, 27] + 81*lambda_2[0, 28] + 81*lambda_2[0, 29] + 27*lambda_2[0, 30] + 81*lambda_2[0, 31] + 81*lambda_2[0, 32] + 81*lambda_2[0, 33]  ==  0 ]
 	constraints += [ lambda_2[0, 0] + 6*lambda_2[0, 3] + 27*lambda_2[0, 6] + 108*lambda_2[0, 9] + 3*lambda_2[0, 12] + 3*lambda_2[0, 13] + 18*lambda_2[0, 15] + 9*lambda_2[0, 16] + 18*lambda_2[0, 17] + 9*lambda_2[0, 19] + 81*lambda_2[0, 21] + 27*lambda_2[0, 22] + 81*lambda_2[0, 23] + 27*lambda_2[0, 25] + 54*lambda_2[0, 27] + 54*lambda_2[0, 28] + 9*lambda_2[0, 30] + 54*lambda_2[0, 31] + 27*lambda_2[0, 32] + 27*lambda_2[0, 33]  ==  0 ]
 	constraints += [ lambda_2[0, 3] + 9*lambda_2[0, 6] + 54*lambda_2[0, 9] + 3*lambda_2[0, 15] + 3*lambda_2[0, 17] + 27*lambda_2[0, 21] + 27*lambda_2[0, 23] + 9*lambda_2[0, 27] + 9*lambda_2[0, 28] + 9*lambda_2[0, 31]  ==  -2*V[0, 2]*t[0, 2] ]
 	constraints += [ lambda_2[0, 6] + 12*lambda_2[0, 9] + 3*lambda_2[0, 21] + 3*lambda_2[0, 23]  ==  0 ]
 	constraints += [ lambda_2[0, 9]  ==  0 ]
 	constraints += [ lambda_2[0, 1] + 6*lambda_2[0, 4] + 27*lambda_2[0, 7] + 108*lambda_2[0, 10] + 3*lambda_2[0, 12] + 3*lambda_2[0, 14] + 9*lambda_2[0, 15] + 18*lambda_2[0, 16] + 18*lambda_2[0, 18] + 9*lambda_2[0, 20] + 27*lambda_2[0, 21] + 81*lambda_2[0, 22] + 81*lambda_2[0, 24] + 27*lambda_2[0, 26] + 54*lambda_2[0, 27] + 54*lambda_2[0, 29] + 9*lambda_2[0, 30] + 27*lambda_2[0, 31] + 54*lambda_2[0, 32] + 27*lambda_2[0, 33]  ==  0 ]
-	constraints += [ lambda_2[0, 12] + 6*lambda_2[0, 15] + 6*lambda_2[0, 16] + 27*lambda_2[0, 21] + 27*lambda_2[0, 22] + 36*lambda_2[0, 27] + 3*lambda_2[0, 30] + 18*lambda_2[0, 31] + 18*lambda_2[0, 32] + 9*lambda_2[0, 33]  ==  -2*V[0, 2]*t[0, 1] ]
+	constraints += [ lambda_2[0, 12] + 6*lambda_2[0, 15] + 6*lambda_2[0, 16] + 27*lambda_2[0, 21] + 27*lambda_2[0, 22] + 36*lambda_2[0, 27] + 3*lambda_2[0, 30] + 18*lambda_2[0, 31] + 18*lambda_2[0, 32] + 9*lambda_2[0, 33]  <=  -2*V[0, 2]*t[0, 1] - 0.1 + objc]
+	constraints += [ lambda_2[0, 12] + 6*lambda_2[0, 15] + 6*lambda_2[0, 16] + 27*lambda_2[0, 21] + 27*lambda_2[0, 22] + 36*lambda_2[0, 27] + 3*lambda_2[0, 30] + 18*lambda_2[0, 31] + 18*lambda_2[0, 32] + 9*lambda_2[0, 33]  >=  -2*V[0, 2]*t[0, 1] - 0.1 - objc]
 	constraints += [ lambda_2[0, 15] + 9*lambda_2[0, 21] + 6*lambda_2[0, 27] + 3*lambda_2[0, 31]  ==  0 ]
 	constraints += [ lambda_2[0, 21]  ==  0 ]
 	constraints += [ lambda_2[0, 4] + 9*lambda_2[0, 7] + 54*lambda_2[0, 10] + 3*lambda_2[0, 16] + 3*lambda_2[0, 18] + 27*lambda_2[0, 22] + 27*lambda_2[0, 24] + 9*lambda_2[0, 27] + 9*lambda_2[0, 29] + 9*lambda_2[0, 32]  ==  2*V[0, 1] ]
@@ -143,20 +141,20 @@ def senGradSDP(control_param, f, g, SVGOnly=False):
 	problem = cp.Problem(objective, constraints)
 	assert problem.is_dcp()
 	assert problem.is_dpp()
-
+	# print("approach here 4!")
 	control_param = np.reshape(control_param, (1, 3))
 	theta_t = torch.from_numpy(control_param).float()
 	theta_t.requires_grad = True
-	layer = CvxpyLayer(problem, parameters=[t], variables=[X, Y, V, objc])
+	layer = CvxpyLayer(problem, parameters=[t], variables=[lambda_1, lambda_2, V, objc])
 	X_star, Y_star, V_star, objc_star = layer(theta_t)
-	
+	# print("approach here 5!")
 	objc_star.backward()
 
 	Lyapunov_param = V_star.detach().numpy()[0]
 	initTest = initValidTest(Lyapunov_param)
 	lieTest = lieValidTest(Lyapunov_param, control_param[0])
-	# print(initTest,  lieTest)
-
+	print(initTest,  lieTest)
+	# print("approach here 6!")
 	return Lyapunov_param, theta_t.grad.detach().numpy()[0], objc_star.detach().numpy(), initTest, lieTest
 
 
@@ -451,7 +449,8 @@ if __name__ == '__main__':
 					print('Successfully synthesis a controller with its Lyapunov function within ' +str(i)+' iterations.')
 					print('controller: ', control_param, 'Lyapunov: ', Lyapunov_param)
 					break
-			except:
+			except Exception as e:
+				print(e)
 				print('SOS failed')
 			control_param -=  np.clip(theta_gard, -1, 1)
 			control_param += 5e-3 * np.clip(vtheta, -2e3, 2e3)
@@ -464,8 +463,8 @@ if __name__ == '__main__':
 	# baselineSVG()
 
 	# print('')
-	# print('Ours approach starts here')
-	# Ours()
+	print('Ours approach starts here')
+	Ours()
 	# plot(0, 0, figname='Tra_Ball.pdf')
 
-	constraintsAutoGenerate()
+	# constraintsAutoGenerate()

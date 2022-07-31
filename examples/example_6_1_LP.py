@@ -12,7 +12,7 @@ from sympy import *
 from itertools import *
 import matplotlib.patches as mpatches
 from numpy import linalg as LA
-
+from handelman_utils import *
 
 
 # print(cp.__version__, np.__version__, scipy.__version__, cvxpylayers.__version__, torch.__version__)
@@ -104,14 +104,14 @@ def senGradSDP(control_param, f, g, SVGOnly=False):
 	# X = cp.Variable((2, 2), symmetric=True) #Q1
 	# Y = cp.Variable((4, 4), symmetric=True) #Q2
 
-	objc = cp.Variable(pos=True) 
-	V = cp.Variable((1, 2)) #Laypunov parameters for SOS rings
+	objc = cp.Variable(6) 
+	V = cp.Variable((1, 6)) #Laypunov parameters for SOS rings
 	lambda_1 = cp.Variable((1, 69))
 	lambda_2 = cp.Variable((1, 69))
 
 	t = cp.Parameter((1, 2)) #controller parameters
 
-	objective = cp.Minimize(objc)
+	objective = cp.Minimize(cp.norm(objc, 2))
 	constraints = []
 	if SVGOnly:
 		constraints += [ objc == 0 ]
@@ -119,33 +119,37 @@ def senGradSDP(control_param, f, g, SVGOnly=False):
 	constraints += [ lambda_1 >= 0 ]
 	constraints += [ lambda_2 >= 0 ]
 	
-	constraints += [ lambda_1[0, 0] + lambda_1[0, 1] + lambda_1[0, 2] + lambda_1[0, 3] + lambda_1[0, 4] + lambda_1[0, 5] + lambda_1[0, 6] + lambda_1[0, 7] + lambda_1[0, 8] + lambda_1[0, 9] + lambda_1[0, 10] + lambda_1[0, 11] + lambda_1[0, 12] + lambda_1[0, 13] + lambda_1[0, 14] + lambda_1[0, 15] + lambda_1[0, 16] + lambda_1[0, 17] + lambda_1[0, 18] + lambda_1[0, 19] + lambda_1[0, 20] + lambda_1[0, 21] + lambda_1[0, 22] + lambda_1[0, 23] + lambda_1[0, 24] + lambda_1[0, 25] + lambda_1[0, 26] + lambda_1[0, 27] + lambda_1[0, 28] + lambda_1[0, 29] + lambda_1[0, 30] + lambda_1[0, 31] + lambda_1[0, 32] + lambda_1[0, 33] + lambda_1[0, 34] + lambda_1[0, 35] + lambda_1[0, 36] + lambda_1[0, 37] + lambda_1[0, 38] + lambda_1[0, 39] + lambda_1[0, 40] + lambda_1[0, 41] + lambda_1[0, 42] + lambda_1[0, 43] + lambda_1[0, 44] + lambda_1[0, 45] + lambda_1[0, 46] + lambda_1[0, 47] + lambda_1[0, 48] + lambda_1[0, 49] + lambda_1[0, 50] + lambda_1[0, 51] + lambda_1[0, 52] + lambda_1[0, 53] + lambda_1[0, 54] + lambda_1[0, 55] + lambda_1[0, 56] + lambda_1[0, 57] + lambda_1[0, 58] + lambda_1[0, 59] + lambda_1[0, 60] + lambda_1[0, 61] + lambda_1[0, 62] + lambda_1[0, 63] + lambda_1[0, 64] + lambda_1[0, 65] + lambda_1[0, 66] + lambda_1[0, 67] + lambda_1[0, 68]  ==  0 ]
-	constraints += [ -lambda_1[0, 0] + lambda_1[0, 1] - 2*lambda_1[0, 4] + 2*lambda_1[0, 5] - 3*lambda_1[0, 8] + 3*lambda_1[0, 9] - 4*lambda_1[0, 12] + 4*lambda_1[0, 13] - lambda_1[0, 17] + lambda_1[0, 18] - lambda_1[0, 19] + lambda_1[0, 20] - lambda_1[0, 22] + lambda_1[0, 23] - 2*lambda_1[0, 24] + 2*lambda_1[0, 25] - lambda_1[0, 26] + lambda_1[0, 27] - 2*lambda_1[0, 28] + 2*lambda_1[0, 29] - lambda_1[0, 31] + lambda_1[0, 32] - 2*lambda_1[0, 34] + 2*lambda_1[0, 35] - 3*lambda_1[0, 36] + 3*lambda_1[0, 37] - lambda_1[0, 38] + lambda_1[0, 39] - 3*lambda_1[0, 40] + 3*lambda_1[0, 41] - lambda_1[0, 43] + lambda_1[0, 44] - 2*lambda_1[0, 47] + 2*lambda_1[0, 48] - 2*lambda_1[0, 49] + 2*lambda_1[0, 50] - lambda_1[0, 54] + lambda_1[0, 55] - lambda_1[0, 56] + lambda_1[0, 57] - lambda_1[0, 59] + lambda_1[0, 60] - 2*lambda_1[0, 61] + 2*lambda_1[0, 62] - lambda_1[0, 63] + lambda_1[0, 64] - lambda_1[0, 66] + lambda_1[0, 67]  ==  0 ]
-	constraints += [ lambda_1[0, 4] + lambda_1[0, 5] + 3*lambda_1[0, 8] + 3*lambda_1[0, 9] + 6*lambda_1[0, 12] + 6*lambda_1[0, 13] - lambda_1[0, 16] - lambda_1[0, 22] - lambda_1[0, 23] + lambda_1[0, 24] + lambda_1[0, 25] + lambda_1[0, 28] + lambda_1[0, 29] + 3*lambda_1[0, 36] + 3*lambda_1[0, 37] + 3*lambda_1[0, 40] + 3*lambda_1[0, 41] - 2*lambda_1[0, 46] + lambda_1[0, 47] + lambda_1[0, 48] + lambda_1[0, 49] + lambda_1[0, 50] - lambda_1[0, 52] - lambda_1[0, 53] - lambda_1[0, 56] - lambda_1[0, 57] - lambda_1[0, 58] - lambda_1[0, 59] - lambda_1[0, 60] + lambda_1[0, 61] + lambda_1[0, 62] - lambda_1[0, 65] - lambda_1[0, 68]  <=  V[0, 1] - 0.1 + objc]
-	constraints += [ lambda_1[0, 4] + lambda_1[0, 5] + 3*lambda_1[0, 8] + 3*lambda_1[0, 9] + 6*lambda_1[0, 12] + 6*lambda_1[0, 13] - lambda_1[0, 16] - lambda_1[0, 22] - lambda_1[0, 23] + lambda_1[0, 24] + lambda_1[0, 25] + lambda_1[0, 28] + lambda_1[0, 29] + 3*lambda_1[0, 36] + 3*lambda_1[0, 37] + 3*lambda_1[0, 40] + 3*lambda_1[0, 41] - 2*lambda_1[0, 46] + lambda_1[0, 47] + lambda_1[0, 48] + lambda_1[0, 49] + lambda_1[0, 50] - lambda_1[0, 52] - lambda_1[0, 53] - lambda_1[0, 56] - lambda_1[0, 57] - lambda_1[0, 58] - lambda_1[0, 59] - lambda_1[0, 60] + lambda_1[0, 61] + lambda_1[0, 62] - lambda_1[0, 65] - lambda_1[0, 68]  >=  V[0, 1] - 0.1 - objc]
-	constraints += [ -lambda_1[0, 2] + lambda_1[0, 3] - 2*lambda_1[0, 6] + 2*lambda_1[0, 7] - 3*lambda_1[0, 10] + 3*lambda_1[0, 11] - 4*lambda_1[0, 14] + 4*lambda_1[0, 15] - lambda_1[0, 17] - lambda_1[0, 18] + lambda_1[0, 19] + lambda_1[0, 20] - lambda_1[0, 24] - lambda_1[0, 25] - 2*lambda_1[0, 26] - 2*lambda_1[0, 27] + lambda_1[0, 28] + lambda_1[0, 29] - lambda_1[0, 30] + 2*lambda_1[0, 31] + 2*lambda_1[0, 32] + lambda_1[0, 33] - lambda_1[0, 36] - lambda_1[0, 37] - 3*lambda_1[0, 38] - 3*lambda_1[0, 39] + lambda_1[0, 40] + lambda_1[0, 41] - 2*lambda_1[0, 42] + 3*lambda_1[0, 43] + 3*lambda_1[0, 44] + 2*lambda_1[0, 45] - 2*lambda_1[0, 47] - 2*lambda_1[0, 48] + 2*lambda_1[0, 49] + 2*lambda_1[0, 50] - lambda_1[0, 52] + lambda_1[0, 53] - lambda_1[0, 56] - lambda_1[0, 57] - 2*lambda_1[0, 58] + lambda_1[0, 59] + lambda_1[0, 60] - lambda_1[0, 63] - lambda_1[0, 64] + 2*lambda_1[0, 65] + lambda_1[0, 66] + lambda_1[0, 67]  ==  0 ]
-	constraints += [ lambda_1[0, 17] - lambda_1[0, 18] - lambda_1[0, 19] + lambda_1[0, 20] + 2*lambda_1[0, 24] - 2*lambda_1[0, 25] + 2*lambda_1[0, 26] - 2*lambda_1[0, 27] - 2*lambda_1[0, 28] + 2*lambda_1[0, 29] - 2*lambda_1[0, 31] + 2*lambda_1[0, 32] + 3*lambda_1[0, 36] - 3*lambda_1[0, 37] + 3*lambda_1[0, 38] - 3*lambda_1[0, 39] - 3*lambda_1[0, 40] + 3*lambda_1[0, 41] - 3*lambda_1[0, 43] + 3*lambda_1[0, 44] + 4*lambda_1[0, 47] - 4*lambda_1[0, 48] - 4*lambda_1[0, 49] + 4*lambda_1[0, 50] + lambda_1[0, 56] - lambda_1[0, 57] - lambda_1[0, 59] + lambda_1[0, 60] + lambda_1[0, 63] - lambda_1[0, 64] - lambda_1[0, 66] + lambda_1[0, 67]  ==  0 ]
-	constraints += [ lambda_1[0, 6] + lambda_1[0, 7] + 3*lambda_1[0, 10] + 3*lambda_1[0, 11] + 6*lambda_1[0, 14] + 6*lambda_1[0, 15] - lambda_1[0, 21] + lambda_1[0, 26] + lambda_1[0, 27] - lambda_1[0, 30] + lambda_1[0, 31] + lambda_1[0, 32] - lambda_1[0, 33] + 3*lambda_1[0, 38] + 3*lambda_1[0, 39] + 3*lambda_1[0, 43] + 3*lambda_1[0, 44] + lambda_1[0, 47] + lambda_1[0, 48] + lambda_1[0, 49] + lambda_1[0, 50] - 2*lambda_1[0, 51] - lambda_1[0, 54] - lambda_1[0, 55] + lambda_1[0, 58] - lambda_1[0, 61] - lambda_1[0, 62] - lambda_1[0, 63] - lambda_1[0, 64] + lambda_1[0, 65] - lambda_1[0, 66] - lambda_1[0, 67] - lambda_1[0, 68]  <=  V[0, 0] - 0.1 + objc]
-	constraints += [ lambda_1[0, 6] + lambda_1[0, 7] + 3*lambda_1[0, 10] + 3*lambda_1[0, 11] + 6*lambda_1[0, 14] + 6*lambda_1[0, 15] - lambda_1[0, 21] + lambda_1[0, 26] + lambda_1[0, 27] - lambda_1[0, 30] + lambda_1[0, 31] + lambda_1[0, 32] - lambda_1[0, 33] + 3*lambda_1[0, 38] + 3*lambda_1[0, 39] + 3*lambda_1[0, 43] + 3*lambda_1[0, 44] + lambda_1[0, 47] + lambda_1[0, 48] + lambda_1[0, 49] + lambda_1[0, 50] - 2*lambda_1[0, 51] - lambda_1[0, 54] - lambda_1[0, 55] + lambda_1[0, 58] - lambda_1[0, 61] - lambda_1[0, 62] - lambda_1[0, 63] - lambda_1[0, 64] + lambda_1[0, 65] - lambda_1[0, 66] - lambda_1[0, 67] - lambda_1[0, 68]  >=  V[0, 0] - 0.1 - objc]
+	constraints += [ lambda_1[0, 0] + lambda_1[0, 1] + lambda_1[0, 2] + lambda_1[0, 3] + lambda_1[0, 4] + lambda_1[0, 5] + lambda_1[0, 6] + lambda_1[0, 7] + lambda_1[0, 8] + lambda_1[0, 9] + lambda_1[0, 10] + lambda_1[0, 11] + lambda_1[0, 12] + lambda_1[0, 13] + lambda_1[0, 14] + lambda_1[0, 15] + lambda_1[0, 16] + lambda_1[0, 17] + lambda_1[0, 18] + lambda_1[0, 19] + lambda_1[0, 20] + lambda_1[0, 21] + lambda_1[0, 22] + lambda_1[0, 23] + lambda_1[0, 24] + lambda_1[0, 25] + lambda_1[0, 26] + lambda_1[0, 27] + lambda_1[0, 28] + lambda_1[0, 29] + lambda_1[0, 30] + lambda_1[0, 31] + lambda_1[0, 32] + lambda_1[0, 33] + lambda_1[0, 34] + lambda_1[0, 35] + lambda_1[0, 36] + lambda_1[0, 37] + lambda_1[0, 38] + lambda_1[0, 39] + lambda_1[0, 40] + lambda_1[0, 41] + lambda_1[0, 42] + lambda_1[0, 43] + lambda_1[0, 44] + lambda_1[0, 45] + lambda_1[0, 46] + lambda_1[0, 47] + lambda_1[0, 48] + lambda_1[0, 49] + lambda_1[0, 50] + lambda_1[0, 51] + lambda_1[0, 52] + lambda_1[0, 53] + lambda_1[0, 54] + lambda_1[0, 55] + lambda_1[0, 56] + lambda_1[0, 57] + lambda_1[0, 58] + lambda_1[0, 59] + lambda_1[0, 60] + lambda_1[0, 61] + lambda_1[0, 62] + lambda_1[0, 63] + lambda_1[0, 64] + lambda_1[0, 65] + lambda_1[0, 66] + lambda_1[0, 67] + lambda_1[0, 68]  >=  V[0, 0] - objc[0]]
+	constraints += [ lambda_1[0, 0] + lambda_1[0, 1] + lambda_1[0, 2] + lambda_1[0, 3] + lambda_1[0, 4] + lambda_1[0, 5] + lambda_1[0, 6] + lambda_1[0, 7] + lambda_1[0, 8] + lambda_1[0, 9] + lambda_1[0, 10] + lambda_1[0, 11] + lambda_1[0, 12] + lambda_1[0, 13] + lambda_1[0, 14] + lambda_1[0, 15] + lambda_1[0, 16] + lambda_1[0, 17] + lambda_1[0, 18] + lambda_1[0, 19] + lambda_1[0, 20] + lambda_1[0, 21] + lambda_1[0, 22] + lambda_1[0, 23] + lambda_1[0, 24] + lambda_1[0, 25] + lambda_1[0, 26] + lambda_1[0, 27] + lambda_1[0, 28] + lambda_1[0, 29] + lambda_1[0, 30] + lambda_1[0, 31] + lambda_1[0, 32] + lambda_1[0, 33] + lambda_1[0, 34] + lambda_1[0, 35] + lambda_1[0, 36] + lambda_1[0, 37] + lambda_1[0, 38] + lambda_1[0, 39] + lambda_1[0, 40] + lambda_1[0, 41] + lambda_1[0, 42] + lambda_1[0, 43] + lambda_1[0, 44] + lambda_1[0, 45] + lambda_1[0, 46] + lambda_1[0, 47] + lambda_1[0, 48] + lambda_1[0, 49] + lambda_1[0, 50] + lambda_1[0, 51] + lambda_1[0, 52] + lambda_1[0, 53] + lambda_1[0, 54] + lambda_1[0, 55] + lambda_1[0, 56] + lambda_1[0, 57] + lambda_1[0, 58] + lambda_1[0, 59] + lambda_1[0, 60] + lambda_1[0, 61] + lambda_1[0, 62] + lambda_1[0, 63] + lambda_1[0, 64] + lambda_1[0, 65] + lambda_1[0, 66] + lambda_1[0, 67] + lambda_1[0, 68]  <=  V[0, 0] + objc[0]]
+	constraints += [ -lambda_1[0, 0] + lambda_1[0, 1] - 2*lambda_1[0, 4] + 2*lambda_1[0, 5] - 3*lambda_1[0, 8] + 3*lambda_1[0, 9] - 4*lambda_1[0, 12] + 4*lambda_1[0, 13] - lambda_1[0, 17] + lambda_1[0, 18] - lambda_1[0, 19] + lambda_1[0, 20] - lambda_1[0, 22] + lambda_1[0, 23] - 2*lambda_1[0, 24] + 2*lambda_1[0, 25] - lambda_1[0, 26] + lambda_1[0, 27] - 2*lambda_1[0, 28] + 2*lambda_1[0, 29] - lambda_1[0, 31] + lambda_1[0, 32] - 2*lambda_1[0, 34] + 2*lambda_1[0, 35] - 3*lambda_1[0, 36] + 3*lambda_1[0, 37] - lambda_1[0, 38] + lambda_1[0, 39] - 3*lambda_1[0, 40] + 3*lambda_1[0, 41] - lambda_1[0, 43] + lambda_1[0, 44] - 2*lambda_1[0, 47] + 2*lambda_1[0, 48] - 2*lambda_1[0, 49] + 2*lambda_1[0, 50] - lambda_1[0, 54] + lambda_1[0, 55] - lambda_1[0, 56] + lambda_1[0, 57] - lambda_1[0, 59] + lambda_1[0, 60] - 2*lambda_1[0, 61] + 2*lambda_1[0, 62] - lambda_1[0, 63] + lambda_1[0, 64] - lambda_1[0, 66] + lambda_1[0, 67]  <=  V[0, 1] + objc[1] ]
+	constraints += [ -lambda_1[0, 0] + lambda_1[0, 1] - 2*lambda_1[0, 4] + 2*lambda_1[0, 5] - 3*lambda_1[0, 8] + 3*lambda_1[0, 9] - 4*lambda_1[0, 12] + 4*lambda_1[0, 13] - lambda_1[0, 17] + lambda_1[0, 18] - lambda_1[0, 19] + lambda_1[0, 20] - lambda_1[0, 22] + lambda_1[0, 23] - 2*lambda_1[0, 24] + 2*lambda_1[0, 25] - lambda_1[0, 26] + lambda_1[0, 27] - 2*lambda_1[0, 28] + 2*lambda_1[0, 29] - lambda_1[0, 31] + lambda_1[0, 32] - 2*lambda_1[0, 34] + 2*lambda_1[0, 35] - 3*lambda_1[0, 36] + 3*lambda_1[0, 37] - lambda_1[0, 38] + lambda_1[0, 39] - 3*lambda_1[0, 40] + 3*lambda_1[0, 41] - lambda_1[0, 43] + lambda_1[0, 44] - 2*lambda_1[0, 47] + 2*lambda_1[0, 48] - 2*lambda_1[0, 49] + 2*lambda_1[0, 50] - lambda_1[0, 54] + lambda_1[0, 55] - lambda_1[0, 56] + lambda_1[0, 57] - lambda_1[0, 59] + lambda_1[0, 60] - 2*lambda_1[0, 61] + 2*lambda_1[0, 62] - lambda_1[0, 63] + lambda_1[0, 64] - lambda_1[0, 66] + lambda_1[0, 67]  >=  V[0, 1] - objc[1] ]
+	constraints += [ lambda_1[0, 4] + lambda_1[0, 5] + 3*lambda_1[0, 8] + 3*lambda_1[0, 9] + 6*lambda_1[0, 12] + 6*lambda_1[0, 13] - lambda_1[0, 16] - lambda_1[0, 22] - lambda_1[0, 23] + lambda_1[0, 24] + lambda_1[0, 25] + lambda_1[0, 28] + lambda_1[0, 29] + 3*lambda_1[0, 36] + 3*lambda_1[0, 37] + 3*lambda_1[0, 40] + 3*lambda_1[0, 41] - 2*lambda_1[0, 46] + lambda_1[0, 47] + lambda_1[0, 48] + lambda_1[0, 49] + lambda_1[0, 50] - lambda_1[0, 52] - lambda_1[0, 53] - lambda_1[0, 56] - lambda_1[0, 57] - lambda_1[0, 58] - lambda_1[0, 59] - lambda_1[0, 60] + lambda_1[0, 61] + lambda_1[0, 62] - lambda_1[0, 65] - lambda_1[0, 68]  <=  V[0, 3] + objc[3]]
+	constraints += [ lambda_1[0, 4] + lambda_1[0, 5] + 3*lambda_1[0, 8] + 3*lambda_1[0, 9] + 6*lambda_1[0, 12] + 6*lambda_1[0, 13] - lambda_1[0, 16] - lambda_1[0, 22] - lambda_1[0, 23] + lambda_1[0, 24] + lambda_1[0, 25] + lambda_1[0, 28] + lambda_1[0, 29] + 3*lambda_1[0, 36] + 3*lambda_1[0, 37] + 3*lambda_1[0, 40] + 3*lambda_1[0, 41] - 2*lambda_1[0, 46] + lambda_1[0, 47] + lambda_1[0, 48] + lambda_1[0, 49] + lambda_1[0, 50] - lambda_1[0, 52] - lambda_1[0, 53] - lambda_1[0, 56] - lambda_1[0, 57] - lambda_1[0, 58] - lambda_1[0, 59] - lambda_1[0, 60] + lambda_1[0, 61] + lambda_1[0, 62] - lambda_1[0, 65] - lambda_1[0, 68]  >=  V[0, 3] - objc[3]]
+	constraints += [ -lambda_1[0, 2] + lambda_1[0, 3] - 2*lambda_1[0, 6] + 2*lambda_1[0, 7] - 3*lambda_1[0, 10] + 3*lambda_1[0, 11] - 4*lambda_1[0, 14] + 4*lambda_1[0, 15] - lambda_1[0, 17] - lambda_1[0, 18] + lambda_1[0, 19] + lambda_1[0, 20] - lambda_1[0, 24] - lambda_1[0, 25] - 2*lambda_1[0, 26] - 2*lambda_1[0, 27] + lambda_1[0, 28] + lambda_1[0, 29] - lambda_1[0, 30] + 2*lambda_1[0, 31] + 2*lambda_1[0, 32] + lambda_1[0, 33] - lambda_1[0, 36] - lambda_1[0, 37] - 3*lambda_1[0, 38] - 3*lambda_1[0, 39] + lambda_1[0, 40] + lambda_1[0, 41] - 2*lambda_1[0, 42] + 3*lambda_1[0, 43] + 3*lambda_1[0, 44] + 2*lambda_1[0, 45] - 2*lambda_1[0, 47] - 2*lambda_1[0, 48] + 2*lambda_1[0, 49] + 2*lambda_1[0, 50] - lambda_1[0, 52] + lambda_1[0, 53] - lambda_1[0, 56] - lambda_1[0, 57] - 2*lambda_1[0, 58] + lambda_1[0, 59] + lambda_1[0, 60] - lambda_1[0, 63] - lambda_1[0, 64] + 2*lambda_1[0, 65] + lambda_1[0, 66] + lambda_1[0, 67]  <=  V[0, 2] + objc[2] ]
+	constraints += [ -lambda_1[0, 2] + lambda_1[0, 3] - 2*lambda_1[0, 6] + 2*lambda_1[0, 7] - 3*lambda_1[0, 10] + 3*lambda_1[0, 11] - 4*lambda_1[0, 14] + 4*lambda_1[0, 15] - lambda_1[0, 17] - lambda_1[0, 18] + lambda_1[0, 19] + lambda_1[0, 20] - lambda_1[0, 24] - lambda_1[0, 25] - 2*lambda_1[0, 26] - 2*lambda_1[0, 27] + lambda_1[0, 28] + lambda_1[0, 29] - lambda_1[0, 30] + 2*lambda_1[0, 31] + 2*lambda_1[0, 32] + lambda_1[0, 33] - lambda_1[0, 36] - lambda_1[0, 37] - 3*lambda_1[0, 38] - 3*lambda_1[0, 39] + lambda_1[0, 40] + lambda_1[0, 41] - 2*lambda_1[0, 42] + 3*lambda_1[0, 43] + 3*lambda_1[0, 44] + 2*lambda_1[0, 45] - 2*lambda_1[0, 47] - 2*lambda_1[0, 48] + 2*lambda_1[0, 49] + 2*lambda_1[0, 50] - lambda_1[0, 52] + lambda_1[0, 53] - lambda_1[0, 56] - lambda_1[0, 57] - 2*lambda_1[0, 58] + lambda_1[0, 59] + lambda_1[0, 60] - lambda_1[0, 63] - lambda_1[0, 64] + 2*lambda_1[0, 65] + lambda_1[0, 66] + lambda_1[0, 67]  >=  V[0, 2] - objc[2] ]
+	constraints += [ lambda_1[0, 17] - lambda_1[0, 18] - lambda_1[0, 19] + lambda_1[0, 20] + 2*lambda_1[0, 24] - 2*lambda_1[0, 25] + 2*lambda_1[0, 26] - 2*lambda_1[0, 27] - 2*lambda_1[0, 28] + 2*lambda_1[0, 29] - 2*lambda_1[0, 31] + 2*lambda_1[0, 32] + 3*lambda_1[0, 36] - 3*lambda_1[0, 37] + 3*lambda_1[0, 38] - 3*lambda_1[0, 39] - 3*lambda_1[0, 40] + 3*lambda_1[0, 41] - 3*lambda_1[0, 43] + 3*lambda_1[0, 44] + 4*lambda_1[0, 47] - 4*lambda_1[0, 48] - 4*lambda_1[0, 49] + 4*lambda_1[0, 50] + lambda_1[0, 56] - lambda_1[0, 57] - lambda_1[0, 59] + lambda_1[0, 60] + lambda_1[0, 63] - lambda_1[0, 64] - lambda_1[0, 66] + lambda_1[0, 67]  <=  V[0, 5] + objc[5]]
+	constraints += [ lambda_1[0, 17] - lambda_1[0, 18] - lambda_1[0, 19] + lambda_1[0, 20] + 2*lambda_1[0, 24] - 2*lambda_1[0, 25] + 2*lambda_1[0, 26] - 2*lambda_1[0, 27] - 2*lambda_1[0, 28] + 2*lambda_1[0, 29] - 2*lambda_1[0, 31] + 2*lambda_1[0, 32] + 3*lambda_1[0, 36] - 3*lambda_1[0, 37] + 3*lambda_1[0, 38] - 3*lambda_1[0, 39] - 3*lambda_1[0, 40] + 3*lambda_1[0, 41] - 3*lambda_1[0, 43] + 3*lambda_1[0, 44] + 4*lambda_1[0, 47] - 4*lambda_1[0, 48] - 4*lambda_1[0, 49] + 4*lambda_1[0, 50] + lambda_1[0, 56] - lambda_1[0, 57] - lambda_1[0, 59] + lambda_1[0, 60] + lambda_1[0, 63] - lambda_1[0, 64] - lambda_1[0, 66] + lambda_1[0, 67]  >=  V[0, 5] - objc[5]]
+	constraints += [ lambda_1[0, 6] + lambda_1[0, 7] + 3*lambda_1[0, 10] + 3*lambda_1[0, 11] + 6*lambda_1[0, 14] + 6*lambda_1[0, 15] - lambda_1[0, 21] + lambda_1[0, 26] + lambda_1[0, 27] - lambda_1[0, 30] + lambda_1[0, 31] + lambda_1[0, 32] - lambda_1[0, 33] + 3*lambda_1[0, 38] + 3*lambda_1[0, 39] + 3*lambda_1[0, 43] + 3*lambda_1[0, 44] + lambda_1[0, 47] + lambda_1[0, 48] + lambda_1[0, 49] + lambda_1[0, 50] - 2*lambda_1[0, 51] - lambda_1[0, 54] - lambda_1[0, 55] + lambda_1[0, 58] - lambda_1[0, 61] - lambda_1[0, 62] - lambda_1[0, 63] - lambda_1[0, 64] + lambda_1[0, 65] - lambda_1[0, 66] - lambda_1[0, 67] - lambda_1[0, 68]  <=  V[0, 4] - 0.1 + objc[4]]
+	constraints += [ lambda_1[0, 6] + lambda_1[0, 7] + 3*lambda_1[0, 10] + 3*lambda_1[0, 11] + 6*lambda_1[0, 14] + 6*lambda_1[0, 15] - lambda_1[0, 21] + lambda_1[0, 26] + lambda_1[0, 27] - lambda_1[0, 30] + lambda_1[0, 31] + lambda_1[0, 32] - lambda_1[0, 33] + 3*lambda_1[0, 38] + 3*lambda_1[0, 39] + 3*lambda_1[0, 43] + 3*lambda_1[0, 44] + lambda_1[0, 47] + lambda_1[0, 48] + lambda_1[0, 49] + lambda_1[0, 50] - 2*lambda_1[0, 51] - lambda_1[0, 54] - lambda_1[0, 55] + lambda_1[0, 58] - lambda_1[0, 61] - lambda_1[0, 62] - lambda_1[0, 63] - lambda_1[0, 64] + lambda_1[0, 65] - lambda_1[0, 66] - lambda_1[0, 67] - lambda_1[0, 68]  >=  V[0, 4] - 0.1 - objc[4]]
 
 	constraints += [ -lambda_2[0, 0] - lambda_2[0, 1] - lambda_2[0, 2] - lambda_2[0, 3] - lambda_2[0, 4] - lambda_2[0, 5] - lambda_2[0, 6] - lambda_2[0, 7] - lambda_2[0, 8] - lambda_2[0, 9] - lambda_2[0, 10] - lambda_2[0, 11] - lambda_2[0, 12] - lambda_2[0, 13] - lambda_2[0, 14] - lambda_2[0, 15] - lambda_2[0, 16] - lambda_2[0, 17] - lambda_2[0, 18] - lambda_2[0, 19] - lambda_2[0, 20] - lambda_2[0, 21] - lambda_2[0, 22] - lambda_2[0, 23] - lambda_2[0, 24] - lambda_2[0, 25] - lambda_2[0, 26] - lambda_2[0, 27] - lambda_2[0, 28] - lambda_2[0, 29] - lambda_2[0, 30] - lambda_2[0, 31] - lambda_2[0, 32] - lambda_2[0, 33] - lambda_2[0, 34] - lambda_2[0, 35] - lambda_2[0, 36] - lambda_2[0, 37] - lambda_2[0, 38] - lambda_2[0, 39] - lambda_2[0, 40] - lambda_2[0, 41] - lambda_2[0, 42] - lambda_2[0, 43] - lambda_2[0, 44] - lambda_2[0, 45] - lambda_2[0, 46] - lambda_2[0, 47] - lambda_2[0, 48] - lambda_2[0, 49] - lambda_2[0, 50] - lambda_2[0, 51] - lambda_2[0, 52] - lambda_2[0, 53] - lambda_2[0, 54] - lambda_2[0, 55] - lambda_2[0, 56] - lambda_2[0, 57] - lambda_2[0, 58] - lambda_2[0, 59] - lambda_2[0, 60] - lambda_2[0, 61] - lambda_2[0, 62] - lambda_2[0, 63] - lambda_2[0, 64] - lambda_2[0, 65] - lambda_2[0, 66] - lambda_2[0, 67] - lambda_2[0, 68]  ==  0 ]
-	constraints += [ lambda_2[0, 0] - lambda_2[0, 1] + 2*lambda_2[0, 4] - 2*lambda_2[0, 5] + 3*lambda_2[0, 8] - 3*lambda_2[0, 9] + 4*lambda_2[0, 12] - 4*lambda_2[0, 13] + lambda_2[0, 17] - lambda_2[0, 18] + lambda_2[0, 19] - lambda_2[0, 20] + lambda_2[0, 22] - lambda_2[0, 23] + 2*lambda_2[0, 24] - 2*lambda_2[0, 25] + lambda_2[0, 26] - lambda_2[0, 27] + 2*lambda_2[0, 28] - 2*lambda_2[0, 29] + lambda_2[0, 31] - lambda_2[0, 32] + 2*lambda_2[0, 34] - 2*lambda_2[0, 35] + 3*lambda_2[0, 36] - 3*lambda_2[0, 37] + lambda_2[0, 38] - lambda_2[0, 39] + 3*lambda_2[0, 40] - 3*lambda_2[0, 41] + lambda_2[0, 43] - lambda_2[0, 44] + 2*lambda_2[0, 47] - 2*lambda_2[0, 48] + 2*lambda_2[0, 49] - 2*lambda_2[0, 50] + lambda_2[0, 54] - lambda_2[0, 55] + lambda_2[0, 56] - lambda_2[0, 57] + lambda_2[0, 59] - lambda_2[0, 60] + 2*lambda_2[0, 61] - 2*lambda_2[0, 62] + lambda_2[0, 63] - lambda_2[0, 64] + lambda_2[0, 66] - lambda_2[0, 67]  ==  0 ]
-	constraints += [ -lambda_2[0, 4] - lambda_2[0, 5] - 3*lambda_2[0, 8] - 3*lambda_2[0, 9] - 6*lambda_2[0, 12] - 6*lambda_2[0, 13] + lambda_2[0, 16] + lambda_2[0, 22] + lambda_2[0, 23] - lambda_2[0, 24] - lambda_2[0, 25] - lambda_2[0, 28] - lambda_2[0, 29] - 3*lambda_2[0, 36] - 3*lambda_2[0, 37] - 3*lambda_2[0, 40] - 3*lambda_2[0, 41] + 2*lambda_2[0, 46] - lambda_2[0, 47] - lambda_2[0, 48] - lambda_2[0, 49] - lambda_2[0, 50] + lambda_2[0, 52] + lambda_2[0, 53] + lambda_2[0, 56] + lambda_2[0, 57] + lambda_2[0, 58] + lambda_2[0, 59] + lambda_2[0, 60] - lambda_2[0, 61] - lambda_2[0, 62] + lambda_2[0, 65] + lambda_2[0, 68]  <=  2*(V[0, 1]-0.2)*t[0, 1] + objc]
-	constraints += [ -lambda_2[0, 4] - lambda_2[0, 5] - 3*lambda_2[0, 8] - 3*lambda_2[0, 9] - 6*lambda_2[0, 12] - 6*lambda_2[0, 13] + lambda_2[0, 16] + lambda_2[0, 22] + lambda_2[0, 23] - lambda_2[0, 24] - lambda_2[0, 25] - lambda_2[0, 28] - lambda_2[0, 29] - 3*lambda_2[0, 36] - 3*lambda_2[0, 37] - 3*lambda_2[0, 40] - 3*lambda_2[0, 41] + 2*lambda_2[0, 46] - lambda_2[0, 47] - lambda_2[0, 48] - lambda_2[0, 49] - lambda_2[0, 50] + lambda_2[0, 52] + lambda_2[0, 53] + lambda_2[0, 56] + lambda_2[0, 57] + lambda_2[0, 58] + lambda_2[0, 59] + lambda_2[0, 60] - lambda_2[0, 61] - lambda_2[0, 62] + lambda_2[0, 65] + lambda_2[0, 68]  >=  2*(V[0, 1]-0.2)*t[0, 1] - objc]
+	constraints += [ lambda_2[0, 0] - lambda_2[0, 1] + 2*lambda_2[0, 4] - 2*lambda_2[0, 5] + 3*lambda_2[0, 8] - 3*lambda_2[0, 9] + 4*lambda_2[0, 12] - 4*lambda_2[0, 13] + lambda_2[0, 17] - lambda_2[0, 18] + lambda_2[0, 19] - lambda_2[0, 20] + lambda_2[0, 22] - lambda_2[0, 23] + 2*lambda_2[0, 24] - 2*lambda_2[0, 25] + lambda_2[0, 26] - lambda_2[0, 27] + 2*lambda_2[0, 28] - 2*lambda_2[0, 29] + lambda_2[0, 31] - lambda_2[0, 32] + 2*lambda_2[0, 34] - 2*lambda_2[0, 35] + 3*lambda_2[0, 36] - 3*lambda_2[0, 37] + lambda_2[0, 38] - lambda_2[0, 39] + 3*lambda_2[0, 40] - 3*lambda_2[0, 41] + lambda_2[0, 43] - lambda_2[0, 44] + 2*lambda_2[0, 47] - 2*lambda_2[0, 48] + 2*lambda_2[0, 49] - 2*lambda_2[0, 50] + lambda_2[0, 54] - lambda_2[0, 55] + lambda_2[0, 56] - lambda_2[0, 57] + lambda_2[0, 59] - lambda_2[0, 60] + 2*lambda_2[0, 61] - 2*lambda_2[0, 62] + lambda_2[0, 63] - lambda_2[0, 64] + lambda_2[0, 66] - lambda_2[0, 67]  ==  V[0, 1]*t[0, 1] + V[0, 2] ]
+	constraints += [ -lambda_2[0, 4] - lambda_2[0, 5] - 3*lambda_2[0, 8] - 3*lambda_2[0, 9] - 6*lambda_2[0, 12] - 6*lambda_2[0, 13] + lambda_2[0, 16] + lambda_2[0, 22] + lambda_2[0, 23] - lambda_2[0, 24] - lambda_2[0, 25] - lambda_2[0, 28] - lambda_2[0, 29] - 3*lambda_2[0, 36] - 3*lambda_2[0, 37] - 3*lambda_2[0, 40] - 3*lambda_2[0, 41] + 2*lambda_2[0, 46] - lambda_2[0, 47] - lambda_2[0, 48] - lambda_2[0, 49] - lambda_2[0, 50] + lambda_2[0, 52] + lambda_2[0, 53] + lambda_2[0, 56] + lambda_2[0, 57] + lambda_2[0, 58] + lambda_2[0, 59] + lambda_2[0, 60] - lambda_2[0, 61] - lambda_2[0, 62] + lambda_2[0, 65] + lambda_2[0, 68]  <=  2*(V[0, 3]-0.1)*t[0, 1] + V[0, 5] + objc]
+	constraints += [ -lambda_2[0, 4] - lambda_2[0, 5] - 3*lambda_2[0, 8] - 3*lambda_2[0, 9] - 6*lambda_2[0, 12] - 6*lambda_2[0, 13] + lambda_2[0, 16] + lambda_2[0, 22] + lambda_2[0, 23] - lambda_2[0, 24] - lambda_2[0, 25] - lambda_2[0, 28] - lambda_2[0, 29] - 3*lambda_2[0, 36] - 3*lambda_2[0, 37] - 3*lambda_2[0, 40] - 3*lambda_2[0, 41] + 2*lambda_2[0, 46] - lambda_2[0, 47] - lambda_2[0, 48] - lambda_2[0, 49] - lambda_2[0, 50] + lambda_2[0, 52] + lambda_2[0, 53] + lambda_2[0, 56] + lambda_2[0, 57] + lambda_2[0, 58] + lambda_2[0, 59] + lambda_2[0, 60] - lambda_2[0, 61] - lambda_2[0, 62] + lambda_2[0, 65] + lambda_2[0, 68]  >=  2*(V[0, 3]-0.1)*t[0, 1] + V[0, 5] - objc]
 	constraints += [ lambda_2[0, 8] - lambda_2[0, 9] + 4*lambda_2[0, 12] - 4*lambda_2[0, 13] - lambda_2[0, 22] + lambda_2[0, 23] - 2*lambda_2[0, 34] + 2*lambda_2[0, 35] + lambda_2[0, 36] - lambda_2[0, 37] + lambda_2[0, 40] - lambda_2[0, 41] - lambda_2[0, 56] + lambda_2[0, 57] - lambda_2[0, 59] + lambda_2[0, 60]  ==  0 ]
 	constraints += [ -lambda_2[0, 12] - lambda_2[0, 13] + lambda_2[0, 34] + lambda_2[0, 35] - lambda_2[0, 46]  ==  0 ]
-	constraints += [ lambda_2[0, 2] - lambda_2[0, 3] + 2*lambda_2[0, 6] - 2*lambda_2[0, 7] + 3*lambda_2[0, 10] - 3*lambda_2[0, 11] + 4*lambda_2[0, 14] - 4*lambda_2[0, 15] + lambda_2[0, 17] + lambda_2[0, 18] - lambda_2[0, 19] - lambda_2[0, 20] + lambda_2[0, 24] + lambda_2[0, 25] + 2*lambda_2[0, 26] + 2*lambda_2[0, 27] - lambda_2[0, 28] - lambda_2[0, 29] + lambda_2[0, 30] - 2*lambda_2[0, 31] - 2*lambda_2[0, 32] - lambda_2[0, 33] + lambda_2[0, 36] + lambda_2[0, 37] + 3*lambda_2[0, 38] + 3*lambda_2[0, 39] - lambda_2[0, 40] - lambda_2[0, 41] + 2*lambda_2[0, 42] - 3*lambda_2[0, 43] - 3*lambda_2[0, 44] - 2*lambda_2[0, 45] + 2*lambda_2[0, 47] + 2*lambda_2[0, 48] - 2*lambda_2[0, 49] - 2*lambda_2[0, 50] + lambda_2[0, 52] - lambda_2[0, 53] + lambda_2[0, 56] + lambda_2[0, 57] + 2*lambda_2[0, 58] - lambda_2[0, 59] - lambda_2[0, 60] + lambda_2[0, 63] + lambda_2[0, 64] - 2*lambda_2[0, 65] - lambda_2[0, 66] - lambda_2[0, 67]  ==  0 ]
-	constraints += [ -lambda_2[0, 17] + lambda_2[0, 18] + lambda_2[0, 19] - lambda_2[0, 20] - 2*lambda_2[0, 24] + 2*lambda_2[0, 25] - 2*lambda_2[0, 26] + 2*lambda_2[0, 27] + 2*lambda_2[0, 28] - 2*lambda_2[0, 29] + 2*lambda_2[0, 31] - 2*lambda_2[0, 32] - 3*lambda_2[0, 36] + 3*lambda_2[0, 37] - 3*lambda_2[0, 38] + 3*lambda_2[0, 39] + 3*lambda_2[0, 40] - 3*lambda_2[0, 41] + 3*lambda_2[0, 43] - 3*lambda_2[0, 44] - 4*lambda_2[0, 47] + 4*lambda_2[0, 48] + 4*lambda_2[0, 49] - 4*lambda_2[0, 50] - lambda_2[0, 56] + lambda_2[0, 57] + lambda_2[0, 59] - lambda_2[0, 60] - lambda_2[0, 63] + lambda_2[0, 64] + lambda_2[0, 66] - lambda_2[0, 67]  <=  2*(V[0, 1]-0.1) + 2*(V[0, 1]-0.1)*t[0, 0] + objc]
-	constraints += [ -lambda_2[0, 17] + lambda_2[0, 18] + lambda_2[0, 19] - lambda_2[0, 20] - 2*lambda_2[0, 24] + 2*lambda_2[0, 25] - 2*lambda_2[0, 26] + 2*lambda_2[0, 27] + 2*lambda_2[0, 28] - 2*lambda_2[0, 29] + 2*lambda_2[0, 31] - 2*lambda_2[0, 32] - 3*lambda_2[0, 36] + 3*lambda_2[0, 37] - 3*lambda_2[0, 38] + 3*lambda_2[0, 39] + 3*lambda_2[0, 40] - 3*lambda_2[0, 41] + 3*lambda_2[0, 43] - 3*lambda_2[0, 44] - 4*lambda_2[0, 47] + 4*lambda_2[0, 48] + 4*lambda_2[0, 49] - 4*lambda_2[0, 50] - lambda_2[0, 56] + lambda_2[0, 57] + lambda_2[0, 59] - lambda_2[0, 60] - lambda_2[0, 63] + lambda_2[0, 64] + lambda_2[0, 66] - lambda_2[0, 67]  >=  2*(V[0, 1]-0.1) + 2*(V[0, 1]-0.1)*t[0, 0] - objc]
+	constraints += [ lambda_2[0, 2] - lambda_2[0, 3] + 2*lambda_2[0, 6] - 2*lambda_2[0, 7] + 3*lambda_2[0, 10] - 3*lambda_2[0, 11] + 4*lambda_2[0, 14] - 4*lambda_2[0, 15] + lambda_2[0, 17] + lambda_2[0, 18] - lambda_2[0, 19] - lambda_2[0, 20] + lambda_2[0, 24] + lambda_2[0, 25] + 2*lambda_2[0, 26] + 2*lambda_2[0, 27] - lambda_2[0, 28] - lambda_2[0, 29] + lambda_2[0, 30] - 2*lambda_2[0, 31] - 2*lambda_2[0, 32] - lambda_2[0, 33] + lambda_2[0, 36] + lambda_2[0, 37] + 3*lambda_2[0, 38] + 3*lambda_2[0, 39] - lambda_2[0, 40] - lambda_2[0, 41] + 2*lambda_2[0, 42] - 3*lambda_2[0, 43] - 3*lambda_2[0, 44] - 2*lambda_2[0, 45] + 2*lambda_2[0, 47] + 2*lambda_2[0, 48] - 2*lambda_2[0, 49] - 2*lambda_2[0, 50] + lambda_2[0, 52] - lambda_2[0, 53] + lambda_2[0, 56] + lambda_2[0, 57] + 2*lambda_2[0, 58] - lambda_2[0, 59] - lambda_2[0, 60] + lambda_2[0, 63] + lambda_2[0, 64] - 2*lambda_2[0, 65] - lambda_2[0, 66] - lambda_2[0, 67]  ==  V[0, 1]*t[0, 0] ]
+	constraints += [ -lambda_2[0, 17] + lambda_2[0, 18] + lambda_2[0, 19] - lambda_2[0, 20] - 2*lambda_2[0, 24] + 2*lambda_2[0, 25] - 2*lambda_2[0, 26] + 2*lambda_2[0, 27] + 2*lambda_2[0, 28] - 2*lambda_2[0, 29] + 2*lambda_2[0, 31] - 2*lambda_2[0, 32] - 3*lambda_2[0, 36] + 3*lambda_2[0, 37] - 3*lambda_2[0, 38] + 3*lambda_2[0, 39] + 3*lambda_2[0, 40] - 3*lambda_2[0, 41] + 3*lambda_2[0, 43] - 3*lambda_2[0, 44] - 4*lambda_2[0, 47] + 4*lambda_2[0, 48] + 4*lambda_2[0, 49] - 4*lambda_2[0, 50] - lambda_2[0, 56] + lambda_2[0, 57] + lambda_2[0, 59] - lambda_2[0, 60] - lambda_2[0, 63] + lambda_2[0, 64] + lambda_2[0, 66] - lambda_2[0, 67]  <=  2*(V[0, 3]-0.3)*t[0, 0] + 2*(V[0, 4]-0.1) + V[0, 5]*t[0, 1] + objc]
+	constraints += [ -lambda_2[0, 17] + lambda_2[0, 18] + lambda_2[0, 19] - lambda_2[0, 20] - 2*lambda_2[0, 24] + 2*lambda_2[0, 25] - 2*lambda_2[0, 26] + 2*lambda_2[0, 27] + 2*lambda_2[0, 28] - 2*lambda_2[0, 29] + 2*lambda_2[0, 31] - 2*lambda_2[0, 32] - 3*lambda_2[0, 36] + 3*lambda_2[0, 37] - 3*lambda_2[0, 38] + 3*lambda_2[0, 39] + 3*lambda_2[0, 40] - 3*lambda_2[0, 41] + 3*lambda_2[0, 43] - 3*lambda_2[0, 44] - 4*lambda_2[0, 47] + 4*lambda_2[0, 48] + 4*lambda_2[0, 49] - 4*lambda_2[0, 50] - lambda_2[0, 56] + lambda_2[0, 57] + lambda_2[0, 59] - lambda_2[0, 60] - lambda_2[0, 63] + lambda_2[0, 64] + lambda_2[0, 66] - lambda_2[0, 67]  >=  2*(V[0, 3]-0.3)*t[0, 0] + 2*(V[0, 4]-0.1) + V[0, 5]*t[0, 1] - objc]
 	constraints += [ lambda_2[0, 24] + lambda_2[0, 25] - lambda_2[0, 28] - lambda_2[0, 29] + 3*lambda_2[0, 36] + 3*lambda_2[0, 37] - 3*lambda_2[0, 40] - 3*lambda_2[0, 41] + 2*lambda_2[0, 47] + 2*lambda_2[0, 48] - 2*lambda_2[0, 49] - 2*lambda_2[0, 50] - lambda_2[0, 52] + lambda_2[0, 53] - lambda_2[0, 56] - lambda_2[0, 57] - 2*lambda_2[0, 58] + lambda_2[0, 59] + lambda_2[0, 60] + 2*lambda_2[0, 65]  ==  0 ]
 	constraints += [ -lambda_2[0, 36] + lambda_2[0, 37] + lambda_2[0, 40] - lambda_2[0, 41] + lambda_2[0, 56] - lambda_2[0, 57] - lambda_2[0, 59] + lambda_2[0, 60]  ==  0 ]
-	constraints += [ -lambda_2[0, 6] - lambda_2[0, 7] - 3*lambda_2[0, 10] - 3*lambda_2[0, 11] - 6*lambda_2[0, 14] - 6*lambda_2[0, 15] + lambda_2[0, 21] - lambda_2[0, 26] - lambda_2[0, 27] + lambda_2[0, 30] - lambda_2[0, 31] - lambda_2[0, 32] + lambda_2[0, 33] - 3*lambda_2[0, 38] - 3*lambda_2[0, 39] - 3*lambda_2[0, 43] - 3*lambda_2[0, 44] - lambda_2[0, 47] - lambda_2[0, 48] - lambda_2[0, 49] - lambda_2[0, 50] + 2*lambda_2[0, 51] + lambda_2[0, 54] + lambda_2[0, 55] - lambda_2[0, 58] + lambda_2[0, 61] + lambda_2[0, 62] + lambda_2[0, 63] + lambda_2[0, 64] - lambda_2[0, 65] + lambda_2[0, 66] + lambda_2[0, 67] + lambda_2[0, 68]  ==  0 ]
+	constraints += [ -lambda_2[0, 6] - lambda_2[0, 7] - 3*lambda_2[0, 10] - 3*lambda_2[0, 11] - 6*lambda_2[0, 14] - 6*lambda_2[0, 15] + lambda_2[0, 21] - lambda_2[0, 26] - lambda_2[0, 27] + lambda_2[0, 30] - lambda_2[0, 31] - lambda_2[0, 32] + lambda_2[0, 33] - 3*lambda_2[0, 38] - 3*lambda_2[0, 39] - 3*lambda_2[0, 43] - 3*lambda_2[0, 44] - lambda_2[0, 47] - lambda_2[0, 48] - lambda_2[0, 49] - lambda_2[0, 50] + 2*lambda_2[0, 51] + lambda_2[0, 54] + lambda_2[0, 55] - lambda_2[0, 58] + lambda_2[0, 61] + lambda_2[0, 62] + lambda_2[0, 63] + lambda_2[0, 64] - lambda_2[0, 65] + lambda_2[0, 66] + lambda_2[0, 67] + lambda_2[0, 68]  ==  V[0, 5]*t[0, 0] ]
 	constraints += [ lambda_2[0, 26] - lambda_2[0, 27] + lambda_2[0, 31] - lambda_2[0, 32] + 3*lambda_2[0, 38] - 3*lambda_2[0, 39] + 3*lambda_2[0, 43] - 3*lambda_2[0, 44] + 2*lambda_2[0, 47] - 2*lambda_2[0, 48] + 2*lambda_2[0, 49] - 2*lambda_2[0, 50] - lambda_2[0, 54] + lambda_2[0, 55] - 2*lambda_2[0, 61] + 2*lambda_2[0, 62] - lambda_2[0, 63] + lambda_2[0, 64] - lambda_2[0, 66] + lambda_2[0, 67]  ==  0 ]
 	constraints += [ -lambda_2[0, 47] - lambda_2[0, 48] - lambda_2[0, 49] - lambda_2[0, 50] + lambda_2[0, 58] + lambda_2[0, 61] + lambda_2[0, 62] + lambda_2[0, 65] - lambda_2[0, 68]  ==  0 ]
-	constraints += [ lambda_2[0, 10] - lambda_2[0, 11] + 4*lambda_2[0, 14] - 4*lambda_2[0, 15] - lambda_2[0, 30] + lambda_2[0, 33] + lambda_2[0, 38] + lambda_2[0, 39] - 2*lambda_2[0, 42] - lambda_2[0, 43] - lambda_2[0, 44] + 2*lambda_2[0, 45] - lambda_2[0, 63] - lambda_2[0, 64] + lambda_2[0, 66] + lambda_2[0, 67]  ==  0 ]
-	constraints += [ -lambda_2[0, 38] + lambda_2[0, 39] + lambda_2[0, 43] - lambda_2[0, 44] + lambda_2[0, 63] - lambda_2[0, 64] - lambda_2[0, 66] + lambda_2[0, 67]  ==  0 ]
-	constraints += [ -lambda_2[0, 14] - lambda_2[0, 15] + lambda_2[0, 42] + lambda_2[0, 45] - lambda_2[0, 51]  ==  -2*V[0, 0] + 0.2]
-	
+	constraints += [ lambda_2[0, 10] - lambda_2[0, 11] + 4*lambda_2[0, 14] - 4*lambda_2[0, 15] - lambda_2[0, 30] + lambda_2[0, 33] + lambda_2[0, 38] + lambda_2[0, 39] - 2*lambda_2[0, 42] - lambda_2[0, 43] - lambda_2[0, 44] + 2*lambda_2[0, 45] - lambda_2[0, 63] - lambda_2[0, 64] + lambda_2[0, 66] + lambda_2[0, 67]  ==  -V[0, 2] ]
+	constraints += [ -lambda_2[0, 38] + lambda_2[0, 39] + lambda_2[0, 43] - lambda_2[0, 44] + lambda_2[0, 63] - lambda_2[0, 64] - lambda_2[0, 66] + lambda_2[0, 67]  ==  -V[0, 5] ]
+	constraints += [ -lambda_2[0, 14] - lambda_2[0, 15] + lambda_2[0, 42] + lambda_2[0, 45] - lambda_2[0, 51]  ==  -2*V[0, 4] ]
+
 	constraints += [objc>=0]
 
 	problem = cp.Problem(objective, constraints)
@@ -155,10 +159,11 @@ def senGradSDP(control_param, f, g, SVGOnly=False):
 	control_param = np.reshape(control_param, (1, 2))
 	theta_t = torch.from_numpy(control_param).float()
 	theta_t.requires_grad = True
+	# print(theta_t.grad)
 	layer = CvxpyLayer(problem, parameters=[t], variables=[lambda_1, lambda_2, V, objc])
 	X_star, Y_star, V_star, objc_star = layer(theta_t)
 	
-	objc_star.backward()
+	torch.norm(objc_star).backward()
 
 	Lyapunov_param = V_star.detach().numpy()[0]
 	initTest = initValidTest(Lyapunov_param)
@@ -170,13 +175,13 @@ def senGradSDP(control_param, f, g, SVGOnly=False):
 
 def initValidTest(V):
 	Test = True
-	assert V.shape == (2, )
+	assert V.shape == (6, )
 	for _ in range(10000):
 		m = np.random.uniform(low=-1, high=1, size=1)[0]
 		n = np.random.uniform(low=-1, high=1, size=1)[0]
 		# q = np.random.uniform(low=-3, high=3, size=1)[0]
 
-		Lya = V.dot(np.array([m**2, n**2]))
+		Lya = V.dot(np.array([1, m, n, m**2, n**2, m*n]))
 		if Lya <= 0:
 			Test = False
 	return Test
@@ -184,16 +189,18 @@ def initValidTest(V):
 
 
 def lieValidTest(V, theta):
-	assert V.shape == (2, )
+	assert V.shape == (6, )
 	assert theta.shape == (2, )
 	Test = True
 	for i in range(10000):
 		m = np.random.uniform(low=-1, high=1, size=1)[0]
 		n = np.random.uniform(low=-1, high=1, size=1)[0]
 		# q = np.random.uniform(low=-3, high=3, size=1)[0]
-		gradBtox = np.array([2*m*V[0], 2*n*V[1]])
-		dynamics = np.array([-m**3 + n, m*theta[0] + n*theta[1]])
-		LieV = gradBtox.dot(dynamics)
+		m_dot = -m**3 + n
+		n_dot = m*theta[0] + n*theta[1]
+		gradBtox = np.array([V[0], V[1], V[2], 2*m*V[0]*m_dot, 2*n*V[1]*n_dot, V[0]*(n*m_dot+m*n_dot)])
+		# dynamics = np.array([-m**3 + n, m*theta[0] + n*theta[1]])
+		LieV = sum(gradBtox)
 		if LieV > 0:
 			Test = False
 	return Test
@@ -310,65 +317,6 @@ def plot(control_param, V, figname, N=10):
 	plt.savefig(figname, bbox_inches='tight')
 
 
-def power_generation(deg, dim):
-	I = []
-	# Possible I generation
-	arr_comb = []
-	for i in range(deg+1):
-		arr_comb.append(i)
-	# Get all possible selection
-	I_temp_comb = list(combinations_with_replacement(arr_comb, dim))
-	I_temp = []
-	# Get all possible permutation
-	for i in I_temp_comb:
-		I_temp_permut = list(permutations(i, dim))
-		I_temp += I_temp_permut
-	# Deduce the redundant option and exceeding power terms
-	[I.append(x) for x in I_temp if x not in I and sum(x) <= deg]
-	return I 
-
-
-def monomial_generation(deg, X):
-	dim = len(X)
-	I = power_generation(deg, dim)
-	# Generate monomial of given degree with given dimension
-	ele = []
-	# Generate the monomial vectors base on possible power
-	for i in I:
-		monomial = 1
-		for j in range(len(i)):
-			monomial = monomial*X[j]**i[j]
-		ele.append(monomial)
-	return Matrix(ele)
-
-
-def possible_handelman_generation(deg, Poly):
-	# Creating possible positive power product and ensure each one
-	# is positive
-	p = []
-	dim = len(Poly)
-	I = power_generation(deg, dim)
-	I.pop(0)
-	# Generate possible terms from the I given
-	for i in I:
-		poly = 1
-		for j in range(len(i)):
-			poly = poly*Poly[j]**i[j]
-		p.append(expand(poly))
-	return p
-
-
-def GetDerivative(dynamics, polymonial_terms, X):
-	ele_der = []
-	for m in polymonial_terms:
-		temp = [0]*len(X)
-		temp_der = 0
-		for i in range(len(X)):
-			temp[i] = diff(m, X[i]) * dynamics[i]
-		temp_der = sum(temp)
-		ele_der.append(expand(temp_der))
-	return Matrix(ele_der)
-
 
 def constraintsAutoGenerate():
 	### Lyapunov function varibale declaration ###
@@ -391,7 +339,7 @@ def constraintsAutoGenerate():
 	# incorporate the interval with handelman basis
 	poly_list = Matrix(poly_list)
 	# poly_list = Matrix(poly_list+l)
-	monomial_list = Matrix([x**2, y**2])
+	monomial_list = monomial_generation(2, X)
 	V = MatrixSymbol('V', 1, len(monomial_list))
 	theta = MatrixSymbol('t', 1, 2)
 	lambda_poly_init = MatrixSymbol('lambda_1', 1, len(poly_list))
@@ -402,7 +350,7 @@ def constraintsAutoGenerate():
 	# print(lhs_init[0,0])
 	lhs_init = expand(lhs_init[0,0])
 	rhs_init = lambda_poly_init * poly_list
-	print(rhs_init[0,0])
+	# print(rhs_init[0,0])
 	rhs_init = expand(rhs_init[0,0])
 	generateConstraints(rhs_init, lhs_init, degree=2)
 	print("")
@@ -463,7 +411,7 @@ if __name__ == '__main__':
 			vtheta, final_state, f, g = SVG(control_param, f, g)
 			try:
 				Lyapunov_param, theta_gard, slack_star, initTest, lieTest = senGradSDP(control_param, f, g)
-				if initTest and lieTest and abs(slack_star) <= 3e-2 and abs(final_state[0]) < 5e-2 and abs(final_state[1]) < 5e-2:
+				if initTest and lieTest and abs(slack_star) <= 3e-2 and LA.norm(final_state)< 5e-2:
 					print('Successfully synthesis a controller with its Lyapunov function within ' +str(i)+' iterations.')
 					print('controller: ', control_param, 'Lyapunov: ', Lyapunov_param)
 					break
@@ -482,8 +430,8 @@ if __name__ == '__main__':
 	# baselineSVG()
 
 	# print('')
-	# print('Ours approach starts here')
-	# Ours()
+	print('Ours approach starts here')
+	Ours()
 	# plot(0, 0, figname='Tra_Ball.pdf')
 
-	constraintsAutoGenerate()	
+	# constraintsAutoGenerate()	
