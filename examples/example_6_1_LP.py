@@ -272,24 +272,20 @@ def SVG(control_param, f, g):
 	return vtheta, state, f, g
 
 
-def plot(control_param, V, figname, N=10):
+def plot(control_param, V, figname, N=5):
 	env = PP()
 	trajectory = []
 	LyapunovValue = []
 
 	for i in range(N):
-		initstate = np.array([[-0.80871812, -1.19756125, -0.67023809],
-							  [-1.04038219, -0.68580387, -0.82082226],
-							  [-1.07304617, -1.05871319, -0.54368882],
-							  [-1.09669493, -1.21477234, -1.30810029],
-							  [-1.15763253, -0.90876271, -0.8885232]])
-		state = env.reset(x0=initstate[i%5][0], x1=initstate[i%5][1], x2=initstate[i%5][2])
+		initstate = np.array([[-0.80871812, -0.19756125],
+							  [-0.04038219, -0.68580387],
+							  [-0.07304617, -0.05871319],
+							  [-0.09669493, -0.21477234],
+							  [0.15763253, -0.90876271]])
+		state = env.reset(x0=initstate[i%5][0], x1=initstate[i%5][1])
 		for _ in range(env.max_iteration):
-			if i < 5:
-				u = np.array([-0.01162847, -0.15120233, -4.42098475]).dot(np.array([state[0], state[1], state[2]])) #ours
-			else:
-				u = np.array([-0.04883252, -0.12512623, -1.06510376]).dot(np.array([state[0], state[1], state[2]]))
-
+			u = control_param.dot(np.array([state[0], state[1]]))
 			trajectory.append(state)
 			state, _, _ = env.step(u)
 
@@ -299,24 +295,21 @@ def plot(control_param, V, figname, N=10):
 
 	trajectory = np.array(trajectory)
 	for i in range(N):
-		if i >= 5:
-			ax1.plot(trajectory[i*env.max_iteration:(i+1)*env.max_iteration, 1], trajectory[i*env.max_iteration:(i+1)*env.max_iteration, 2], color='#ff7f0e')
-		else:
-			ax1.plot(trajectory[i*env.max_iteration:(i+1)*env.max_iteration, 1], trajectory[i*env.max_iteration:(i+1)*env.max_iteration, 2], color='#2ca02c')
+		ax1.plot(trajectory[i*env.max_iteration:(i+1)*env.max_iteration, 1], color='#2ca02c')
 	
 	ax1.grid(True)
 	ax1.legend(handles=[SVG_patch, Ours_patch])
 
 
 	def f(x, y):
-		return 0.1000259*x**2 + 0.05630844*y**2
+		return V[0] + V[1]*y + V[2]*x + V[3]*y**2 + V[4]*x**2 + V[5]*x*y
 
-	x = np.linspace(-1.5, 1, 30)
-	y = np.linspace(-1.5, 1, 30)
+	x = np.linspace(-1, 1, 30)
+	y = np.linspace(-1, 1, 30)
 	X, Y = np.meshgrid(x, y)
 	Z = f(X, Y)
 	ax2.plot_surface(X, Y, Z,  rstride=1, cstride=1, cmap='viridis', edgecolor='none')
-	ax2.set_title('Lyapunov function');
+	ax2.set_title('Lyapunov function example_6_1_LP')
 	plt.savefig(figname, bbox_inches='tight')
 
 
@@ -430,6 +423,7 @@ if __name__ == '__main__':
 				print(f"The SVG gradient is: {vtheta}")
 				print(f"The final_state is: {final_state}")
 		print(control_param, Lyapunov_param)
+		plot(control_param, Lyapunov_param, 'Tra_Lyapunov_6_1.pdf')
 		# plot(control_param, Lyapunov_param, 'Tra_Lyapunov.pdf')
 
 	# print('baseline starts here')
