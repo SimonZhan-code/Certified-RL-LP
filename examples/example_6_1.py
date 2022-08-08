@@ -280,52 +280,46 @@ def SVG(control_param, f, g):
 	return vtheta, state, f, g
 
 
-# def plot(control_param, V, figname, N=10):
-# 	env = Ball4()
-# 	trajectory = []
-# 	LyapunovValue = []
+def plot(control_param, V, figname, N=5):
+	env = PP()
+	trajectory = []
+	LyapunovValue = []
 
-# 	for i in range(N):
-# 		initstate = np.array([[-0.80871812, -1.19756125, -0.67023809],
-# 							  [-1.04038219, -0.68580387, -0.82082226],
-# 							  [-1.07304617, -1.05871319, -0.54368882],
-# 							  [-1.09669493, -1.21477234, -1.30810029],
-# 							  [-1.15763253, -0.90876271, -0.8885232]])
-# 		state = env.reset(x0=initstate[i%5][0], x1=initstate[i%5][1], x2=initstate[i%5][2])
-# 		for _ in range(env.max_iteration):
-# 			if i < 5:
-# 				u = np.array([-0.01162847, -0.15120233, -4.42098475]).dot(np.array([state[0], state[1], state[2]])) #ours
-# 			else:
-# 				u = np.array([-0.04883252, -0.12512623, -1.06510376]).dot(np.array([state[0], state[1], state[2]]))
+	for i in range(N):
+		initstate = np.array([[-0.80871812, -0.19756125],
+							  [-0.04038219, -0.68580387],
+							  [-0.07304617, -0.05871319],
+							  [-0.09669493, -0.21477234],
+							  [0.15763253, -0.90876271]])
+		state = env.reset(x0=initstate[i%5][0], x1=initstate[i%5][1])
+		for _ in range(env.max_iteration):
+			u = control_param.dot(np.array([state[0], state[1]]))
+			trajectory.append(state)
+			state, _, _ = env.step(u)
 
-# 			trajectory.append(state)
-# 			state, _, _ = env.step(u)
+	fig = plt.figure(figsize=(7,4))
+	ax1 = fig.add_subplot(121)
+	ax2 = fig.add_subplot(122, projection='3d')
 
-# 	fig = plt.figure(figsize=(7,4))
-# 	ax1 = fig.add_subplot(121)
-# 	ax2 = fig.add_subplot(122, projection='3d')
-
-# 	trajectory = np.array(trajectory)
-# 	for i in range(N):
-# 		if i >= 5:
-# 			ax1.plot(trajectory[i*env.max_iteration:(i+1)*env.max_iteration, 1], trajectory[i*env.max_iteration:(i+1)*env.max_iteration, 2], color='#ff7f0e')
-# 		else:
-# 			ax1.plot(trajectory[i*env.max_iteration:(i+1)*env.max_iteration, 1], trajectory[i*env.max_iteration:(i+1)*env.max_iteration, 2], color='#2ca02c')
+	trajectory = np.array(trajectory)
+	for i in range(N):
+		ax1.plot(trajectory[i*env.max_iteration:(i+1)*env.max_iteration, 1], color='#2ca02c')
 	
-# 	ax1.grid(True)
-# 	ax1.legend(handles=[SVG_patch, Ours_patch])
+	ax1.grid(True)
+	ax1.legend(handles=[SVG_patch, Ours_patch])
 
 
-# 	def f(x, y):
-# 		return 0.1000259*x**2 + 0.05630844*y**2
+	def f(x, y):
+		return V[0]*y**2 + V[1]*x**2
 
-# 	x = np.linspace(-1.5, 1, 30)
-# 	y = np.linspace(-1.5, 1, 30)
-# 	X, Y = np.meshgrid(x, y)
-# 	Z = f(X, Y)
-# 	ax2.plot_surface(X, Y, Z,  rstride=1, cstride=1, cmap='viridis', edgecolor='none')
-# 	ax2.set_title('Lyapunov function');
-# 	plt.savefig(figname, bbox_inches='tight')
+	x = np.linspace(-1, 1, 30)
+	y = np.linspace(-1, 1, 30)
+	X, Y = np.meshgrid(x, y)
+	Z = f(X, Y)
+	ax2.plot_surface(X, Y, Z,  rstride=1, cstride=1, cmap='viridis', edgecolor='none')
+	ax2.set_title('Lyapunov function example_6_1')
+	plt.savefig(figname, bbox_inches='tight')
+
 
 
 
@@ -417,7 +411,7 @@ if __name__ == '__main__':
 			vtheta, final_state, f, g = SVG(control_param, f, g)
 			try:
 				Lyapunov_param, theta_gard, slack_star, initTest, lieTest = senGradSDP(control_param, f, g)
-				if initTest and lieTest and abs(slack_star) <= 3e-4 and abs(final_state[0]) < 5e-2 and abs(final_state[1]) < 5e-2:
+				if initTest and lieTest and abs(slack_star) <= 3e-4 and LA.norm(final_state) < 1e-3 :
 					print('Successfully synthesis a controller with its Lyapunov function within ' +str(i)+' iterations.')
 					print('controller: ', control_param, 'Lyapunov: ', Lyapunov_param)
 					break
@@ -433,7 +427,7 @@ if __name__ == '__main__':
 				print(f"The SVG gradient is: {vtheta}")
 				print(f"The final_state is: {final_state}")
 		print(control_param, Lyapunov_param)
-		# plot(control_param, Lyapunov_param, 'Tra_Lyapunov.pdf')
+		plot(control_param, Lyapunov_param, 'Tra_Lyapunov_SDP.pdf')
 
 	# print('baseline starts here')
 	# baselineSVG()
