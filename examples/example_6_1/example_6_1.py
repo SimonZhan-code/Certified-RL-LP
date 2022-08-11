@@ -209,9 +209,9 @@ def lieValidTest(V, theta):
 		m = np.random.uniform(low=-1, high=1, size=1)[0]
 		n = np.random.uniform(low=-1, high=1, size=1)[0]
 		# q = np.random.uniform(low=-3, high=3, size=1)[0]
-		gradBtox = np.array([2*m*V[0], 2*n*V[1]])
-		dynamics = np.array([-m**3 + n, m*theta[0] + n*theta[1]])
-		LieV = gradBtox.dot(dynamics)
+		gradBtox = np.array([2*m*V[0]*(-m**3 + n), 2*n*V[1]*(m*theta[0] + n*theta[1])])
+		# dynamics = np.array([-m**3 + n, m*theta[0] + n*theta[1]])
+		LieV = np.sum(gradBtox)
 		if LieV > 0:
 			Test = False
 	return Test
@@ -285,6 +285,9 @@ def plot(control_param, V, figname, N=5):
 	trajectory = []
 	LyapunovValue = []
 
+	def f(x, y):
+		return V[0]*y**2 + V[1]*x**2
+
 	for i in range(N):
 		initstate = np.array([[-0.80871812, -0.19756125],
 							  [-0.04038219, -0.68580387],
@@ -295,6 +298,7 @@ def plot(control_param, V, figname, N=5):
 		for _ in range(env.max_iteration):
 			u = control_param.dot(np.array([state[0], state[1]]))
 			trajectory.append(state)
+			LyapunovValue.append(f(state[0], state[1]))
 			state, _, _ = env.step(u)
 
 	fig = plt.figure(figsize=(7,4))
@@ -303,14 +307,12 @@ def plot(control_param, V, figname, N=5):
 
 	trajectory = np.array(trajectory)
 	for i in range(N):
+		# ax1.plot(LyapunovValue[i*env.max_iteration:(i+1)*env.max_iteration], color='#2ca02c')
 		ax1.plot(trajectory[i*env.max_iteration:(i+1)*env.max_iteration, 1], color='#2ca02c')
 	
 	ax1.grid(True)
 	ax1.legend(handles=[SVG_patch, Ours_patch])
 
-
-	def f(x, y):
-		return V[0]*y**2 + V[1]*x**2
 
 	x = np.linspace(-1, 1, 30)
 	y = np.linspace(-1, 1, 30)
@@ -411,7 +413,7 @@ if __name__ == '__main__':
 			vtheta, final_state, f, g = SVG(control_param, f, g)
 			try:
 				Lyapunov_param, theta_gard, slack_star, initTest, lieTest = senGradSDP(control_param, f, g)
-				if initTest and lieTest and abs(slack_star) <= 3e-4 and LA.norm(final_state) < 1e-3 :
+				if initTest and lieTest and abs(slack_star) <= 3e-4 and LA.norm(final_state) < 5e-2 :
 					print('Successfully synthesis a controller with its Lyapunov function within ' +str(i)+' iterations.')
 					print('controller: ', control_param, 'Lyapunov: ', Lyapunov_param)
 					break

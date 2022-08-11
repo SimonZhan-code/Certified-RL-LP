@@ -859,9 +859,9 @@ if __name__ == '__main__':
 			except Exception as e:
 				print(e)
 
-	print('baseline starts here')
-	baseline()
-	print('')
+	# print('baseline starts here')
+	# baseline()
+	# print('')
 	print('Our approach starts here')
 	Ours()
 
