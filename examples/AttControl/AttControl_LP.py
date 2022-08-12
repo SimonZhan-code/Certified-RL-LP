@@ -140,12 +140,12 @@ def generateConstraints(x, y, z, m, n, p, exp1, exp2, degree):
 ## Generate the Lyapunov conditions
 def LyapunovConstraints():
 	a, b, c, d, e, f, m, n = symbols('a,b,c,d,e,f, m, n')
-
-	Poly = []
+	# Confined in the [-2,2]^6 spaces
+	Poly = [2-a, 2-b, 2-c, 2-d, 2-e, 2-f, 2-m, 2-n]
 	X = [a, b, c, d, e, f, m, n]
 	
 	# Generate the possible handelman product to the power defined
-	poly_list = possible_handelman_generation(6, Poly)
+	poly_list = possible_handelman_generation(4, Poly)
 	# incorporate the interval with handelman basis
 	poly_list = Matrix(poly_list)
 	monomial_list = monomial_generation(2, X)
@@ -163,8 +163,8 @@ def LyapunovConstraints():
 	rhs_init = expand(rhs_init[0,0])
 	generateConstraints(a,b,c,d,e,f, lhs_init, rhs_init, degree=2)
 
-	Lya = V*quadraticBase
-	Lya = expand(Lya[0, 0])
+	# Lya = V*quadraticBase
+	# Lya = expand(Lya[0, 0])
 
 	# partiala = diff(Lya, a)
 	# partialb = diff(Lya, b)
