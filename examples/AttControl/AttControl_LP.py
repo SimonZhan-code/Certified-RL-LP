@@ -141,8 +141,8 @@ def generateConstraints(x, y, z, m, n, p, exp1, exp2, degree):
 def LyapunovConstraints():
 	a, b, c, d, e, f, m, n = symbols('a,b,c,d,e,f, m, n')
 	# Confined in the [-2,2]^6 spaces
-	Poly = [2-a, 2-b, 2-c, 2-d, 2-e, 2-f, 2-m, 2-n]
-	X = [a, b, c, d, e, f, m, n]
+	Poly = [2-a, 2-b, 2-c, 2-d, 2-e, 2-f]
+	X = [a, b, c, d, e, f]
 	
 	# Generate the possible handelman product to the power defined
 	poly_list = possible_handelman_generation(4, Poly)
@@ -156,12 +156,12 @@ def LyapunovConstraints():
 	lhs_init = V * monomial_list
 	# print("Pass the timing process_1")
 	# print(lhs_init[0,0])
-	lhs_init = expand(lhs_init[0,0])
+	lhs_init = simplify(lhs_init[0,0])
 	rhs_init = lambda_poly_init * poly_list
 	# print("Pass the timing process_2")
 	# print(rhs_init[0,0])
-	rhs_init = expand(rhs_init[0,0])
-	generateConstraints(a,b,c,d,e,f, lhs_init, rhs_init, degree=2)
+	rhs_init = simplify(rhs_init[0,0])
+	# generateConstraints(a,b,c,d,e,f, lhs_init, rhs_init, degree=2)
 
 	# Lya = V*quadraticBase
 	# Lya = expand(Lya[0, 0])
@@ -203,10 +203,10 @@ def LyapunovConstraints():
 
 	monomial_der = GetDerivative(dynamics, monomial_list, X)
 	lhs_der = V*monomial_der
-	lhs_der = expand(lhs_der[0, 0])
+	lhs_der = simplify(lhs_der[0, 0])
 
 	rhs_der = -lambda_poly_der * poly_list
-	rhs_der = expand(rhs_der[0,0])
+	rhs_der = simplify(rhs_der[0,0])
 
 	generateConstraints(a,b,c,d,e,f, lhs_der, rhs_der, degree=4)
 	print(monomial_list,len(monomial_list),len(poly_list))
@@ -425,6 +425,6 @@ if __name__ == '__main__':
 	# print('baseline starts here')
 	# baseline()
 	# print('')
-	print('Our approach starts here')
-	Ours()
-
+	# print('Our approach starts here')
+	# Ours()
+	LyapunovConstraints()
