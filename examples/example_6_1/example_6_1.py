@@ -11,6 +11,7 @@ from sympy import MatrixSymbol, Matrix
 from sympy import *
 import matplotlib.patches as mpatches
 from numpy import linalg as LA
+from timer import *
 
 
 # print(cp.__version__, np.__version__, scipy.__version__, cvxpylayers.__version__, torch.__version__)
@@ -411,8 +412,11 @@ if __name__ == '__main__':
 			theta_gard = np.array([0, 0])
 			slack_star = 0
 			vtheta, final_state, f, g = SVG(control_param, f, g)
+			timer = Timer()
 			try:
+				timer.start()
 				Lyapunov_param, theta_gard, slack_star, initTest, lieTest = senGradSDP(control_param, f, g)
+				timer.stop()
 				if initTest and lieTest and abs(slack_star) <= 3e-4 and LA.norm(final_state) < 5e-2 :
 					print('Successfully synthesis a controller with its Lyapunov function within ' +str(i)+' iterations.')
 					print('controller: ', control_param, 'Lyapunov: ', Lyapunov_param)
