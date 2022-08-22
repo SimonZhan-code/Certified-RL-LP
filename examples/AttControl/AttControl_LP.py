@@ -13,6 +13,7 @@ from itertools import *
 import matplotlib.patches as mpatches
 from numpy import linalg as LA
 from handelman_utils import *
+from timer import *
 
 
 EPR = []
@@ -88,28 +89,29 @@ def LyaLP(c0, c1, c2, SVG_only=False):
 	if SVG_only:
 		constraints += [ objc == 0 ]
 
-	constraints += [objc>=0]
+	constraints += [objc >= 0]
 	#---------------The initial conditions--------------
+
 	constraints += [ V[0, 0]  >=  2*lambda_1[0, 0] + 4*lambda_1[0, 1] + 8*lambda_1[0, 2] + 16*lambda_1[0, 3] + objc[0] ]
 	constraints += [ V[0, 0]  <=  2*lambda_1[0, 0] + 4*lambda_1[0, 1] + 8*lambda_1[0, 2] + 16*lambda_1[0, 3] + objc[0] ]
 	constraints += [ V[0, 1]  >=  0 + objc[1] ]
 	constraints += [ V[0, 1]  <=  0 + objc[1] ]
-	constraints += [ V[0, 7]  >=  0 + objc[7] ]
-	constraints += [ V[0, 7]  <=  0 + objc[7] ]
+	constraints += [ V[0, 7]  >=  0 + objc[7] - 0.1]
+	constraints += [ V[0, 7]  <=  0 + objc[7] - 0.1]
 	constraints += [ V[0, 2]  >=  0 + objc[2] ]
 	constraints += [ V[0, 2]  <=  0 + objc[2] ]
 	constraints += [ V[0, 13]  >=  0 + objc[13] ]
 	constraints += [ V[0, 13]  <=  0 + objc[13] ]
-	constraints += [ V[0, 8]  >=  0 + objc[8] ]
-	constraints += [ V[0, 8]  <=  0 + objc[8] ]
+	constraints += [ V[0, 8]  >=  0 + objc[8] - 0.1]
+	constraints += [ V[0, 8]  <=  0 + objc[8] - 0.1]
 	constraints += [ V[0, 3]  >=  0 + objc[3] ]
 	constraints += [ V[0, 3]  <=  0 + objc[3] ]
 	constraints += [ V[0, 14]  >=  0 + objc[14] ]
 	constraints += [ V[0, 14]  <=  0 + objc[14] ]
 	constraints += [ V[0, 15]  >=  0 + objc[15] ]
 	constraints += [ V[0, 15]  <=  0 + objc[15] ]
-	constraints += [ V[0, 9]  >=  0 + objc[9] ]
-	constraints += [ V[0, 9]  <=  0 + objc[9] ]
+	constraints += [ V[0, 9]  >=  0 + objc[9] - 0.1]
+	constraints += [ V[0, 9]  <=  0 + objc[9] - 0.1]
 	constraints += [ V[0, 4]  >=  0 + objc[4] ]
 	constraints += [ V[0, 4]  <=  0 + objc[4] ]
 	constraints += [ V[0, 16]  >=  0 + objc[16] ]
@@ -118,8 +120,8 @@ def LyaLP(c0, c1, c2, SVG_only=False):
 	constraints += [ V[0, 17]  <=  0 + objc[17] ]
 	constraints += [ V[0, 18]  >=  0 + objc[18] ]
 	constraints += [ V[0, 18]  <=  0 + objc[18] ]
-	constraints += [ V[0, 10]  >=  0 + objc[10] ]
-	constraints += [ V[0, 10]  <=  0 + objc[10] ]
+	constraints += [ V[0, 10]  >=  0 + objc[10] - 0.1]
+	constraints += [ V[0, 10]  <=  0 + objc[10] - 0.1]
 	constraints += [ V[0, 5]  >=  0 + objc[5] ]
 	constraints += [ V[0, 5]  <=  0 + objc[5] ]
 	constraints += [ V[0, 19]  >=  0 + objc[19] ]
@@ -130,8 +132,8 @@ def LyaLP(c0, c1, c2, SVG_only=False):
 	constraints += [ V[0, 21]  <=  0 + objc[21] ]
 	constraints += [ V[0, 22]  >=  0 + objc[22] ]
 	constraints += [ V[0, 22]  <=  0 + objc[22] ]
-	constraints += [ V[0, 11]  >=  0 + objc[11] ]
-	constraints += [ V[0, 11]  <=  0 + objc[11] ]
+	constraints += [ V[0, 11]  >=  0 + objc[11] - 0.1]
+	constraints += [ V[0, 11]  <=  0 + objc[11] - 0.1]
 	constraints += [ V[0, 6]  >=  0 + objc[6] ]
 	constraints += [ V[0, 6]  <=  0 + objc[6] ]
 	constraints += [ V[0, 23]  >=  0 + objc[23] ]
@@ -144,8 +146,8 @@ def LyaLP(c0, c1, c2, SVG_only=False):
 	constraints += [ V[0, 26]  <=  0 + objc[26] ]
 	constraints += [ V[0, 27]  >=  0 + objc[27] ]
 	constraints += [ V[0, 27]  <=  0 + objc[27] ]
-	constraints += [ V[0, 12]  >=  0 + objc[12] ]
-	constraints += [ V[0, 12]  <=  0 + objc[12] ]
+	constraints += [ V[0, 12]  >=  0 + objc[12] - 0.1]
+	constraints += [ V[0, 12]  <=  0 + objc[12] - 0.1]
 	
 	#---------------The Lie Derivative conditions--------------
 	
@@ -381,7 +383,7 @@ def LyaLP(c0, c1, c2, SVG_only=False):
 	# n = n_star.detach().numpy()
 
 	valueTest, LieTest = LyaTest(V, c0, c1, c2)
-	print("We pass Phase 5")
+	# print("We pass Phase 5")
 
 	return V, objc_star.detach().numpy(), theta_t0.grad.detach().numpy(), theta_t1.grad.detach().numpy(), theta_t2.grad.detach().numpy(), valueTest, LieTest
 
@@ -417,7 +419,7 @@ def generateConstraints_der(x, y, z, m, n, p, exp1, exp2, degree):
 def LyapunovConstraints():
 	a, b, c, d, e, f, m, n = symbols('a,b,c,d,e,f, m, n')
 	# Confined in the [-2,2]^6 spaces
-	Poly = [2 - (a**2+b**2+c**2+d**2+e**2+f**2)**0.5]
+	Poly = [0.5*(a**2+b**2+c**2+d**2+e**2+f**2)**0.5, 1 - 0.5*(a**2+b**2+c**2+d**2+e**2+f**2)**0.5]
 	X = [a, b, c, d, e, f]
 	
 	# Generate the possible handelman product to the power defined
@@ -490,7 +492,7 @@ def LyapunovConstraints():
 
 def LyaTest(V, c0, c1, c2):
 	assert V.shape == (28, )
-	print("pass 1")
+	# print("pass 1")
 	t0 = np.reshape(c0, (1, 9))
 	t1 = np.reshape(c1, (1, 13))
 	t2 = np.reshape(c2, (1, 16))
@@ -558,7 +560,7 @@ def LyaTest(V, c0, c1, c2):
 		Lie *= -1
 		if Lie > 0:
 			LieTest = False
-	print("pass 2")
+	# print("pass 2")
 	return valueTest, LieTest
 
 
@@ -725,23 +727,26 @@ if __name__ == '__main__':
 			c0 += 1e-2*np.clip(vt[0], -1e2, 1e2)
 			c1 += 1e-2*np.clip(vt[1], -1e2, 1e2)
 			c2 += 1e-2*np.clip(vt[2], -1e2, 1e2)
-
+			timer = Timer()
 			print('iteration: ', it, 'norm is: ',  LA.norm(final_state))
 			try:
+				timer.start()
 				V, slack, sdpt0, sdpt1, sdpt2, valueTest, LieTest = LyaLP(c0, c1, c2, SVG_only=False)
-				print(slack, valueTest, LieTest)
+				timer.stop()
+				print(LA.norm(slack), valueTest, LieTest)
 				if it > 20 and slack < 1e-3 and valueTest and LieTest:
 					print('SOS succeed! Controller parameters for u0, u1, u2 are: ')
 					print(c0, c1, c2)
 					print('Lyapunov function: ', V)
 					# plot(V, c0, c1, c2)
 					break
-				c0 -= 1e-2*np.clip(sdpt0[0], -1e2, 1e2)
-				c1 -= 1e-2*np.clip(sdpt1[0], -1e2, 1e2)
-				c2 -= 1e-2*np.clip(sdpt2[0], -1e2, 1e2)
-
 			except Exception as e:
 				print(e)
+			
+			c0 -= 1e-2*np.clip(sdpt0[0], -1e2, 1e2)
+			c1 -= 1e-2*np.clip(sdpt1[0], -1e2, 1e2)
+			c2 -= 1e-2*np.clip(sdpt2[0], -1e2, 1e2)
+
 
 	# print('baseline starts here')
 	# baseline()
