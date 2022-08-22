@@ -88,7 +88,7 @@ def LyaLP(c0, c1, c2, SVG_only=False):
 	if SVG_only:
 		constraints += [ objc == 0 ]
 
-	constraints += [objc>=0.001]
+	constraints += [objc>=0]
 	#---------------The initial conditions--------------
 	constraints += [ V[0, 0]  >=  2*lambda_1[0, 0] + 4*lambda_1[0, 1] + 8*lambda_1[0, 2] + 16*lambda_1[0, 3] + objc[0] ]
 	constraints += [ V[0, 0]  <=  2*lambda_1[0, 0] + 4*lambda_1[0, 1] + 8*lambda_1[0, 2] + 16*lambda_1[0, 3] + objc[0] ]
