@@ -9,6 +9,7 @@ from sympy import MatrixSymbol, Matrix
 from sympy import *
 import numpy.linalg as LA
 import matplotlib.patches as mpatches
+from timer import *
 
 EPR = []
 SVG_patch = mpatches.Patch(color='#ff7f0e', label='SVG')
@@ -630,7 +631,7 @@ def LyapunovConstraints():
 	u2 = expand(u2[0, 0])
 
 	print(diff(u0, a), ',', diff(u0, b), ',' , diff(u0, c),',' , diff(u0, d), ',' ,diff(u0, e), ',' ,diff(u0, f))
-	assert False
+	# assert False
 	
 	dynamics = Matrix([[0.25*(u0 + b*c)], 
 					   [0.5*(u1 - 3*a*c)], 
@@ -841,10 +842,12 @@ if __name__ == '__main__':
 			c0 += 1e-2*np.clip(vt[0], -1e2, 1e2)
 			c1 += 1e-2*np.clip(vt[1], -1e2, 1e2)
 			c2 += 1e-2*np.clip(vt[2], -1e2, 1e2)
-
+			timer = Timer()
 			print('iteration: ', it, 'norm is: ',  LA.norm(final_state))
 			try:
+				timer.start()
 				V, slack, sdpt0, sdpt1, sdpt2, valueTest, LieTest = LyaSDP(c0, c1, c2, SVG_only=False)
+				timer.stop()
 				print(slack, valueTest, LieTest)
 				if it > 20 and slack < 1e-3 and valueTest and LieTest:
 					print('SOS succeed! Controller parameters for u0, u1, u2 are: ')

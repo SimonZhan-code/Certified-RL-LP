@@ -62,7 +62,7 @@ def possible_handelman_generation(deg, Poly):
 		for j in range(len(i)):
 			poly = poly*Poly[j]**i[j]
 		p.append(expand(poly))
-	return p
+	return Matrix(p)
 
 
 
