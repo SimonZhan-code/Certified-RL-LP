@@ -45,7 +45,7 @@ def monomial_generation(deg, X):
 		for j in range(len(i)):
 			monomial = monomial*X[j]**i[j]
 		ele.append(monomial)
-	return Matrix(ele)
+	return ele
 
 
 
@@ -62,7 +62,7 @@ def possible_handelman_generation(deg, Poly):
 		for j in range(len(i)):
 			poly = poly*Poly[j]**i[j]
 		p.append(expand(poly))
-	return Matrix(p)
+	return p
 
 
 

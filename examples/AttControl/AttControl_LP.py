@@ -11,7 +11,7 @@ from sympy import MatrixSymbol, Matrix
 from sympy import *
 from itertools import *
 import matplotlib.patches as mpatches
-from numpy import linalg as LA
+import numpy.linalg as LA
 from handelman_utils import *
 from timer import *
 
@@ -77,8 +77,8 @@ def LyaLP(c0, c1, c2, SVG_only=False):
 	m = cp.Variable(pos=True)
 	n = cp.Variable(pos=True)
 	objc = cp.Variable(28)
-	lambda_1 = cp.Variable((1, 14))
-	lambda_2 = cp.Variable((1, 14))
+	lambda_1 = cp.Variable((1, 5))
+	lambda_2 = cp.Variable((1, 5))
 	objective = cp.Minimize(cp.norm(objc, 2))
 	t0 = cp.Parameter((1, 9))
 	t1 = cp.Parameter((1, 13))
@@ -92,27 +92,26 @@ def LyaLP(c0, c1, c2, SVG_only=False):
 	constraints += [objc >= 0]
 
 	#---------------The initial conditions--------------
-
-	constraints += [ V[0, 0]  >=  lambda_1[0, 0] + lambda_1[0, 2] + lambda_1[0, 4] + lambda_1[0, 6] + objc[0] ]
-	constraints += [ V[0, 0]  <=  lambda_1[0, 0] + lambda_1[0, 2] + lambda_1[0, 4] + lambda_1[0, 6] + objc[0] ]
+	constraints += [ V[0, 0]  >=  lambda_1[0, 0] + lambda_1[0, 2] + objc[0] ]
+	constraints += [ V[0, 0]  <=  lambda_1[0, 0] + lambda_1[0, 2] + objc[0] ]
 	constraints += [ V[0, 1]  >=  0 + objc[1] ]
 	constraints += [ V[0, 1]  <=  0 + objc[1] ]
-	constraints += [ -m + V[0, 7]  >=  0 + objc[7] ]
-	constraints += [ -m + V[0, 7]  <=  0 + objc[7] ]
+	constraints += [ -m + V[0, 7]  >=  -0.25*lambda_1[0, 0] + 0.25*lambda_1[0, 1] - 0.5*lambda_1[0, 2] + 0.25*lambda_1[0, 4] + objc[7] ]
+	constraints += [ -m + V[0, 7]  <=  -0.25*lambda_1[0, 0] + 0.25*lambda_1[0, 1] - 0.5*lambda_1[0, 2] + 0.25*lambda_1[0, 4] + objc[7] ]
 	constraints += [ V[0, 2]  >=  0 + objc[2] ]
 	constraints += [ V[0, 2]  <=  0 + objc[2] ]
 	constraints += [ V[0, 13]  >=  0 + objc[13] ]
 	constraints += [ V[0, 13]  <=  0 + objc[13] ]
-	constraints += [ -m + V[0, 8]  >=  0 + objc[8] ]
-	constraints += [ -m + V[0, 8]  <=  0 + objc[8] ]
+	constraints += [ -m + V[0, 8]  >=  -0.25*lambda_1[0, 0] + 0.25*lambda_1[0, 1] - 0.5*lambda_1[0, 2] + 0.25*lambda_1[0, 4] + objc[8] ]
+	constraints += [ -m + V[0, 8]  <=  -0.25*lambda_1[0, 0] + 0.25*lambda_1[0, 1] - 0.5*lambda_1[0, 2] + 0.25*lambda_1[0, 4] + objc[8] ]
 	constraints += [ V[0, 3]  >=  0 + objc[3] ]
 	constraints += [ V[0, 3]  <=  0 + objc[3] ]
 	constraints += [ V[0, 14]  >=  0 + objc[14] ]
 	constraints += [ V[0, 14]  <=  0 + objc[14] ]
 	constraints += [ V[0, 15]  >=  0 + objc[15] ]
 	constraints += [ V[0, 15]  <=  0 + objc[15] ]
-	constraints += [ -m + V[0, 9]  >=  0 + objc[9] ]
-	constraints += [ -m + V[0, 9]  <=  0 + objc[9] ]
+	constraints += [ -m + V[0, 9]  >=  -0.25*lambda_1[0, 0] + 0.25*lambda_1[0, 1] - 0.5*lambda_1[0, 2] + 0.25*lambda_1[0, 4] + objc[9] ]
+	constraints += [ -m + V[0, 9]  <=  -0.25*lambda_1[0, 0] + 0.25*lambda_1[0, 1] - 0.5*lambda_1[0, 2] + 0.25*lambda_1[0, 4] + objc[9] ]
 	constraints += [ V[0, 4]  >=  0 + objc[4] ]
 	constraints += [ V[0, 4]  <=  0 + objc[4] ]
 	constraints += [ V[0, 16]  >=  0 + objc[16] ]
@@ -121,8 +120,8 @@ def LyaLP(c0, c1, c2, SVG_only=False):
 	constraints += [ V[0, 17]  <=  0 + objc[17] ]
 	constraints += [ V[0, 18]  >=  0 + objc[18] ]
 	constraints += [ V[0, 18]  <=  0 + objc[18] ]
-	constraints += [ -m + V[0, 10]  >=  0 + objc[10] ]
-	constraints += [ -m + V[0, 10]  <=  0 + objc[10] ]
+	constraints += [ -m + V[0, 10]  >=  -0.25*lambda_1[0, 0] + 0.25*lambda_1[0, 1] - 0.5*lambda_1[0, 2] + 0.25*lambda_1[0, 4] + objc[10] ]
+	constraints += [ -m + V[0, 10]  <=  -0.25*lambda_1[0, 0] + 0.25*lambda_1[0, 1] - 0.5*lambda_1[0, 2] + 0.25*lambda_1[0, 4] + objc[10] ]
 	constraints += [ V[0, 5]  >=  0 + objc[5] ]
 	constraints += [ V[0, 5]  <=  0 + objc[5] ]
 	constraints += [ V[0, 19]  >=  0 + objc[19] ]
@@ -133,8 +132,8 @@ def LyaLP(c0, c1, c2, SVG_only=False):
 	constraints += [ V[0, 21]  <=  0 + objc[21] ]
 	constraints += [ V[0, 22]  >=  0 + objc[22] ]
 	constraints += [ V[0, 22]  <=  0 + objc[22] ]
-	constraints += [ -m + V[0, 11]  >=  0 + objc[11] ]
-	constraints += [ -m + V[0, 11]  <=  0 + objc[11] ]
+	constraints += [ -m + V[0, 11]  >=  -0.25*lambda_1[0, 0] + 0.25*lambda_1[0, 1] - 0.5*lambda_1[0, 2] + 0.25*lambda_1[0, 4] + objc[11] ]
+	constraints += [ -m + V[0, 11]  <=  -0.25*lambda_1[0, 0] + 0.25*lambda_1[0, 1] - 0.5*lambda_1[0, 2] + 0.25*lambda_1[0, 4] + objc[11] ]
 	constraints += [ V[0, 6]  >=  0 + objc[6] ]
 	constraints += [ V[0, 6]  <=  0 + objc[6] ]
 	constraints += [ V[0, 23]  >=  0 + objc[23] ]
@@ -147,25 +146,30 @@ def LyaLP(c0, c1, c2, SVG_only=False):
 	constraints += [ V[0, 26]  <=  0 + objc[26] ]
 	constraints += [ V[0, 27]  >=  0 + objc[27] ]
 	constraints += [ V[0, 27]  <=  0 + objc[27] ]
-	constraints += [ -m + V[0, 12]  >=  0 + objc[12] ]
-	constraints += [ -m + V[0, 12]  <=  0 + objc[12] ]
+	constraints += [ -m + V[0, 12]  >=  -0.25*lambda_1[0, 0] + 0.25*lambda_1[0, 1] - 0.5*lambda_1[0, 2] + 0.25*lambda_1[0, 4] + objc[12] ]
+	constraints += [ -m + V[0, 12]  <=  -0.25*lambda_1[0, 0] + 0.25*lambda_1[0, 1] - 0.5*lambda_1[0, 2] + 0.25*lambda_1[0, 4] + objc[12] ]
 	
 	#---------------The Lie Derivative conditions--------------
 	
 	constraints += [ -V[0, 4]*t2[0, 15]  ==  0 ]
-	constraints += [ -n - V[0, 16]*t2[0, 15]  ==  0 ]
+	constraints += [ -n - V[0, 16]*t2[0, 15]  >=  -0.25*lambda_2[0, 0] + 0.25*lambda_2[0, 1] - 0.5*lambda_2[0, 2] + 0.25*lambda_2[0, 4] - objc[16] ]
+	constraints += [ -n - V[0, 16]*t2[0, 15]  <=  -0.25*lambda_2[0, 0] + 0.25*lambda_2[0, 1] - 0.5*lambda_2[0, 2] + 0.25*lambda_2[0, 4] + objc[16] ]
 	constraints += [ -V[0, 4]*t2[0, 0]  ==  0 ]
-	constraints += [ -V[0, 16]*t2[0, 0]  ==  0 ]
+	constraints += [ -V[0, 16]*t2[0, 0]  >=  0.0625*lambda_2[0, 2] + 0.0625*lambda_2[0, 3] - 0.0625*lambda_2[0, 4] - objc[16] ]
+	constraints += [ -V[0, 16]*t2[0, 0]  <=  0.0625*lambda_2[0, 2] + 0.0625*lambda_2[0, 3] - 0.0625*lambda_2[0, 4] + objc[16] ]
 	constraints += [ -0.5*V[0, 5]*t1[0, 10]  ==  0 ]
 	constraints += [ -V[0, 17]*t2[0, 15] - 0.5*V[0, 19]*t1[0, 10]  ==  0 ]
 	constraints += [ -0.5*V[0, 5]*t1[0, 7]  ==  0 ]
 	constraints += [ -V[0, 17]*t2[0, 0] - 0.5*V[0, 19]*t1[0, 7]  ==  0 ]
-	constraints += [ -n - 0.5*V[0, 20]*t1[0, 10]  ==  0 ]
+	constraints += [ -n - 0.5*V[0, 20]*t1[0, 10]  >=  -0.25*lambda_2[0, 0] + 0.25*lambda_2[0, 1] - 0.5*lambda_2[0, 2] + 0.25*lambda_2[0, 4] - objc[20] ]
+	constraints += [ -n - 0.5*V[0, 20]*t1[0, 10]  <=  -0.25*lambda_2[0, 0] + 0.25*lambda_2[0, 1] - 0.5*lambda_2[0, 2] + 0.25*lambda_2[0, 4] + objc[20] ]
 	constraints += [ -V[0, 4]*t2[0, 8]  ==  0 ]
-	constraints += [ -V[0, 16]*t2[0, 8] - 0.5*V[0, 20]*t1[0, 7]  ==  0 ]
+	constraints += [ -V[0, 16]*t2[0, 8] - 0.5*V[0, 20]*t1[0, 7]  >=  0.125*lambda_2[0, 2] + 0.125*lambda_2[0, 3] - 0.125*lambda_2[0, 4] - objc[20] ]
+	constraints += [ -V[0, 16]*t2[0, 8] - 0.5*V[0, 20]*t1[0, 7]  <=  0.125*lambda_2[0, 2] + 0.125*lambda_2[0, 3] - 0.125*lambda_2[0, 4] + objc[20] ]
 	constraints += [ -0.5*V[0, 5]*t1[0, 0]  ==  0 ]
 	constraints += [ -V[0, 17]*t2[0, 8] - 0.5*V[0, 19]*t1[0, 0]  ==  0 ]
-	constraints += [ -0.5*V[0, 20]*t1[0, 0]  ==  0 ]
+	constraints += [ -0.5*V[0, 20]*t1[0, 0]  >=  0.0625*lambda_2[0, 2] + 0.0625*lambda_2[0, 3] - 0.0625*lambda_2[0, 4] - objc[20] ]
+	constraints += [ -0.5*V[0, 20]*t1[0, 0]  <=  0.0625*lambda_2[0, 2] + 0.0625*lambda_2[0, 3] - 0.0625*lambda_2[0, 4] + objc[20] ]
 	constraints += [ -0.25*V[0, 6]*t0[0, 7]  ==  0 ]
 	constraints += [ -V[0, 18]*t2[0, 15] - 0.25*V[0, 23]*t0[0, 7]  ==  0 ]
 	constraints += [ -V[0, 18]*t2[0, 0]  ==  0 ]
@@ -173,16 +177,20 @@ def LyaLP(c0, c1, c2, SVG_only=False):
 	constraints += [ -0.5*V[0, 21]*t1[0, 7]  ==  0 ]
 	constraints += [ -V[0, 18]*t2[0, 8]  ==  0 ]
 	constraints += [ -0.5*V[0, 21]*t1[0, 0]  ==  0 ]
-	constraints += [ -n - 0.25*V[0, 25]*t0[0, 7]  ==  0 ]
+	constraints += [ -n - 0.25*V[0, 25]*t0[0, 7]  >=  -0.25*lambda_2[0, 0] + 0.25*lambda_2[0, 1] - 0.5*lambda_2[0, 2] + 0.25*lambda_2[0, 4] - objc[25] ]
+	constraints += [ -n - 0.25*V[0, 25]*t0[0, 7]  <=  -0.25*lambda_2[0, 0] + 0.25*lambda_2[0, 1] - 0.5*lambda_2[0, 2] + 0.25*lambda_2[0, 4] + objc[25] ]
 	constraints += [ -V[0, 4]*t2[0, 7]  ==  0 ]
-	constraints += [ -V[0, 16]*t2[0, 7]  ==  0 ]
+	constraints += [ -V[0, 16]*t2[0, 7]  >=  0.125*lambda_2[0, 2] + 0.125*lambda_2[0, 3] - 0.125*lambda_2[0, 4] - objc[16] ]
+	constraints += [ -V[0, 16]*t2[0, 7]  <=  0.125*lambda_2[0, 2] + 0.125*lambda_2[0, 3] - 0.125*lambda_2[0, 4] + objc[16] ]
 	constraints += [ -0.5*V[0, 5]*t1[0, 4]  ==  0 ]
 	constraints += [ -V[0, 17]*t2[0, 7] - 0.5*V[0, 19]*t1[0, 4]  ==  0 ]
-	constraints += [ -0.5*V[0, 20]*t1[0, 4]  ==  0 ]
+	constraints += [ -0.5*V[0, 20]*t1[0, 4]  >=  0.125*lambda_2[0, 2] + 0.125*lambda_2[0, 3] - 0.125*lambda_2[0, 4] - objc[20] ]
+	constraints += [ -0.5*V[0, 20]*t1[0, 4]  <=  0.125*lambda_2[0, 2] + 0.125*lambda_2[0, 3] - 0.125*lambda_2[0, 4] + objc[20] ]
 	constraints += [ -0.25*V[0, 6]*t0[0, 0]  ==  0 ]
 	constraints += [ -V[0, 18]*t2[0, 7] - 0.25*V[0, 23]*t0[0, 0]  ==  0 ]
 	constraints += [ -0.5*V[0, 21]*t1[0, 4] - 0.25*V[0, 24]*t0[0, 0]  ==  0 ]
-	constraints += [ -0.25*V[0, 25]*t0[0, 0]  ==  0 ]
+	constraints += [ -0.25*V[0, 25]*t0[0, 0]  >=  0.0625*lambda_2[0, 2] + 0.0625*lambda_2[0, 3] - 0.0625*lambda_2[0, 4] - objc[25] ]
+	constraints += [ -0.25*V[0, 25]*t0[0, 0]  <=  0.0625*lambda_2[0, 2] + 0.0625*lambda_2[0, 3] - 0.0625*lambda_2[0, 4] + objc[25] ]
 	constraints += [ -0.5*V[0, 1] - V[0, 4]*t2[0, 14]  ==  0 ]
 	constraints += [ -1.0*V[0, 7] - 2*V[0, 10]*t2[0, 15] - V[0, 16]*t2[0, 14]  ==  0 ]
 	constraints += [ -0.5*V[0, 1] - V[0, 4]*t2[0, 10]  ==  0 ]
@@ -203,19 +211,23 @@ def LyaLP(c0, c1, c2, SVG_only=False):
 	constraints += [ -1.0*V[0, 9] - 2*V[0, 10]*t2[0, 7]  ==  0 ]
 	constraints += [ -0.5*V[0, 22]*t1[0, 4]  ==  0 ]
 	constraints += [ -0.25*V[0, 26]*t0[0, 0]  ==  0 ]
-	constraints += [ -n - 2*V[0, 10]*t2[0, 14] - 0.5*V[0, 16]  ==  0 ]
+	constraints += [ -n - 2*V[0, 10]*t2[0, 14] - 0.5*V[0, 16]  >=  -0.25*lambda_2[0, 0] + 0.25*lambda_2[0, 1] - 0.5*lambda_2[0, 2] + 0.25*lambda_2[0, 4] - objc[10] ]
+	constraints += [ -n - 2*V[0, 10]*t2[0, 14] - 0.5*V[0, 16]  <=  -0.25*lambda_2[0, 0] + 0.25*lambda_2[0, 1] - 0.5*lambda_2[0, 2] + 0.25*lambda_2[0, 4] + objc[10] ]
 	constraints += [ -V[0, 4]*t2[0, 6]  ==  0 ]
-	constraints += [ -2*V[0, 10]*t2[0, 10] - V[0, 16]*t2[0, 6] - 0.5*V[0, 16]  ==  0 ]
+	constraints += [ -2*V[0, 10]*t2[0, 10] - V[0, 16]*t2[0, 6] - 0.5*V[0, 16]  >=  0.125*lambda_2[0, 2] + 0.125*lambda_2[0, 3] - 0.125*lambda_2[0, 4] - objc[6] ]
+	constraints += [ -2*V[0, 10]*t2[0, 10] - V[0, 16]*t2[0, 6] - 0.5*V[0, 16]  <=  0.125*lambda_2[0, 2] + 0.125*lambda_2[0, 3] - 0.125*lambda_2[0, 4] + objc[6] ]
 	constraints += [ -0.5*V[0, 18]  ==  0 ]
 	constraints += [ -V[0, 17]*t2[0, 6] - 0.5*V[0, 17]  ==  0 ]
-	constraints += [ -2*V[0, 10]*t2[0, 4]  ==  0 ]
+	constraints += [ -2*V[0, 10]*t2[0, 4]  >=  0.125*lambda_2[0, 2] + 0.125*lambda_2[0, 3] - 0.125*lambda_2[0, 4] - objc[10] ]
+	constraints += [ -2*V[0, 10]*t2[0, 4]  <=  0.125*lambda_2[0, 2] + 0.125*lambda_2[0, 3] - 0.125*lambda_2[0, 4] + objc[10] ]
 	constraints += [ 0.5*V[0, 17]  ==  0 ]
 	constraints += [ -V[0, 18]*t2[0, 6] - 0.5*V[0, 18]  ==  0 ]
 	constraints += [ -V[0, 4]*t2[0, 1]  ==  0 ]
 	constraints += [ -2*V[0, 10]*t2[0, 6] - V[0, 16]*t2[0, 1]  ==  0 ]
 	constraints += [ -V[0, 17]*t2[0, 1]  ==  0 ]
 	constraints += [ -V[0, 18]*t2[0, 1]  ==  0 ]
-	constraints += [ -2*V[0, 10]*t2[0, 1]  ==  0 ]
+	constraints += [ -2*V[0, 10]*t2[0, 1]  >=  0.0625*lambda_2[0, 2] + 0.0625*lambda_2[0, 3] - 0.0625*lambda_2[0, 4] - objc[10] ]
+	constraints += [ -2*V[0, 10]*t2[0, 1]  <=  0.0625*lambda_2[0, 2] + 0.0625*lambda_2[0, 3] - 0.0625*lambda_2[0, 4] + objc[10] ]
 	constraints += [ -0.5*V[0, 2] - 0.5*V[0, 5]*t1[0, 11]  ==  0 ]
 	constraints += [ 0.5*V[0, 3] - 0.5*V[0, 13] - 0.5*V[0, 19]*t1[0, 11] - V[0, 22]*t2[0, 15]  ==  0 ]
 	constraints += [ -0.5*V[0, 5]*t1[0, 6] + 0.5*V[0, 14]  ==  0 ]
@@ -250,27 +262,33 @@ def LyaLP(c0, c1, c2, SVG_only=False):
 	constraints += [ -V[0, 22]*t2[0, 6]  ==  0 ]
 	constraints += [ -2*V[0, 10]*t2[0, 11]  ==  0 ]
 	constraints += [ -V[0, 22]*t2[0, 1]  ==  0 ]
-	constraints += [ -n - 1.0*V[0, 11]*t1[0, 11] - 0.5*V[0, 20]  ==  0 ]
+	constraints += [ -n - 1.0*V[0, 11]*t1[0, 11] - 0.5*V[0, 20]  >=  -0.25*lambda_2[0, 0] + 0.25*lambda_2[0, 1] - 0.5*lambda_2[0, 2] + 0.25*lambda_2[0, 4] - objc[11] ]
+	constraints += [ -n - 1.0*V[0, 11]*t1[0, 11] - 0.5*V[0, 20]  <=  -0.25*lambda_2[0, 0] + 0.25*lambda_2[0, 1] - 0.5*lambda_2[0, 2] + 0.25*lambda_2[0, 4] + objc[11] ]
 	constraints += [ -V[0, 4]*t2[0, 9] + 0.5*V[0, 21]  ==  0 ]
-	constraints += [ -1.0*V[0, 11]*t1[0, 6] - V[0, 16]*t2[0, 9]  ==  0 ]
+	constraints += [ -1.0*V[0, 11]*t1[0, 6] - V[0, 16]*t2[0, 9]  >=  0.125*lambda_2[0, 2] + 0.125*lambda_2[0, 3] - 0.125*lambda_2[0, 4] - objc[16] ]
+	constraints += [ -1.0*V[0, 11]*t1[0, 6] - V[0, 16]*t2[0, 9]  <=  0.125*lambda_2[0, 2] + 0.125*lambda_2[0, 3] - 0.125*lambda_2[0, 4] + objc[16] ]
 	constraints += [ -0.5*V[0, 5]*t1[0, 3]  ==  0 ]
 	constraints += [ -V[0, 17]*t2[0, 9] - 0.5*V[0, 19]*t1[0, 3] - 0.5*V[0, 19] - V[0, 22]*t2[0, 13]  ==  0 ]
-	constraints += [ -1.0*V[0, 11]*t1[0, 5] - 0.5*V[0, 20]*t1[0, 3] - 0.5*V[0, 20]  ==  0 ]
+	constraints += [ -1.0*V[0, 11]*t1[0, 5] - 0.5*V[0, 20]*t1[0, 3] - 0.5*V[0, 20]  >=  0.125*lambda_2[0, 2] + 0.125*lambda_2[0, 3] - 0.125*lambda_2[0, 4] - objc[11] ]
+	constraints += [ -1.0*V[0, 11]*t1[0, 5] - 0.5*V[0, 20]*t1[0, 3] - 0.5*V[0, 20]  <=  0.125*lambda_2[0, 2] + 0.125*lambda_2[0, 3] - 0.125*lambda_2[0, 4] + objc[11] ]
 	constraints += [ -0.5*V[0, 19]  ==  0 ]
 	constraints += [ -V[0, 18]*t2[0, 9]  ==  0 ]
 	constraints += [ -0.5*V[0, 21]*t1[0, 3] - 0.5*V[0, 21] - 0.25*V[0, 27]*t0[0, 8]  ==  0 ]
-	constraints += [ -1.0*V[0, 11]*t1[0, 2]  ==  0 ]
+	constraints += [ -1.0*V[0, 11]*t1[0, 2]  >=  0.125*lambda_2[0, 2] + 0.125*lambda_2[0, 3] - 0.125*lambda_2[0, 4] - objc[11] ]
+	constraints += [ -1.0*V[0, 11]*t1[0, 2]  <=  0.125*lambda_2[0, 2] + 0.125*lambda_2[0, 3] - 0.125*lambda_2[0, 4] + objc[11] ]
 	constraints += [ -V[0, 4]*t2[0, 3] - 0.25*V[0, 27]  ==  0 ]
 	constraints += [ -2*V[0, 10]*t2[0, 9] - V[0, 16]*t2[0, 3]  ==  0 ]
 	constraints += [ -V[0, 17]*t2[0, 3] - 0.5*V[0, 22]*t1[0, 3] - V[0, 22]*t2[0, 11]  ==  0 ]
 	constraints += [ -V[0, 18]*t2[0, 3]  ==  0 ]
-	constraints += [ -2*V[0, 10]*t2[0, 3]  ==  0 ]
+	constraints += [ -2*V[0, 10]*t2[0, 3]  >=  0.125*lambda_2[0, 2] + 0.125*lambda_2[0, 3] - 0.125*lambda_2[0, 4] - objc[10] ]
+	constraints += [ -2*V[0, 10]*t2[0, 3]  <=  0.125*lambda_2[0, 2] + 0.125*lambda_2[0, 3] - 0.125*lambda_2[0, 4] + objc[10] ]
 	constraints += [ -0.5*V[0, 5]*t1[0, 1]  ==  0 ]
 	constraints += [ -0.5*V[0, 19]*t1[0, 1] - V[0, 22]*t2[0, 9]  ==  0 ]
 	constraints += [ -1.0*V[0, 11]*t1[0, 3] - 0.5*V[0, 20]*t1[0, 1]  ==  0 ]
 	constraints += [ -0.5*V[0, 21]*t1[0, 1]  ==  0 ]
 	constraints += [ -0.5*V[0, 22]*t1[0, 1] - V[0, 22]*t2[0, 3]  ==  0 ]
-	constraints += [ -1.0*V[0, 11]*t1[0, 1]  ==  0 ]
+	constraints += [ -1.0*V[0, 11]*t1[0, 1]  >=  0.0625*lambda_2[0, 2] + 0.0625*lambda_2[0, 3] - 0.0625*lambda_2[0, 4] - objc[11] ]
+	constraints += [ -1.0*V[0, 11]*t1[0, 1]  <=  0.0625*lambda_2[0, 2] + 0.0625*lambda_2[0, 3] - 0.0625*lambda_2[0, 4] + objc[11] ]
 	constraints += [ -0.5*V[0, 3] - 0.25*V[0, 6]*t0[0, 6]  ==  0 ]
 	constraints += [ -0.5*V[0, 2] - 0.5*V[0, 14] - 0.25*V[0, 23]*t0[0, 6] - V[0, 26]*t2[0, 15]  ==  0 ]
 	constraints += [ -0.25*V[0, 6]*t0[0, 4] - 0.5*V[0, 13]  ==  0 ]
@@ -324,37 +342,44 @@ def LyaLP(c0, c1, c2, SVG_only=False):
 	constraints += [ -1.0*V[0, 11]*t1[0, 12]  ==  0 ]
 	constraints += [ -V[0, 26]*t2[0, 3]  ==  0 ]
 	constraints += [ -0.5*V[0, 27]*t1[0, 1]  ==  0 ]
-	constraints += [ -n - 0.5*V[0, 12]*t0[0, 6] - 0.5*V[0, 25]  ==  0 ]
+	constraints += [ -n - 0.5*V[0, 12]*t0[0, 6] - 0.5*V[0, 25]  >=  -0.25*lambda_2[0, 0] + 0.25*lambda_2[0, 1] - 0.5*lambda_2[0, 2] + 0.25*lambda_2[0, 4] - objc[25] ]
+	constraints += [ -n - 0.5*V[0, 12]*t0[0, 6] - 0.5*V[0, 25]  <=  -0.25*lambda_2[0, 0] + 0.25*lambda_2[0, 1] - 0.5*lambda_2[0, 2] + 0.25*lambda_2[0, 4] + objc[25] ]
 	constraints += [ -V[0, 4]*t2[0, 5] - 0.5*V[0, 24]  ==  0 ]
-	constraints += [ -0.5*V[0, 12]*t0[0, 4] - V[0, 16]*t2[0, 5]  ==  0 ]
+	constraints += [ -0.5*V[0, 12]*t0[0, 4] - V[0, 16]*t2[0, 5]  >=  0.125*lambda_2[0, 2] + 0.125*lambda_2[0, 3] - 0.125*lambda_2[0, 4] - objc[12] ]
+	constraints += [ -0.5*V[0, 12]*t0[0, 4] - V[0, 16]*t2[0, 5]  <=  0.125*lambda_2[0, 2] + 0.125*lambda_2[0, 3] - 0.125*lambda_2[0, 4] + objc[12] ]
 	constraints += [ 0.5*V[0, 23]  ==  0 ]
 	constraints += [ -V[0, 17]*t2[0, 5]  ==  0 ]
-	constraints += [ -0.5*V[0, 12]*t0[0, 3]  ==  0 ]
+	constraints += [ -0.5*V[0, 12]*t0[0, 3]  >=  0.125*lambda_2[0, 2] + 0.125*lambda_2[0, 3] - 0.125*lambda_2[0, 4] - objc[12] ]
+	constraints += [ -0.5*V[0, 12]*t0[0, 3]  <=  0.125*lambda_2[0, 2] + 0.125*lambda_2[0, 3] - 0.125*lambda_2[0, 4] + objc[12] ]
 	constraints += [ -0.25*V[0, 6]*t0[0, 5]  ==  0 ]
 	constraints += [ -V[0, 18]*t2[0, 5] - 0.25*V[0, 23]*t0[0, 5] - 0.5*V[0, 23]  ==  0 ]
 	constraints += [ -0.25*V[0, 24]*t0[0, 5] - 0.5*V[0, 24] - 0.5*V[0, 27]*t1[0, 9]  ==  0 ]
-	constraints += [ -0.5*V[0, 12]*t0[0, 2] - 0.25*V[0, 25]*t0[0, 5] - 0.5*V[0, 25]  ==  0 ]
+	constraints += [ -0.5*V[0, 12]*t0[0, 2] - 0.25*V[0, 25]*t0[0, 5] - 0.5*V[0, 25]  >=  0.125*lambda_2[0, 2] + 0.125*lambda_2[0, 3] - 0.125*lambda_2[0, 4] - objc[25] ]
+	constraints += [ -0.5*V[0, 12]*t0[0, 2] - 0.25*V[0, 25]*t0[0, 5] - 0.5*V[0, 25]  <=  0.125*lambda_2[0, 2] + 0.125*lambda_2[0, 3] - 0.125*lambda_2[0, 4] + objc[25] ]
 	constraints += [ -V[0, 4]*t2[0, 2] + 1.5*V[0, 27]  ==  0 ]
 	constraints += [ -2*V[0, 10]*t2[0, 5] - V[0, 16]*t2[0, 2]  ==  0 ]
 	constraints += [ -V[0, 17]*t2[0, 2]  ==  0 ]
 	constraints += [ -V[0, 18]*t2[0, 2] - 0.25*V[0, 26]*t0[0, 5] - V[0, 26]*t2[0, 12]  ==  0 ]
-	constraints += [ -2*V[0, 10]*t2[0, 2]  ==  0 ]
+	constraints += [ -2*V[0, 10]*t2[0, 2]  >=  0.125*lambda_2[0, 2] + 0.125*lambda_2[0, 3] - 0.125*lambda_2[0, 4] - objc[10] ]
+	constraints += [ -2*V[0, 10]*t2[0, 2]  <=  0.125*lambda_2[0, 2] + 0.125*lambda_2[0, 3] - 0.125*lambda_2[0, 4] + objc[10] ]
 	constraints += [ -0.5*V[0, 5]*t1[0, 8] - 2*V[0, 26]  ==  0 ]
 	constraints += [ -0.5*V[0, 19]*t1[0, 8] - V[0, 22]*t2[0, 5]  ==  0 ]
 	constraints += [ -0.5*V[0, 20]*t1[0, 8]  ==  0 ]
 	constraints += [ -0.5*V[0, 21]*t1[0, 8] - 0.25*V[0, 27]*t0[0, 5] - 0.5*V[0, 27]*t1[0, 12]  ==  0 ]
 	constraints += [ -0.5*V[0, 22]*t1[0, 8] - V[0, 22]*t2[0, 2]  ==  0 ]
-	constraints += [ -1.0*V[0, 11]*t1[0, 8]  ==  0 ]
+	constraints += [ -1.0*V[0, 11]*t1[0, 8]  >=  0.125*lambda_2[0, 2] + 0.125*lambda_2[0, 3] - 0.125*lambda_2[0, 4] - objc[11] ]
+	constraints += [ -1.0*V[0, 11]*t1[0, 8]  <=  0.125*lambda_2[0, 2] + 0.125*lambda_2[0, 3] - 0.125*lambda_2[0, 4] + objc[11] ]
 	constraints += [ -0.25*V[0, 6]*t0[0, 1]  ==  0 ]
 	constraints += [ -0.25*V[0, 23]*t0[0, 1] - V[0, 26]*t2[0, 5]  ==  0 ]
 	constraints += [ -0.25*V[0, 24]*t0[0, 1]  ==  0 ]
 	constraints += [ -0.5*V[0, 12]*t0[0, 5] - 0.25*V[0, 25]*t0[0, 1]  ==  0 ]
 	constraints += [ -0.25*V[0, 26]*t0[0, 1] - V[0, 26]*t2[0, 2]  ==  0 ]
 	constraints += [ -0.25*V[0, 27]*t0[0, 1] - 0.5*V[0, 27]*t1[0, 8]  ==  0 ]
-	constraints += [ -0.5*V[0, 12]*t0[0, 1]  ==  0 ]
-
-	constraints += [ V <= 0.5 ]
-	constraints += [ V >= -0.2 ]
+	constraints += [ -0.5*V[0, 12]*t0[0, 1]  >=  0.0625*lambda_2[0, 2] + 0.0625*lambda_2[0, 3] - 0.0625*lambda_2[0, 4] - objc[12] ]
+	constraints += [ -0.5*V[0, 12]*t0[0, 1]  <=  0.0625*lambda_2[0, 2] + 0.0625*lambda_2[0, 3] - 0.0625*lambda_2[0, 4] + objc[12] ]
+	
+	# constraints += [ V <= 0.5 ]
+	# constraints += [ V >= -0.2 ]
 
 	problem = cp.Problem(objective, constraints)
 	assert problem.is_dcp()
@@ -372,8 +397,8 @@ def LyaLP(c0, c1, c2, SVG_only=False):
 	theta_t2 = torch.from_numpy(c2).float()
 	theta_t2.requires_grad = True
 
-	layer = CvxpyLayer(problem, parameters=[t0, t1, t2], variables=[lambda_1, m, n, V, objc])
-	lambda1_star, m_star, n_star, V_star, objc_star = layer(theta_t0, theta_t1, theta_t2, solver_args={'solve_method':'ECOS'})
+	layer = CvxpyLayer(problem, parameters=[t0, t1, t2], variables=[lambda_1, lambda_2, m, n, V, objc])
+	lambda1_star, lambda2_star, m_star, n_star, V_star, objc_star = layer(theta_t0, theta_t1, theta_t2, solver_args={'solve_method':'ECOS'})
 
 	torch.norm(objc_star).backward()
 
@@ -410,6 +435,22 @@ def generateConstraints_der(x, y, z, m, n, p, exp1, exp2, degree):
 								if exp1.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f) != 0:
 									print('constraints += [', exp1.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f), ' == ', exp2.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f), ']')
 
+def generateConstraints(x, y, z, m, n, p, exp1, exp2, degree):
+	constraints = []
+	for a in range(degree+1):
+		for b in range(degree+1):
+			for c in range(degree+1):
+				for d in range(degree+1):
+					for e in range(degree+1):
+						for f in range(degree+1):
+							if a + b + c + d + e + f <= degree:
+								if exp1.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f) != 0:
+									if exp2.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f) != 0:
+										print('constraints += [', exp1.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f), ' >= ', exp2.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f), '- objc', ']')
+										print('constraints += [', exp1.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f), ' <= ', exp2.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f), '+ objc', ']')
+										# print('constraints += [', exp1.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f), ' == ', exp2.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f), ']')
+									else:
+										print('constraints += [', exp1.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f), ' == ', exp2.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f), ']')
 
 
 
@@ -417,13 +458,13 @@ def generateConstraints_der(x, y, z, m, n, p, exp1, exp2, degree):
 def LyapunovConstraints():
 	a, b, c, d, e, f, m, n = symbols('a,b,c,d,e,f, m, n')
 	# Confined in the [-2,2]^6 spaces
-	Poly = [0.5*(a**2+b**2+c**2+d**2+e**2+f**2)**0.5, 1 - 0.5*(a**2+b**2+c**2+d**2+e**2+f**2)**0.5]
+	Poly = [0.25*(a**2+b**2+c**2+d**2+e**2+f**2), 1 - 0.25*(a**2+b**2+c**2+d**2+e**2+f**2)]
 	X = [a, b, c, d, e, f]
 	
 	# Generate the possible handelman product to the power defined
-	poly_list = possible_handelman_generation(4, Poly)
+	poly_list = Matrix(possible_handelman_generation(2, Poly))
 	# incorporate the interval with handelman basis
-	monomial_list = monomial_generation(2, X)
+	monomial_list = Matrix(monomial_generation(2, X))
 	V = MatrixSymbol('V', 1, len(monomial_list))
 	lambda_poly_der = MatrixSymbol('lambda_2', 1, len(poly_list))
 	lambda_poly_init = MatrixSymbol('lambda_1', 1, len(poly_list))
@@ -434,8 +475,8 @@ def LyapunovConstraints():
 	rhs_init = lambda_poly_init * poly_list
 	# print("Pass the timing process_2")
 	rhs_init = expand(rhs_init[0, 0])
-	print("#---------------The initial conditions--------------")
-	generateConstraints_init(a,b,c,d,e,f, lhs_init, rhs_init, degree=2)
+	print("#-------------------The initial conditions-------------------")
+	generateConstraints(a,b,c,d,e,f, lhs_init, rhs_init, degree=2)
 
 	# Lya = V*quadraticBase
 	# Lya = expand(Lya[0, 0])
@@ -448,6 +489,10 @@ def LyapunovConstraints():
 	# partialf = diff(lhs_init, f)
 	# gradVtox = Matrix([[partiala, partialb, partialc, partiald, partiale, partialf]])
 
+	# u0Base = Matrix([[d**3, a**3, a*d**2, a*e**2, a*f**2, a**2*d, a, d, b*d*e]])
+	# u1Base = Matrix([[e**3, b**3, b*d**2, b**2*e, d**2*e, b*e**2, b*f**2, e*f**2, a**2*b, a*d*e, e, b, a*b*d]])
+	# u2Base = Matrix([[f**3, c**3, a**2*c, b**2*c, c*e**2, a**2*f, c**2*f, d**2*f, e**2*f, b**2*f, c*f**2, b*c*e, a*c*d, b*e*f, c, f]])
+	
 	u0Base = Matrix([[d**3, a**3, a*d**2, a*e**2, a*f**2, a**2*d, a, d, b*d*e]])
 	u1Base = Matrix([[e**3, b**3, b*d**2, b**2*e, d**2*e, b*e**2, b*f**2, e*f**2, a**2*b, a*d*e, e, b, a*b*d]])
 	u2Base = Matrix([[f**3, c**3, a**2*c, b**2*c, c*e**2, a**2*f, c**2*f, d**2*f, e**2*f, b**2*f, c*f**2, b*c*e, a*c*d, b*e*f, c, f]])
@@ -464,7 +509,7 @@ def LyapunovConstraints():
 	u2 = expand(u2[0, 0])
 
 	print(" ")
-	print("#---------------The Lie Derivative conditions--------------")
+	print("#------------------The Lie Derivative conditions------------------")
 	print(" ")
 	dynamics = [0.25*(u0 + b*c), 
 				0.5*(u1 - 3*a*c), 
@@ -482,7 +527,7 @@ def LyapunovConstraints():
 	rhs_der = lambda_poly_der * poly_list
 	rhs_der = expand(rhs_der[0,0])
 
-	generateConstraints_der(a,b,c,d,e,f, lhs_der, rhs_der, degree=4)
+	generateConstraints(a,b,c,d,e,f, lhs_der, rhs_der, degree=4)
 	print(monomial_list,len(monomial_list),len(poly_list))
 	temp = V*monomial_der
 	print(expand(temp[0, 0]))
@@ -790,7 +835,7 @@ if __name__ == '__main__':
 				c0 -= 1e-2*np.clip(sdpt0[0], -1e2, 1e2)
 				c1 -= 1e-2*np.clip(sdpt1[0], -1e2, 1e2)
 				c2 -= 1e-2*np.clip(sdpt2[0], -1e2, 1e2)
-				print(slack, valueTest, LieTest)
+				print(LA.norm(slack), valueTest, LieTest)
 				print('Lyapunov function: ', V)
 				if it > 20 and LA.norm(slack) < 1e-3 and valueTest and LieTest:
 					print('SOS succeed! Controller parameters for u0, u1, u2 are: ')
