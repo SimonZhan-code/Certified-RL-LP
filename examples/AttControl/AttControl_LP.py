@@ -458,25 +458,28 @@ def generateConstraints(x, y, z, m, n, p, exp1, exp2, degree):
 def LyapunovConstraints():
 	a, b, c, d, e, f, m, n = symbols('a,b,c,d,e,f, m, n')
 	# Confined in the [-2,2]^6 spaces
-	Poly = [0.25*(a**2+b**2+c**2+d**2+e**2+f**2), 1 - 0.25*(a**2+b**2+c**2+d**2+e**2+f**2)]
+	Poly = [2-a, 2-b, 2-c, 2-d, 2-e, 2-f]
 	X = [a, b, c, d, e, f]
 	
 	# Generate the possible handelman product to the power defined
-	poly_list = Matrix(possible_handelman_generation(2, Poly))
+	poly_list = Matrix(possible_handelman_generation(4, Poly))
 	# incorporate the interval with handelman basis
 	monomial_list = Matrix(monomial_generation(2, X))
+	# print(monomial_list)
 	V = MatrixSymbol('V', 1, len(monomial_list))
 	lambda_poly_der = MatrixSymbol('lambda_2', 1, len(poly_list))
 	lambda_poly_init = MatrixSymbol('lambda_1', 1, len(poly_list))
 
-	lhs_init = V * monomial_list - m*Matrix([a**2 + b**2 + c**2 + d**2 + e**2 + f**2])
+	lhs_init = V * monomial_list
 	# print("Pass the timing process_1")
-	lhs_init = expand(lhs_init[0,0])
+	lhs_init = lhs_init[0, 0].expand()
+	
 	rhs_init = lambda_poly_init * poly_list
 	# print("Pass the timing process_2")
-	rhs_init = expand(rhs_init[0, 0])
+	rhs_init = rhs_init[0, 0].expand()
+
 	print("#-------------------The initial conditions-------------------")
-	generateConstraints(a,b,c,d,e,f, lhs_init, rhs_init, degree=2)
+	generateConstraints(a, b, c, d, e, f, lhs_init, rhs_init, degree=2)
 
 	# Lya = V*quadraticBase
 	# Lya = expand(Lya[0, 0])
@@ -492,14 +495,15 @@ def LyapunovConstraints():
 	# u0Base = Matrix([[d**3, a**3, a*d**2, a*e**2, a*f**2, a**2*d, a, d, b*d*e]])
 	# u1Base = Matrix([[e**3, b**3, b*d**2, b**2*e, d**2*e, b*e**2, b*f**2, e*f**2, a**2*b, a*d*e, e, b, a*b*d]])
 	# u2Base = Matrix([[f**3, c**3, a**2*c, b**2*c, c*e**2, a**2*f, c**2*f, d**2*f, e**2*f, b**2*f, c*f**2, b*c*e, a*c*d, b*e*f, c, f]])
-	
-	u0Base = Matrix([[d**3, a**3, a*d**2, a*e**2, a*f**2, a**2*d, a, d, b*d*e]])
-	u1Base = Matrix([[e**3, b**3, b*d**2, b**2*e, d**2*e, b*e**2, b*f**2, e*f**2, a**2*b, a*d*e, e, b, a*b*d]])
-	u2Base = Matrix([[f**3, c**3, a**2*c, b**2*c, c*e**2, a**2*f, c**2*f, d**2*f, e**2*f, b**2*f, c*f**2, b*c*e, a*c*d, b*e*f, c, f]])
+	temp = monomial_generation(2, X)
+	temp.remove(1)
+	u0Base = Matrix([temp])
+	u1Base = Matrix([temp])
+	u2Base = Matrix([temp])
 
-	t0 = MatrixSymbol('t0', 1, 9)
-	t1 = MatrixSymbol('t1', 1, 13)
-	t2 = MatrixSymbol('t2', 1, 16)
+	t0 = MatrixSymbol('t0', 1, len(temp))
+	t1 = MatrixSymbol('t1', 1, len(temp))
+	t2 = MatrixSymbol('t2', 1, len(temp))
 
 	u0 = t0*u0Base.T
 	u1 = t1*u1Base.T
@@ -511,6 +515,7 @@ def LyapunovConstraints():
 	print(" ")
 	print("#------------------The Lie Derivative conditions------------------")
 	print(" ")
+
 	dynamics = [0.25*(u0 + b*c), 
 				0.5*(u1 - 3*a*c), 
 				u2 + 2*a*b, 
@@ -519,18 +524,18 @@ def LyapunovConstraints():
 				0.5*(a*(d*f - e) + b*(e*f + d) + c*(f**2 + 1))]
 	# lhs_der= -gradVtox*dynamics - n*Matrix([2 - a**2 - b**2 - c**2 - d**2 - e**2 - f**2])
 	# lhs_der = expand(lhs_der[0, 0])
-
-	monomial_der = GetDerivative(dynamics, monomial_list, X)
-	lhs_der = -V * monomial_der- n*Matrix([a**2 + b**2 + c**2 + d**2 + e**2 + f**2])
-	lhs_der = expand(lhs_der[0,0])
+	temp = monomial_generation(2, X)
+	monomial_der = GetDerivative(dynamics, temp, X)
+	lhs_der = - V * monomial_der - 0.1 * Matrix([a**2 + b**2 + c**2 + d**2 + e**2 + f**2])
+	lhs_der = lhs_der[0,0].expand()
 
 	rhs_der = lambda_poly_der * poly_list
-	rhs_der = expand(rhs_der[0,0])
+	rhs_der = rhs_der[0,0].expand()
 
-	generateConstraints(a,b,c,d,e,f, lhs_der, rhs_der, degree=4)
+	generateConstraints(a, b, c, d, e, f, lhs_der, rhs_der, degree=4)
 	print(monomial_list,len(monomial_list),len(poly_list))
-	temp = V*monomial_der
-	print(expand(temp[0, 0]))
+	# temp = V*monomial_der
+	# print(expand(temp[0, 0]))
 
 
 
@@ -852,6 +857,7 @@ if __name__ == '__main__':
 	# print('baseline starts here')
 	# baseline()
 	# print('')
-	print('Our approach starts here')
-	Ours()
-	# LyapunovConstraints()
+	# print('Our approach starts here')
+	# Ours()
+	LyapunovConstraints()
+	# print (cp.installed_solvers())
