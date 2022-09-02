@@ -143,6 +143,8 @@ def LyaSDP(c0, c1, c2, SVG_only=False):
 	constraints += [ X[0, 1] + X[1, 0]  <=  V[0, 7] + objc ]
 	constraints += [ X[0, 0]  >=  m + V[0, 6] - objc ]
 	constraints += [ X[0, 0]  <=  m + V[0, 6] + objc ]
+
+
 	constraints += [ Y[0, 0]  >=  -2*n - objc ]
 	constraints += [ Y[0, 0]  <=  -2*n + objc ]
 	constraints += [ Y[0, 6] + Y[6, 0]  >=  -V[0, 2]*t2[0, 15] - objc ]
@@ -586,7 +588,9 @@ def LyaSDP(c0, c1, c2, SVG_only=False):
 
 	return V, objc_star.detach().numpy(), theta_t0.grad.detach().numpy(), theta_t1.grad.detach().numpy(), theta_t2.grad.detach().numpy(), valueTest, LieTest
 
+
 def LyapunovConstraints():
+	
 	a, b, c, d, e, f, m, n = symbols('a,b,c,d,e,f, m, n')
 	quadraticBase = Matrix([a,b,c,d,e,f, a**2, a*b, b**2, a*c, b*c, c**2, a*d, b*d, c*d, d**2, a*e, b*e, c*e, d*e, e**2, a*f, b*f, c*f, d*f, e*f, f**2])
 	ele = Matrix([a,b,c,d,e,f])
