@@ -1,3 +1,6 @@
+from calendar import c
+from cmath import e
+from this import d
 import cvxpy as cp
 import numpy as np
 import numpy.random as npr
@@ -464,27 +467,26 @@ def generateConstraints_der(x, y, z, m, n, p, exp1, exp2, degree):
 									print('constraints += [', exp1.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f), ' == ', exp2.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f), ']')
 
 
-def generateConstraints(x, y, z, m, n, p, exp1, exp2, file, degree):
-	for a in range(degree+1):
-		for b in range(degree+1):
-			for c in range(degree+1):
-				for d in range(degree+1):
-					for e in range(degree+1):
-						for f in range(degree+1):
-							if a + b + c + d + e + f <= degree:
-								if exp1.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f) != 0:
-									if exp2.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f) != 0:
-										file.write('constraints += [' + str(exp1.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f)) + ' >= ' + str(exp2.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f)) + '- objc' + ']\n')
-										file.write('constraints += [' + str(exp1.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f)) + ' <= ' + str(exp2.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f)) + '+ objc' + ']\n')
-											# print('constraints += [', exp1.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f), ' == ', exp2.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f), ']')
-									else:
-										file.write('constraints += [' + str(exp1.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f)) + ' == ' + str(exp2.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f)) + ']\n')
-
-
 
 ## Generate the Lyapunov conditions
 def LyapunovConstraints():
-	
+
+	def generateConstraints(exp1, exp2, file, degree):
+		for x in range(degree+1):
+			for y in range(degree+1):
+				for z in range(degree+1):
+					for m in range(degree+1):
+						for n in range(degree+1):
+							for p in range(degree+1):
+								if x + y + z + m + n + p <= degree:
+									if exp1.coeff(a,x).coeff(b,y).coeff(c,z).coeff(d,m).coeff(e,n).coeff(f,p) != 0:
+										if exp2.coeff(a,x).coeff(b,y).coeff(c,z).coeff(d,m).coeff(e,n).coeff(f,p) != 0:
+											file.write('constraints += [' + str(exp1.coeff(a,x).coeff(b,y).coeff(c,z).coeff(d,m).coeff(e,n).coeff(f,p)) + ' >= ' + str(exp2.coeff(a,x).coeff(b,y).coeff(c,z).coeff(d,m).coeff(e,n).coeff(f,p)) + '- objc' + ']\n')
+											file.write('constraints += [' + str(exp1.coeff(a,x).coeff(b,y).coeff(c,z).coeff(d,m).coeff(e,n).coeff(f,p)) + ' <= ' + str(exp2.coeff(a,x).coeff(b,y).coeff(c,z).coeff(d,m).coeff(e,n).coeff(f,p)) + '+ objc' + ']\n')
+												# print('constraints += [', exp1.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f), ' == ', exp2.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f), ']')
+										else:
+											file.write('constraints += [' + str(exp1.coeff(a,x).coeff(b,y).coeff(c,z).coeff(d,m).coeff(e,n).coeff(f,p)) + ' == ' + str(exp2.coeff(a,x).coeff(b,y).coeff(c,z).coeff(d,m).coeff(e,n).coeff(f,p)) + ']\n')
+
 	a, b, c, d, e, f, m, n = symbols('a,b,c,d,e,f, m, n')
 	# Confined in the [-2,2]^6 spaces
 	Poly = [2-a, 2-b, 2-c, 2-d, 2-e, 2-f]
@@ -508,9 +510,9 @@ def LyapunovConstraints():
 	rhs_init = lambda_poly_init * poly_list
 	# print("Get done the right hand side mul")
 	rhs_init = rhs_init[0, 0].expand()
-	f = open("cons.txt","w")
+	f = open("cons.txt","w+")
 	f.write("#-------------------The initial conditions-------------------\n")
-	generateConstraints(a, b, c, d, e, f, lhs_init, rhs_init, f, degree=3)
+	generateConstraints(lhs_init, rhs_init, f, degree=3)
 		# f.close()
 	# Lya = V*quadraticBase
 	# Lya = expand(Lya[0, 0])
@@ -566,7 +568,7 @@ def LyapunovConstraints():
 	# with open('cons.txt', 'a+') as f:
 	f.write("\n")
 	f.write("#------------------The Lie Derivative conditions------------------\n")
-	generateConstraints(a, b, c, d, e, f, lhs_der, rhs_der, f, degree=6)
+	generateConstraints(lhs_der, rhs_der, f, degree=6)
 	f.write("\n")
 	f.write("#------------------Monomial and Polynomial Terms------------------\n")
 	f.write(str(monomial_list)+"\n")
