@@ -464,7 +464,7 @@ def generateConstraints_der(x, y, z, m, n, p, exp1, exp2, degree):
 									print('constraints += [', exp1.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f), ' == ', exp2.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f), ']')
 
 
-def generateConstraints(x, y, z, m, n, p, exp1, exp2, degree):
+def generateConstraints(x, y, z, m, n, p, exp1, exp2, file, degree):
 	for a in range(degree+1):
 		for b in range(degree+1):
 			for c in range(degree+1):
@@ -474,11 +474,11 @@ def generateConstraints(x, y, z, m, n, p, exp1, exp2, degree):
 							if a + b + c + d + e + f <= degree:
 								if exp1.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f) != 0:
 									if exp2.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f) != 0:
-										print('constraints += [', exp1.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f), ' >= ', exp2.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f), '- objc', ']')
-										print('constraints += [', exp1.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f), ' <= ', exp2.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f), '+ objc', ']')
+										file.write('constraints += [' + str(exp1.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f)) + ' >= ' + str(exp2.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f)) + '- objc' + ']\n')
+										file.write('constraints += [' + str(exp1.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f)) + ' <= ' + str(exp2.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f)) + '+ objc' + ']\n')
 											# print('constraints += [', exp1.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f), ' == ', exp2.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f), ']')
 									else:
-										print('constraints += [', exp1.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f), ' == ', exp2.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f), ']')
+										file.write('constraints += [' + str(exp1.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f)) + ' == ' + str(exp2.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f)) + ']\n')
 
 
 
@@ -508,13 +508,9 @@ def LyapunovConstraints():
 	rhs_init = lambda_poly_init * poly_list
 	# print("Get done the right hand side mul")
 	rhs_init = rhs_init[0, 0].expand()
-	# print("Get done the right hand side expansion")
-	# with open('cons.txt', 'a+') as f:
-	print("#-------------------The initial conditions-------------------\n")
-	print(" ")
-		# f.close()
-	# print("Start writing to the .txt file")
-	generateConstraints(a, b, c, d, e, f, lhs_init, rhs_init, degree=3)
+	f = open("cons.txt","w")
+	f.write("#-------------------The initial conditions-------------------\n")
+	generateConstraints(a, b, c, d, e, f, lhs_init, rhs_init, f, degree=3)
 		# f.close()
 	# Lya = V*quadraticBase
 	# Lya = expand(Lya[0, 0])
@@ -559,7 +555,7 @@ def LyapunovConstraints():
 				0.5*(a*(d*f - e) + b*(e*f + d) + c*(f**2 + 1))]
 	# lhs_der= -gradVtox*dynamics - n*Matrix([2 - a**2 - b**2 - c**2 - d**2 - e**2 - f**2])
 	# lhs_der = expand(lhs_der[0, 0])
-	temp = monomial_generation(2, X)
+	temp = monomial_generation(3, X)
 	monomial_der = GetDerivative(dynamics, temp, X)
 	lhs_der = - V * monomial_der - 0.5 * Matrix([2 - a**2 - b**2 - c**2 - d**2 - e**2 - f**2])
 	lhs_der = lhs_der[0,0].expand()
@@ -568,15 +564,19 @@ def LyapunovConstraints():
 	rhs_der = rhs_der[0,0].expand()
 
 	# with open('cons.txt', 'a+') as f:
-	print(" ")
-	print("#------------------The Lie Derivative conditions------------------\n")
-	print(" ")
-	generateConstraints(a, b, c, d, e, f, lhs_der, rhs_der, degree=6)
-		# f.close()
-	print(monomial_list,len(monomial_list),len(poly_list))
-	# f.close()
-	# temp = V*monomial_der
-	# print(expand(temp[0, 0]))
+	f.write("\n")
+	f.write("#------------------The Lie Derivative conditions------------------\n")
+	generateConstraints(a, b, c, d, e, f, lhs_der, rhs_der, f, degree=6)
+	f.write("\n")
+	f.write("#------------------Monomial and Polynomial Terms------------------\n")
+	f.write(str(monomial_list)+"\n")
+	f.write(str(len(monomial_list))+"\n")
+	f.write(str(len(poly_list))+"\n")
+	f.write("\n")
+	f.write("#------------------Lie Derivative test------------------\n")
+	temp = V*monomial_der
+	f.write(str(expand(temp[0, 0]))+"\n")
+	f.close()
 
 
 

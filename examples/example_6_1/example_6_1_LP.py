@@ -339,13 +339,12 @@ def plot(control_param, V, figname, N=5):
 
 def constraintsAutoGenerate():
 	### Lyapunov function varibale declaration ###
-	def generateConstraints(exp1, exp2, degree):
-		constraints = []
+	def generateConstraints(exp1, exp2, file, degree):
 		for i in range(degree+1):
 			for j in range(degree+1):
 					if i + j <= degree:
 						if exp1.coeff(x, i).coeff(y, j) != 0:
-							print('constraints += [', exp1.coeff(x, i).coeff(y, j), ' == ', exp2.coeff(x, i).coeff(y, j), ']')
+							file.write('constraints += ['+ str(exp1.coeff(x, i).coeff(y, j))+ ' == '+ str(exp2.coeff(x, i).coeff(y, j))+ ']\n')
 
 
 	
@@ -376,8 +375,10 @@ def constraintsAutoGenerate():
 	# print("Pass the timing process_2")
 	# print(rhs_init[0,0])
 	rhs_init = expand(rhs_init[0,0])
-	generateConstraints(rhs_init, lhs_init, degree=2)
-	print("")
+	f = open("cons.txt","w")
+	f.write("------------------Init Conditions--------------------\n")
+	generateConstraints(rhs_init, lhs_init, f, degree=2)
+	# print("")
 	
 	# # # lie derivative
 	controlInput = theta*Matrix([[x], [y]])
@@ -388,9 +389,11 @@ def constraintsAutoGenerate():
 	lhs_der = expand(lhs_der[0, 0])
 	rhs_der = -lambda_poly_der * poly_list
 	rhs_der = expand(rhs_der[0,0])
-	generateConstraints(rhs_der, lhs_der, degree=4)
+	f.write("------------------Lie Derivative Conditions--------------------\n")
+	generateConstraints(rhs_der, lhs_der, f, degree=4)
 
-	print(monomial_list,len(monomial_list),len(poly_list))
+	f.write(str(monomial_list)+str(len(monomial_list))+str(len(poly_list)))
+	f.close()
 
 
 if __name__ == '__main__':
@@ -466,10 +469,10 @@ if __name__ == '__main__':
 
 	# print('')
 	# print('Ours approach starts here')
-	Ours()
+	# Ours()
 	# control_param = np.array([-1,-1])
 	# Lyapunov_param = np.array([0,0,0,0.3,0.3,0])
 	# plot(control_param, Lyapunov_param, 'Experiment.pdf')
 	# plot(0, 0, figname='Tra_Ball.pdf')
 	# print (cp.installed_solvers())
-	# constraintsAutoGenerate()	
+	constraintsAutoGenerate()	
