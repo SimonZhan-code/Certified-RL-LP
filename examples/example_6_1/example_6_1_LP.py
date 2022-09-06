@@ -348,7 +348,7 @@ def constraintsAutoGenerate():
 
 
 	
-	x, y, f, g = symbols('x, y, f, g')
+	x, y = symbols('x, y')
 	Poly = [x+1, y+1, x-1, y-1]
 	l = [x**2, y**2, 1-x**2, 1-y**2]
 	X = [x, y]
