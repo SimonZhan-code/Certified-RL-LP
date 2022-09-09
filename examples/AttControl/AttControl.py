@@ -81,7 +81,8 @@ def generateConstraints(x, y, z, m, n, p, exp1, exp2, degree):
 										print('constraints += [', exp1.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f), ' == ', exp2.coeff(x,a).coeff(y,b).coeff(z,c).coeff(m,d).coeff(n,e).coeff(p,f), ']')
 
 
-def LyaSDP(c0, c1, c2, SVG_only=False):
+def LyaSDP(c0, c1, c2, timer, SVG_only=False):
+	timer.start()
 	X = cp.Variable((6, 6), symmetric=True)
 	Y = cp.Variable((28, 28), symmetric=True)
 	V = cp.Variable((1, 27))
@@ -583,7 +584,7 @@ def LyaSDP(c0, c1, c2, SVG_only=False):
 	V = V_star.detach().numpy()[0]
 	m = m_star.detach().numpy()
 	n = n_star.detach().numpy()
-
+	timer.stop()
 	valueTest, LieTest = LyaTest(V, c0, c1, c2, m, n)
 
 	return V, objc_star.detach().numpy(), theta_t0.grad.detach().numpy(), theta_t1.grad.detach().numpy(), theta_t2.grad.detach().numpy(), valueTest, LieTest
@@ -840,18 +841,18 @@ if __name__ == '__main__':
 		c2 = np.array([0.0]*16)
 
 		np.set_printoptions(precision=3)
-		
+		l = 1e-2
 		for it in range(100):
 			final_state, vt = SVG(c0, c1, c2)
-			c0 += 1e-2*np.clip(vt[0], -1e2, 1e2)
-			c1 += 1e-2*np.clip(vt[1], -1e2, 1e2)
-			c2 += 1e-2*np.clip(vt[2], -1e2, 1e2)
+			c0 += l*np.clip(vt[0], -1e2, 1e2)
+			c1 += l*np.clip(vt[1], -1e2, 1e2)
+			c2 += l*np.clip(vt[2], -1e2, 1e2)
 			timer = Timer()
 			print('iteration: ', it, 'norm is: ',  LA.norm(final_state))
 			try:
-				timer.start()
-				V, slack, sdpt0, sdpt1, sdpt2, valueTest, LieTest = LyaSDP(c0, c1, c2, SVG_only=False)
-				timer.stop()
+				# timer.start()
+				V, slack, sdpt0, sdpt1, sdpt2, valueTest, LieTest = LyaSDP(c0, c1, c2, timer, SVG_only=False)
+				# timer.stop()
 				print(slack, valueTest, LieTest)
 				if it > 20 and slack < 1e-3 and valueTest and LieTest:
 					print('SOS succeed! Controller parameters for u0, u1, u2 are: ')
@@ -859,9 +860,9 @@ if __name__ == '__main__':
 					print('Lyapunov function: ', V)
 					# plot(V, c0, c1, c2)
 					break
-				c0 -= 1e-2*np.clip(sdpt0[0], -1e2, 1e2)
-				c1 -= 1e-2*np.clip(sdpt1[0], -1e2, 1e2)
-				c2 -= 1e-2*np.clip(sdpt2[0], -1e2, 1e2)
+				c0 -= l*slack*it*1e-1*np.clip(sdpt0[0], -1e2, 1e2)
+				c1 -= l*slack*it*1e-1*np.clip(sdpt1[0], -1e2, 1e2)
+				c2 -= l*slack*it*1e-1*np.clip(sdpt2[0], -1e2, 1e2)
 
 			except Exception as e:
 				print(e)
