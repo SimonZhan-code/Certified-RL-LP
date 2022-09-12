@@ -16,7 +16,7 @@ SVG_patch = mpatches.Patch(color='#ff7f0e', label='SVG')
 Ours_patch = mpatches.Patch(color='#2ca02c', label='Ours')
 
 class AttControl:
-	deltaT = 0.1
+	deltaT = 0.01
 	max_iteration = 100
 	simul_per_step = 10
 
@@ -854,7 +854,7 @@ if __name__ == '__main__':
 				V, slack, sdpt0, sdpt1, sdpt2, valueTest, LieTest = LyaSDP(c0, c1, c2, timer, SVG_only=False)
 				# timer.stop()
 				print(slack, valueTest, LieTest)
-				if it > 20 and slack < 1e-3 and valueTest and LieTest:
+				if slack < 1e-3 and valueTest and LieTest:
 					print('SOS succeed! Controller parameters for u0, u1, u2 are: ')
 					print(c0, c1, c2)
 					print('Lyapunov function: ', V)
@@ -863,6 +863,9 @@ if __name__ == '__main__':
 				c0 -= l*slack*it*1e-1*np.clip(sdpt0[0], -1e2, 1e2)
 				c1 -= l*slack*it*1e-1*np.clip(sdpt1[0], -1e2, 1e2)
 				c2 -= l*slack*it*1e-1*np.clip(sdpt2[0], -1e2, 1e2)
+				# print(f"control 1 +:{l*np.clip(vt[0], -1e2, 1e2)},control 1 -:{l*1e-1*it*slack*np.clip(sdpt0[0], -1e2, 1e2)}")
+				# print(f"control 2 +:{l*np.clip(vt[1], -1e2, 1e2)},control 2 -:{l*1e-1*it*slack*np.clip(sdpt1[0], -1e2, 1e2)}")
+				# print(f"control 3 +:{l*np.clip(vt[2], -1e2, 1e2)},control 3 -:{l*1e-1*it*slack*np.clip(sdpt2[0], -1e2, 1e2)}")
 
 			except Exception as e:
 				print(e)
