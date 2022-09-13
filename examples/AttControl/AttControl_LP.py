@@ -1,6 +1,6 @@
-from calendar import c
-from cmath import e
-from this import d
+# from calendar import c
+# from cmath import e
+# from this import d
 import cvxpy as cp
 import numpy as np
 import numpy.random as npr
@@ -927,9 +927,9 @@ if __name__ == '__main__':
 				# timer.start()
 				V, slack, sdpt0, sdpt1, sdpt2, valueTest, LieTest = LyaLP(c0, c1, c2, timer, SVG_only=False)
 				# timer.stop()
-				c0 -= l*1e4*it*slack*np.clip(sdpt0[0], -1e2, 1e2)
-				c1 -= l*1e4*it*slack*np.clip(sdpt1[0], -1e2, 1e2)
-				c2 -= l*1e4*it*slack*np.clip(sdpt2[0], -1e2, 1e2)
+				c0 -= l*1e3*it*slack*np.clip(sdpt0[0], -1e2, 1e2)
+				c1 -= l*1e3*it*slack*np.clip(sdpt1[0], -1e2, 1e2)
+				c2 -= l*1e3*it*slack*np.clip(sdpt2[0], -1e2, 1e2)
 				print(LA.norm(slack), valueTest, LieTest)
 				print(V)
 				# print(f"control 1 +:{l*np.clip(vt[0], -1e2, 1e2)},control 1 -:{l*1e-1*it*slack*np.clip(sdpt0[0], -1e2, 1e2)}")
