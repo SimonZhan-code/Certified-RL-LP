@@ -598,10 +598,10 @@ def LyaSDP(c0, c1, c2, timer, SVG_only=False):
 	V = V_star.detach().numpy()[0]
 	m = m_star.detach().numpy()
 	n = n_star.detach().numpy()
-	timer.stop()
+	tmp = timer.stop()
 	valueTest, LieTest = LyaTest(V, c0, c1, c2, False)
 
-	return V, objc_star.detach().numpy(), theta_t0.grad.detach().numpy(), theta_t1.grad.detach().numpy(), theta_t2.grad.detach().numpy(), valueTest, LieTest
+	return tmp, V, objc_star.detach().numpy(), theta_t0.grad.detach().numpy(), theta_t1.grad.detach().numpy(), theta_t2.grad.detach().numpy(), valueTest, LieTest
 
 
 
@@ -1142,10 +1142,10 @@ def LyaLP(c0, c1, c2, timer, SVG_only=False):
 	V = V_star.detach().numpy()[0]
 	# m = m_star.detach().numpy()
 	# n = n_star.detach().numpy()
-	timer.stop()
+	tmp = timer.stop()
 	valueTest, LieTest = LyaTest(V, c0, c1, c2, True)
 	
-	return V, objc_star.detach().numpy(), theta_t0.grad.detach().numpy(), theta_t1.grad.detach().numpy(), theta_t2.grad.detach().numpy(), valueTest, LieTest
+	return tmp, V, objc_star.detach().numpy(), theta_t0.grad.detach().numpy(), theta_t1.grad.detach().numpy(), theta_t2.grad.detach().numpy(), valueTest, LieTest
 
 
 ## Generate the Lyapunov conditions
@@ -1543,6 +1543,7 @@ if __name__ == '__main__':
 
 		np.set_printoptions(precision=3)
 		l = 1e-2
+		time_buffer = 0
 		for it in range(1000):
 			final_state, vt = SVG(c0, c1, c2)
 			c0 += l*np.clip(vt[0], -1e2, 1e2)
@@ -1553,10 +1554,11 @@ if __name__ == '__main__':
 			try:
 				# timer.start()
 				if LP:
-					V, slack, sdpt0, sdpt1, sdpt2, valueTest, LieTest = LyaLP(c0, c1, c2, timer, SVG_only=False)
+					tmp, V, slack, sdpt0, sdpt1, sdpt2, valueTest, LieTest = LyaLP(c0, c1, c2, timer, SVG_only=False)
 				else:
-					V, slack, sdpt0, sdpt1, sdpt2, valueTest, LieTest = LyaSDP(c0, c1, c2, timer, SVG_only=False)
+					tmp, V, slack, sdpt0, sdpt1, sdpt2, valueTest, LieTest = LyaSDP(c0, c1, c2, timer, SVG_only=False)
 				# timer.stop()
+				time_buffer += tmp
 				c0 -= l*1e3*it*slack*np.clip(sdpt0[0], -1e2, 1e2)
 				c1 -= l*1e3*it*slack*np.clip(sdpt1[0], -1e2, 1e2)
 				c2 -= l*1e3*it*slack*np.clip(sdpt2[0], -1e2, 1e2)
@@ -1571,7 +1573,8 @@ if __name__ == '__main__':
 					print('SOS succeed! Controller parameters for u0, u1, u2 are: ')
 					print(c0, c1, c2)
 					print('Lyapunov function: ', V)
-					plot(V, c0, c1, c2)
+					print('Average time for each iteration is:', time_buffer/it)
+					# plot(V, c0, c1, c2)
 					break
 			except Exception as e:
 				print(e)
