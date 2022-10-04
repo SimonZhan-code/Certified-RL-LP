@@ -79,7 +79,7 @@ class Dubin:
 
 			self.x = np.array([x_l, y_l, phi_l, v_l, n_l, m_l, x_w, y_w, phi_w, v_w, n_w, m_w])
 		self.t += 1
-		return self.x, -np.linalg.norm(self.x), self.t == self.max_iteration
+		return self.x, self.t == self.max_iteration
 
 
 
@@ -225,9 +225,9 @@ if __name__ == '__main__':
 			c1 += 1e-2*np.clip(vt[1], -1e2, 1e2)
 			c2 += 1e-2*np.clip(vt[2], -1e2, 1e2)
 			print(LA.norm(final_state))
-			try:
-				LyaSDP(c0, c1, c2, SVG_only=True)
-				print('SOS succeed!')
-			except Exception as e:
-				print(e)
+			# try:
+			# 	LyaSDP(c0, c1, c2, SVG_only=True)
+			# 	print('SOS succeed!')
+			# except Exception as e:
+			# 	print(e)
 		# print(c0, c1, c2)
