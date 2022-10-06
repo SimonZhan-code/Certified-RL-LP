@@ -12,6 +12,7 @@ import numpy.linalg as LA
 class ACC:
 	deltaT = 0.1
 	max_iteration = 300
+	mu = 0.0001
 
 	def __init__(self):
 		self.t = 0
@@ -74,11 +75,13 @@ def SVG(control_param, view=False):
 		# tau = control_param[2].dot(state)
 		state_tra.append(state)
 		control_tra.append(np.array([a_l, a_e]))
+		
 		next_state, reward, done = env.step(a_l, a_e)
+		print(reward)
 		distance_tra.append(-reward)
 		state = next_state
 
-	print(distance_tra[-1])
+	# print(distance_tra[-1])
 	if view:
 		x_diff = [s[0] - s[3] for s in state_tra]
 		v_diff = [s[1] - s[4] for s in state_tra]
@@ -120,21 +123,23 @@ def SVG(control_param, view=False):
 			[c1[0,0], c1[0,1], c1[0,2], -c1[0,0], -c1[0,1], -c1[0,2]]
 		])
 		fs = np.array([
-			[]		
+			[1,dt,0,0,0,0],
+			[0,1,dt,0,0,0],
+			[0,-2*env.mu*v_l,1-2*dt,0,0,0],
+			[0,0,0,1,dt,0],
+			[0,0,0,0,1,dt],
+			[0,0,0,0,-2*env.mu*v_e,1-2*dt]		
 			])	
 
 		fa = np.array([
-			[0, 0, 0], [0, 0, 0], [0, 0, 0], 
-			[9.81*dt, 0, 0], [0, -9.81*dt, 0], [0, 0, dt],
-			[0, 0, 0], [0, 0, 0], [0, 0, 0],
-			[0, 0, 0], [0, 0, 0], [0, 0, 0]
+			[0,0],[0,0],[2*dt,0],[0,0],[0,0],[0,2*dt]
 			])
 		# print(fa.shape)
 		# assert False	
 		vs = rs + gamma * vs_prime.dot(fs + fa.dot(pis))
 		pitheta = np.array([
-			[[0]*6, [0]*6, [0]*6], 
-			[[0]*12, [px, py, pz, vx, vy, vz, qx, qy, qz, bx, by, bz], [0]*12]
+			[[1,1,1],[0,0,0]], 
+			[[0,0,0],[x_l-x_e,v_l-v_e,r_l-r_e]]
 			])
 		# print(pitheta.shape)
 		# assert False
@@ -159,13 +164,13 @@ if __name__ == '__main__':
 	# plt.plot(tra[:, 2], label='z')
 	# plt.legend()
 	# plt.savefig('quadtest.png')
-	control_param = np.array([-0.0]*36)
-	# control_param = np.reshape(control_param, (3, 12))
+	control_param = np.array([-0.0]*6)
+	control_param = np.reshape(control_param, (2, 3))
 	vtheta, state = SVG(control_param)
 	for i in range(500):
 		vtheta, final_state = SVG(control_param)
 		if i == 0:
-			print(vtheta)
+			print(vtheta.shape)
 		control_param += 1e-3 * np.clip(vtheta, -1e3, 1e3)
 		if i > 10:
 			control_param += 0.1*vtheta
