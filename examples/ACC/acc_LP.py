@@ -55,7 +55,7 @@ class ACC:
 		self.state = np.array([x_l_new, v_l_new, r_l_new, x_e_new, v_e_new, r_e_new])
 		# related_state = np.array([px_new - qx_new, py_new - qy_new, pz_new - qz_new, vx_new - bx_new, vy_new - by_new, vz_new - bz_new])
 		self.t += 1
-		reward = -(x_l_new - x_e_new)
+		reward = -(x_l_new - x_e_new - 10)**2
 		return self.state, reward, self.t == self.max_iteration
 
 def SVG(control_param, view=False):
@@ -77,7 +77,7 @@ def SVG(control_param, view=False):
 		control_tra.append(np.array([a_l, a_e]))
 		
 		next_state, reward, done = env.step(a_l, a_e)
-		print(reward)
+		# print(reward)
 		distance_tra.append(-reward)
 		state = next_state
 
@@ -102,7 +102,7 @@ def SVG(control_param, view=False):
 		x_l, v_l, r_l, x_e, v_e, r_e = state_tra[i]
 		a_l, a_e = control_tra[i]
 		# ra = np.array([0, 0, 0, 0])
-		assert distance_tra[i] >= 0
+		# assert distance_tra[i] >= 0
 
 		rs = np.array([
 			-x_l / distance_tra[i], 
@@ -174,6 +174,6 @@ if __name__ == '__main__':
 		control_param += 1e-3 * np.clip(vtheta, -1e3, 1e3)
 		if i > 10:
 			control_param += 0.1*vtheta
-	print()
+	# print()
 	print(final_state, vtheta)
 	SVG(control_param, view=True)
