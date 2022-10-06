@@ -69,7 +69,7 @@ def SVG(control_param, view=False):
 		if -reward >= 10:
 			break
 		x_l, v_l, r_l, x_e, v_e, r_e = state[0], state[1], state[2], state[3], state[4], state[5]
-		a_l = control_param[0].dot(np.array([np.cos(np.pi*dt)]))
+		a_l = control_param[0].dot(np.array([1, 1, 1]))
 		a_e = control_param[1].dot(np.array([x_l - x_e, v_l - v_e, r_l - r_e]))
 		# tau = control_param[2].dot(state)
 		state_tra.append(state)
@@ -79,20 +79,20 @@ def SVG(control_param, view=False):
 		state = next_state
 
 	print(distance_tra[-1])
-	# if view:
-	# 	x_diff = [s[0] - s[6] for s in state_tra]
-	# 	y_diff = [s[1] - s[7] for s in state_tra]
-	# 	z_diff = [s[2] - s[8] for s in state_tra]
-	# 	x = [s[0] for s in state_tra]
-	# 	plt.plot(x_diff, label='$\delta x$')
-	# 	plt.plot(y_diff, label='$\delta y$')
-	# 	plt.plot(z_diff, label='$\delta z$')
-	# 	plt.plot(x, label='x')
-	# 	plt.legend()
-	# 	plt.savefig('test.jpg')
+	if view:
+		x_diff = [s[0] - s[3] for s in state_tra]
+		v_diff = [s[1] - s[4] for s in state_tra]
+		# z_diff = [s[2] - s[8] for s in state_tra]
+		x = [s[0] for s in state_tra]
+		plt.plot(x_diff, label='$\delta x$')
+		plt.plot(v_diff, label='$\delta v$')
+		# plt.plot(z_diff, label='$\delta z$')
+		plt.plot(x, label='x')
+		plt.legend()
+		plt.savefig('test.jpg')
 
 	vs_prime = np.array([0.0] * 6)
-	vtheta_prime = np.array([[0.0] * 1, [0.0] * 3])
+	vtheta_prime = np.array([[0.0] * 3, [0.0] * 3])
 	gamma = 0.99
 
 	for i in range(len(state_tra)-1, -1, -1):
@@ -112,23 +112,15 @@ def SVG(control_param, view=False):
 		# print(rs.shape)
 		# assert False
 
-		pis = np.reshape(control_param, (3, 12))	
+		c0 = np.reshape(control_param[0], (1, 3))
+		c1 = np.reshape(control_param[1], (1, 3))
+
+		pis = np.array([
+			[0, 0, 0, 0, 0, 0],
+			[c1[0,0], c1[0,1], c1[0,2], -c1[0,0], -c1[0,1], -c1[0,2]]
+		])
 		fs = np.array([
-			[1, 0, 0, dt, 0, 0, 0, 0, 0, 0, 0, 0],
-			[0, 1, 0, 0, dt, 0, 0, 0, 0, 0, 0, 0],
-			[0, 0, 1, 0, 0, dt, 0, 0, 0, 0, 0, 0],
-
-			[0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-			[0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
-			[0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-
-			[0, 0, 0, 0, 0, 0, 1, 0, 0, dt, 0, 0],
-			[0, 0, 0, 0, 0, 0, 0, 1, 0, 0, dt, 0],
-			[0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, dt],
-
-			[0, 0, 0, 0, 0, 0, -dt, 0, 0, 1, 0, 0], 
-			[0, 0, 0, 0, 0, 0, 0, -dt, 0, 0, 1, 0], 
-			[0, 0, 0, 0, 0, 0, 0, 0, -dt, 0, 0, 1]			
+			[]		
 			])	
 
 		fa = np.array([
@@ -141,9 +133,8 @@ def SVG(control_param, view=False):
 		# assert False	
 		vs = rs + gamma * vs_prime.dot(fs + fa.dot(pis))
 		pitheta = np.array([
-			[[px, py, pz, vx, vy, vz, qx, qy, qz, bx, by, bz], [0]*12, [0]*12], 
-			[[0]*12, [px, py, pz, vx, vy, vz, qx, qy, qz, bx, by, bz], [0]*12], 
-			[[0]*12, [0]*12, [px, py, pz, vx, vy, vz, qx, qy, qz, bx, by, bz]]
+			[[0]*6, [0]*6, [0]*6], 
+			[[0]*12, [px, py, pz, vx, vy, vz, qx, qy, qz, bx, by, bz], [0]*12]
 			])
 		# print(pitheta.shape)
 		# assert False
