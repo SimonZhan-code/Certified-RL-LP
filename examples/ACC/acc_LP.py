@@ -16,11 +16,11 @@ class ACC:
 
 	def __init__(self):
 		self.t = 0
-		x_l = np.random.normal(90,92)
-		v_l = np.random.normal(20,30)
+		x_l = np.random.uniform(90,92)
+		v_l = np.random.uniform(20,30)
 		r_l = 0
-		x_e = np.random.normal(30,31)
-		v_e = np.random.normal(30,30.5)
+		x_e = np.random.uniform(30,31)
+		v_e = np.random.uniform(30,30.5)
 		r_e = 0
 		# norm = (u*u + v*v + w*w + m*m + n*n + k*k)**(0.5)
 		# print(norm, u,v,w,m,n,k)
@@ -28,11 +28,11 @@ class ACC:
 		self.state = np.array([x_l, v_l, r_l, x_e, v_e, r_e])
 
 	def reset(self):
-		x_l = np.random.normal(90,92)
-		v_l = np.random.normal(20,30)
+		x_l = np.random.uniform(90,92)
+		v_l = np.random.uniform(20,30)
 		r_l = 0
-		x_e = np.random.normal(30,31)
-		v_e = np.random.normal(30,30.5)
+		x_e = np.random.uniform(30,31)
+		v_e = np.random.uniform(30,30.5)
 		r_e = 0
 		# norm = (u*u + v*v + w*w + m*m + n*n + k*k)**(0.5)
 		# normlized_vector = [i / norm for i in (u,v,w,m,n,k)]
@@ -179,7 +179,7 @@ if __name__ == '__main__':
 	control_param = np.array([-0.0]*6)
 	control_param = np.reshape(control_param, (2, 3))
 	vtheta, state = SVG(control_param)
-	for i in range(1):
+	for i in range(500):
 		vtheta, final_state = SVG(control_param)
 		if i == 0:
 			print(vtheta)
