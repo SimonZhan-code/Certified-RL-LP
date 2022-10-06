@@ -67,7 +67,7 @@ def SVG(control_param, view=False):
 	dt = env.deltaT
 	reward = 0
 	while not done:
-		if -reward >= 1000:
+		if -reward >= 20000:
 			break
 		x_l, v_l, r_l, x_e, v_e, r_e = state[0], state[1], state[2], state[3], state[4], state[5]
 		a_l = control_param[0].dot(np.array([1, 1, 1]))
@@ -108,7 +108,7 @@ def SVG(control_param, view=False):
 	vs_prime = np.array([0.0] * 6)
 	vtheta_prime = np.array([[0.0] * 3, [0.0] * 3])
 	gamma = 0.99
-
+	# print(len(state_tra))
 	for i in range(len(state_tra)-1, -1, -1):
 		x_l, v_l, r_l, x_e, v_e, r_e = state_tra[i]
 		a_l, a_e = control_tra[i]
@@ -146,14 +146,17 @@ def SVG(control_param, view=False):
 			[0,0],[0,0],[2*dt,0],[0,0],[0,0],[0,2*dt]
 			])
 		
+		# print(vs_prime)
+
 		vs = rs + gamma * vs_prime.dot(fs + fa.dot(pis))
-		print(vs)
+		# print(vs)
 		pitheta = np.array([
 			[[1,1,1],[0,0,0]], 
 			[[0,0,0],[x_l-x_e,v_l-v_e,r_l-r_e]]
 			])
 		# print(pitheta.shape)
 		# assert False
+		
 		vtheta =  gamma * vs_prime.dot(fa).dot(pitheta) + gamma * vtheta_prime
 		vs_prime = vs
 		vtheta_prime = vtheta
@@ -179,10 +182,10 @@ if __name__ == '__main__':
 	control_param = np.array([-0.0]*6)
 	control_param = np.reshape(control_param, (2, 3))
 	vtheta, state = SVG(control_param)
-	for i in range(500):
+	for i in range(2):
 		vtheta, final_state = SVG(control_param)
-		if i == 0:
-			print(vtheta)
+		# if i == 0:
+		# 	print(vtheta)
 		control_param += 1e-3 * np.clip(vtheta, -1e3, 1e3)
 		# print(vtheta)
 		if i > 10:
