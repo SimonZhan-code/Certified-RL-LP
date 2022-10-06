@@ -12,7 +12,7 @@ import numpy.linalg as LA
 class ACC:
 	deltaT = 0.1
 	max_iteration = 300
-	mu = 0.0001
+	mu = 0
 
 	def __init__(self):
 		self.t = 0
@@ -67,7 +67,7 @@ def SVG(control_param, view=False):
 	dt = env.deltaT
 	reward = 0
 	while not done:
-		if -reward >= 10:
+		if -reward >= 1000:
 			break
 		x_l, v_l, r_l, x_e, v_e, r_e = state[0], state[1], state[2], state[3], state[4], state[5]
 		a_l = control_param[0].dot(np.array([1, 1, 1]))
@@ -75,24 +75,35 @@ def SVG(control_param, view=False):
 		# tau = control_param[2].dot(state)
 		state_tra.append(state)
 		control_tra.append(np.array([a_l, a_e]))
-		
+		# print(state)
 		next_state, reward, done = env.step(a_l, a_e)
 		# print(reward)
-		distance_tra.append(-reward)
+		distance_tra.append(reward)
 		state = next_state
 
 	# print(distance_tra[-1])
 	if view:
-		x_diff = [s[0] - s[3] for s in state_tra]
-		v_diff = [s[1] - s[4] for s in state_tra]
+		x_l = [s[0] for s in state_tra]
+		x_e = [s[3] for s in state_tra]
+
+		v_l = [s[1] for s in state_tra]
+		v_e = [s[4] for s in state_tra]
 		# z_diff = [s[2] - s[8] for s in state_tra]
-		x = [s[0] for s in state_tra]
-		plt.plot(x_diff, label='$\delta x$')
-		plt.plot(v_diff, label='$\delta v$')
+		# x = [s[0] for s in state_tra]
+		fig = plt.figure()
+		# fig2 = plt.figure()
+		ax1 = fig.add_subplot(2,1,1)
+		ax1.plot(x_l, label='x_l')
+		ax1.plot(x_e, label='x_e')
+		ax1.legend()
+		# fig1.savefig('test_displacement.jpg')
+		ax2 = fig.add_subplot(2,1,2)
+		ax2.plot(v_l, label='$v_l$')
+		ax2.plot(v_e, label='$v_e$')
 		# plt.plot(z_diff, label='$\delta z$')
-		plt.plot(x, label='x')
-		plt.legend()
-		plt.savefig('test.jpg')
+		# plt.plot(x, label='x')
+		ax2.legend()
+		fig.savefig('test.jpg')
 
 	vs_prime = np.array([0.0] * 6)
 	vtheta_prime = np.array([[0.0] * 3, [0.0] * 3])
@@ -125,18 +136,18 @@ def SVG(control_param, view=False):
 		fs = np.array([
 			[1,dt,0,0,0,0],
 			[0,1,dt,0,0,0],
-			[0,-2*env.mu*v_l,1-2*dt,0,0,0],
+			[0,0,1-2*dt,0,0,0],
 			[0,0,0,1,dt,0],
 			[0,0,0,0,1,dt],
-			[0,0,0,0,-2*env.mu*v_e,1-2*dt]		
+			[0,0,0,0,0,1-2*dt]		
 			])	
 
 		fa = np.array([
 			[0,0],[0,0],[2*dt,0],[0,0],[0,0],[0,2*dt]
 			])
-		# print(fa.shape)
-		# assert False	
+		
 		vs = rs + gamma * vs_prime.dot(fs + fa.dot(pis))
+		print(vs)
 		pitheta = np.array([
 			[[1,1,1],[0,0,0]], 
 			[[0,0,0],[x_l-x_e,v_l-v_e,r_l-r_e]]
@@ -146,7 +157,8 @@ def SVG(control_param, view=False):
 		vtheta =  gamma * vs_prime.dot(fa).dot(pitheta) + gamma * vtheta_prime
 		vs_prime = vs
 		vtheta_prime = vtheta
-
+	# print(vtheta)
+	# print(state)
 	return vtheta, state
 
 if __name__ == '__main__':
@@ -167,13 +179,14 @@ if __name__ == '__main__':
 	control_param = np.array([-0.0]*6)
 	control_param = np.reshape(control_param, (2, 3))
 	vtheta, state = SVG(control_param)
-	for i in range(500):
+	for i in range(1):
 		vtheta, final_state = SVG(control_param)
 		if i == 0:
-			print(vtheta.shape)
+			print(vtheta)
 		control_param += 1e-3 * np.clip(vtheta, -1e3, 1e3)
+		# print(vtheta)
 		if i > 10:
 			control_param += 0.1*vtheta
 	# print()
-	print(final_state, vtheta)
+	# print(final_state, vtheta)
 	SVG(control_param, view=True)
