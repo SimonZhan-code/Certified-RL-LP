@@ -11,7 +11,7 @@ import numpy.linalg as LA
 
 class ACC:
 	deltaT = 0.1
-	max_iteration = 50 # 5 seconds simulation
+	max_iteration = 300 # 5 seconds simulation
 	mu = 0.0001
 
 	def __init__(self):
@@ -41,7 +41,7 @@ class ACC:
 
 		x_l_new = x_l + v_l*dt
 		v_l_new = v_l + r_l*dt
-		r_l_new = r_l + (-2*r_l-10-self.mu*v_l**2)*dt # directly write a_l = -5 into the dynamics
+		r_l_new = r_l + (-2*r_l-25*np.sin(v_l)-self.mu*v_l**2)*dt # directly write a_l = -5 into the dynamics
 		x_e_new = x_e + v_e*dt
 		v_e_new = v_e + r_e*dt
 		r_e_new = r_e + (-2*r_e+2*a_e-self.mu*v_e**2)*dt 
@@ -88,7 +88,7 @@ def SVG(control_param, view=False):
 		# plt.plot(x, label='ego')
 		ax1.legend()
 		ax2.legend()
-		fig.savefig('test.jpg')
+		fig.savefig('test_sin.jpg')
 
 	vs_prime = np.array([0.0] * 6)
 	vtheta_prime = np.array([[0.0] * 3])
@@ -124,7 +124,7 @@ def SVG(control_param, view=False):
 		fs = np.array([
 			[1,dt,0,0,0,0],
 			[0,1,dt,0,0,0],
-			[0,-2*env.mu*v_l*dt,1-2*dt,0,0,0],
+			[0,-25*np.cos(v_l)*dt-2*env.mu*v_l*dt,1-2*dt,0,0,0],
 			[0,0,0,1,dt,0],
 			[0,0,0,0,1,dt],
 			[0,0,0,0,-2*env.mu*v_e*dt,1-2*dt]		
