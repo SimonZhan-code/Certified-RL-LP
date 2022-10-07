@@ -41,7 +41,7 @@ class ACC:
 
 		x_l_new = x_l + v_l*dt
 		v_l_new = v_l + r_l*dt
-		r_l_new = r_l + (-2*r_l-20*np.sin(v_l)-self.mu*v_l**2)*dt # directly write a_l = -5 into the dynamics
+		r_l_new = r_l + (-2*r_l-10-self.mu*v_l**2)*dt # directly write a_l = -5 into the dynamics
 		x_e_new = x_e + v_e*dt
 		v_e_new = v_e + r_e*dt
 		r_e_new = r_e + (-2*r_e+2*a_e-self.mu*v_e**2)*dt 
@@ -97,13 +97,23 @@ def SVG(control_param, view=False):
 	for i in range(len(state_tra)-1, -1, -1):
 		x_l, v_l, r_l, x_e, v_e, r_e = state_tra[i]
 		a_e = control_tra[i]
+
+		# rs = np.array([
+		# 	-x_l / distance_tra[i], 
+		# 	-v_l / distance_tra[i], 
+		# 	-r_l / distance_tra[i], 
+		# 	-x_e / distance_tra[i],
+		# 	-v_e / distance_tra[i],
+		# 	-r_e / distance_tra[i]
+		# 	])
+
 		rs = np.array([
 			-2*(x_l - x_e - 10 - 1.4 * v_e), 
 			-2*(v_l - v_e), 
 			-2*(r_l - r_e), 
-			-2*(x_l - x_e - 10 - 1.4 * v_e),
-			-2.8*(x_l - x_e - 10 - 1.4 * v_e) - 2*(v_l - v_e),
-			-2*(r_l - r_e)
+			2*(x_l - x_e - 10 - 1.4 * v_e),
+			2.8*(x_l - x_e - 10 - 1.4 * v_e) + 2*(v_l - v_e),
+			2*(r_l - r_e)
 			])
 
 		c1 = np.reshape(control_param, (1, 3))
@@ -114,7 +124,7 @@ def SVG(control_param, view=False):
 		fs = np.array([
 			[1,dt,0,0,0,0],
 			[0,1,dt,0,0,0],
-			[0,-20*np.cos(v_l)*dt-2*env.mu*v_l*dt,1-2*dt,0,0,0],
+			[0,-2*env.mu*v_l*dt,1-2*dt,0,0,0],
 			[0,0,0,1,dt,0],
 			[0,0,0,0,1,dt],
 			[0,0,0,0,-2*env.mu*v_e*dt,1-2*dt]		
@@ -154,7 +164,7 @@ if __name__ == '__main__':
 	for i in range(100):
 		vtheta, final_state = SVG(control_param)
 		print(vtheta.shape, vtheta)
-		control_param += 1e-8 * np.clip(vtheta, -1e7, 1e7)
+		control_param += 1e-7 * np.clip(vtheta, -1e7, 1e7)
 		# if i > 50:
 		# 	control_param += 1e-4 * np.clip(vtheta, -1e4, 1e4)
 	print(final_state, vtheta, control_param)
