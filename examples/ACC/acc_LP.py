@@ -241,8 +241,9 @@ def BarrierConstraints():
 	file.write(str(len(monomial))+"\n")
 	file.write("\n")
 	file.write("#------------------Lie Derivative test------------------\n")
-	temp = V*monomial_der
-	file.write(str(expand(temp[0, 0]))+"\n")
+	temp1 = V*monomial_der
+	temp2 = l*V*monomial_list
+	file.write(str(expand(temp1[0, 0])-expand(temp2[0, 0]))+"\n")
 	file.close()
 
 
@@ -274,6 +275,25 @@ def BarrierTest(Barrier_param, control_param):
 		x_e = np.random.uniform(0,50000)
 		v_e = np.random.uniform(0,100)
 		r_e = np.random.uniform(0,10)
+		while x_l - x_e >= 10 + 1.4*v_e :
+			x_l = np.random.uniform(0,50000)
+			v_l = np.random.uniform(0,100)
+			r_l = np.random.uniform(0,10)
+			x_e = np.random.uniform(0,50000)
+			v_e = np.random.uniform(0,100)
+			r_e = np.random.uniform(0,10)
+		t0 = np.reshape(control_param, (1, 3))
+		V = np.reshape(Barrier_param, (1, 14))
+		lie = -4*r_e**2*V[0, 7]*t0[0, 2] - 4.2*r_e**2*V[0, 7] + r_e**2*V[0, 13] + 4*r_e*r_l*V[0, 7]*t0[0, 2] - 2*r_e*r_l*V[0, 16]*t0[0, 2] - 4.2*r_e*r_l*V[0, 16] + r_e*r_l*V[0, 17] + r_e*r_l*V[0, 19] - 0.0002*r_e*v_e**2*V[0, 7] - 5.6*r_e*v_e*V[0, 7]*t0[0, 0] - 4*r_e*v_e*V[0, 7]*t0[0, 1] + 2*r_e*v_e*V[0, 8] - 2*r_e*v_e*V[0, 13]*t0[0, 2] - 2.2*r_e*v_e*V[0, 13] + r_e*v_e*V[0, 14] - 0.0001*r_e*v_l**2*V[0, 16] + 4*r_e*v_l*V[0, 7]*t0[0, 1] - 2*r_e*v_l*V[0, 19]*t0[0, 2] - 2.2*r_e*v_l*V[0, 19] + r_e*v_l*V[0, 20] + r_e*v_l*V[0, 23] - 4*r_e*x_e*V[0, 7]*t0[0, 0] - 2*r_e*x_e*V[0, 14]*t0[0, 2] - 2.2*r_e*x_e*V[0, 14] + r_e*x_e*V[0, 15] + 4*r_e*x_l*V[0, 7]*t0[0, 0] - 2*r_e*x_l*V[0, 23]*t0[0, 2] - 2.2*r_e*x_l*V[0, 23] + r_e*x_l*V[0, 24] - 25*r_e*sin(v_l)*V[0, 16] - 2*r_e*V[0, 1]*t0[0, 2] - 2.2*r_e*V[0, 1] + r_e*V[0, 2] - 4.2*r_l**2*V[0, 10] + 2*r_l**2*V[0, 16]*t0[0, 2] + r_l**2*V[0, 22] - 0.0001*r_l*v_e**2*V[0, 16] + 2*r_l*v_e*V[0, 13]*t0[0, 2] - 2.8*r_l*v_e*V[0, 16]*t0[0, 0] - 2*r_l*v_e*V[0, 16]*t0[0, 1] - 2.2*r_l*v_e*V[0, 17] + r_l*v_e*V[0, 18] + r_l*v_e*V[0, 20] - 0.0002*r_l*v_l**2*V[0, 10] + 2*r_l*v_l*V[0, 11] + 2*r_l*v_l*V[0, 16]*t0[0, 1] + 2*r_l*v_l*V[0, 19]*t0[0, 2] - 2.2*r_l*v_l*V[0, 22] + r_l*v_l*V[0, 26] + 2*r_l*x_e*V[0, 14]*t0[0, 2] - 2*r_l*x_e*V[0, 16]*t0[0, 0] - 2.2*r_l*x_e*V[0, 18] + r_l*x_e*V[0, 21] + 2*r_l*x_l*V[0, 16]*t0[0, 0] + 2*r_l*x_l*V[0, 23]*t0[0, 2] - 2.2*r_l*x_l*V[0, 26] + r_l*x_l*V[0, 27] - 50*r_l*sin(v_l)*V[0, 10] + 2*r_l*V[0, 1]*t0[0, 2] - 2.2*r_l*V[0, 4] + r_l*V[0, 5] - 0.0001*v_e**3*V[0, 13] - 0.0001*v_e**2*v_l*V[0, 19] - 0.0001*v_e**2*x_e*V[0, 14] - 0.0001*v_e**2*x_l*V[0, 23] - 0.0001*v_e**2*V[0, 1] - 0.2*v_e**2*V[0, 8] - 2.8*v_e**2*V[0, 13]*t0[0, 0] - 2*v_e**2*V[0, 13]*t0[0, 1] + v_e**2*V[0, 15] - 0.0001*v_e*v_l**2*V[0, 17] + 2*v_e*v_l*V[0, 13]*t0[0, 1] - 2.8*v_e*v_l*V[0, 19]*t0[0, 0] - 2*v_e*v_l*V[0, 19]*t0[0, 1] - 0.2*v_e*v_l*V[0, 20] + v_e*v_l*V[0, 21] + v_e*v_l*V[0, 24] + 2*v_e*x_e*V[0, 9] - 2*v_e*x_e*V[0, 13]*t0[0, 0] - 2.8*v_e*x_e*V[0, 14]*t0[0, 0] - 2*v_e*x_e*V[0, 14]*t0[0, 1] - 0.2*v_e*x_e*V[0, 15] + 2*v_e*x_l*V[0, 13]*t0[0, 0] - 2.8*v_e*x_l*V[0, 23]*t0[0, 0] - 2*v_e*x_l*V[0, 23]*t0[0, 1] - 0.2*v_e*x_l*V[0, 24] + v_e*x_l*V[0, 25] - 25*v_e*sin(v_l)*V[0, 17] - 2.8*v_e*V[0, 1]*t0[0, 0] - 2*v_e*V[0, 1]*t0[0, 1] - 0.2*v_e*V[0, 2] + v_e*V[0, 3] - 0.0001*v_l**3*V[0, 22] - 0.0001*v_l**2*x_e*V[0, 18] - 0.0001*v_l**2*x_l*V[0, 26] - 0.0001*v_l**2*V[0, 4] - 0.2*v_l**2*V[0, 11] + 2*v_l**2*V[0, 19]*t0[0, 1] + v_l**2*V[0, 27] + 2*v_l*x_e*V[0, 14]*t0[0, 1] - 2*v_l*x_e*V[0, 19]*t0[0, 0] - 0.2*v_l*x_e*V[0, 21] + v_l*x_e*V[0, 25] + 2*v_l*x_l*V[0, 12] + 2*v_l*x_l*V[0, 19]*t0[0, 0] + 2*v_l*x_l*V[0, 23]*t0[0, 1] - 0.2*v_l*x_l*V[0, 27] - 25*v_l*sin(v_l)*V[0, 22] + 2*v_l*V[0, 1]*t0[0, 1] - 0.2*v_l*V[0, 5] + v_l*V[0, 6] - 0.2*x_e**2*V[0, 9] - 2*x_e**2*V[0, 14]*t0[0, 0] + 2*x_e*x_l*V[0, 14]*t0[0, 0] - 2*x_e*x_l*V[0, 23]*t0[0, 0] - 0.2*x_e*x_l*V[0, 25] - 25*x_e*sin(v_l)*V[0, 18] - 2*x_e*V[0, 1]*t0[0, 0] - 0.2*x_e*V[0, 3] - 0.2*x_l**2*V[0, 12] + 2*x_l**2*V[0, 23]*t0[0, 0] - 25*x_l*sin(v_l)*V[0, 26] + 2*x_l*V[0, 1]*t0[0, 0] - 0.2*x_l*V[0, 6] - 25*sin(v_l)*V[0, 4] - 0.2*V[0, 0]
+		if lie < 0:
+			lieTest = False
+
+		x_l = np.random.uniform(0,50000)
+		v_l = np.random.uniform(0,100)
+		r_l = np.random.uniform(0,10)
+		x_e = np.random.uniform(0,50000)
+		v_e = np.random.uniform(0,100)
+		r_e = np.random.uniform(0,10)
 		while x_l - x_e < 10 + 1.4*v_e :
 			x_l = np.random.uniform(0,50000)
 			v_l = np.random.uniform(0,100)
@@ -285,19 +305,126 @@ def BarrierTest(Barrier_param, control_param):
 		if unsafeBarrier > 0:
 			unsafeTest = False
 
-		rstate = np.random.uniform(low=-3, high=3, size=(4, ))
-		m, n, p, q = rstate[0], rstate[1], rstate[2], rstate[3]
-		while (m)**2 + (n)**2 + (p)**2 + q**2 > 9:
-			rstate = np.random.uniform(low=-3, high=3, size=(4, ))
-			m, n, p, q = rstate[0], rstate[1], rstate[2], rstate[3]		
-		t0 = np.reshape(control_param, (1, 3))
-		V = np.reshape(Barrier_param, (1, 14))
-		# lie = -l*m**4*B[13] - l*m**3*B[12] - l*m**2*B[11] - l*m*n*B[5] - l*m*p*B[6] - l*m*q*B[7] - l*m*B[1] - l*n*p*B[8] - l*n*q*B[9] - l*n*B[2] - l*p*q*B[10] - l*p*B[3] - l*q*B[4] - l*B[0] + 4*m**3*n*B[13] + 53.6*m**3*p*B[13] + 3*m**2*n*B[12] + 40.2*m**2*p*B[12] + 40*m**2*B[5]*t[0] + 16.3*m**2*B[7]*t[0] + 40*m*n*B[5]*t[1] - 6.5*m*n*B[5] + 16.3*m*n*B[7]*t[1] + 0.925*m*n*B[7] + 16.3*m*n*B[9]*t[0] + 2*m*n*B[11] + 40*m*p*B[5]*t[2] + 16.3*m*p*B[7]*t[2] + 40*m*p*B[8]*t[0] + 16.3*m*p*B[10]*t[0] + 26.8*m*p*B[11] + 40*m*q*B[5]*t[3] - 10.5*m*q*B[5] + m*q*B[6] + 16.3*m*q*B[7]*t[3] - 5.61*m*q*B[7] + 40*m*q*B[9]*t[0] + 40*m*B[2]*t[0] + 16.3*m*B[4]*t[0] + n**2*B[5] + 16.3*n**2*B[9]*t[1] + 0.925*n**2*B[9] + 13.4*n*p*B[5] + n*p*B[6] + 40*n*p*B[8]*t[1] - 6.5*n*p*B[8] + 16.3*n*p*B[9]*t[2] + 16.3*n*p*B[10]*t[1] + 0.925*n*p*B[10] + n*q*B[7] + n*q*B[8] + 40*n*q*B[9]*t[1] + 16.3*n*q*B[9]*t[3] - 12.11*n*q*B[9] + n*B[1] + 40*n*B[2]*t[1] - 6.5*n*B[2] + 16.3*n*B[4]*t[1] + 0.925*n*B[4] + 13.4*p**2*B[6] + 40*p**2*B[8]*t[2] + 16.3*p**2*B[10]*t[2] + 13.4*p*q*B[7] + 40*p*q*B[8]*t[3] - 10.5*p*q*B[8] + 40*p*q*B[9]*t[2] + 16.3*p*q*B[10]*t[3] - 5.61*p*q*B[10] + 13.4*p*B[1] + 40*p*B[2]*t[2] + 16.3*p*B[4]*t[2] + 40*q**2*B[9]*t[3] - 10.5*q**2*B[9] + q**2*B[10] + 40*q*B[2]*t[3] - 10.5*q*B[2] + q*B[3] + 16.3*q*B[4]*t[3] - 5.61*q*B[4]
-		lie = -4*r_e**2*V[0, 7]*t0[0, 2] - 4*r_e**2*V[0, 7] + r_e**2*V[0, 13] + 4*r_e*r_l*V[0, 7]*t0[0, 2] - 2*r_e*r_l*V[0, 16]*t0[0, 2] - 4*r_e*r_l*V[0, 16] + r_e*r_l*V[0, 17] + r_e*r_l*V[0, 19] - 0.0002*r_e*v_e**2*V[0, 7] - 5.6*r_e*v_e*V[0, 7]*t0[0, 0] - 4*r_e*v_e*V[0, 7]*t0[0, 1] + 2*r_e*v_e*V[0, 8] - 2*r_e*v_e*V[0, 13]*t0[0, 2] - 2*r_e*v_e*V[0, 13] + r_e*v_e*V[0, 14] - 0.0001*r_e*v_l**2*V[0, 16] + 4*r_e*v_l*V[0, 7]*t0[0, 1] - 2*r_e*v_l*V[0, 19]*t0[0, 2] - 2*r_e*v_l*V[0, 19] + r_e*v_l*V[0, 20] + r_e*v_l*V[0, 23] - 4*r_e*x_e*V[0, 7]*t0[0, 0] - 2*r_e*x_e*V[0, 14]*t0[0, 2] - 2*r_e*x_e*V[0, 14] + r_e*x_e*V[0, 15] + 4*r_e*x_l*V[0, 7]*t0[0, 0] - 2*r_e*x_l*V[0, 23]*t0[0, 2] - 2*r_e*x_l*V[0, 23] + r_e*x_l*V[0, 24] - 25*r_e*sin(v_l)*V[0, 16] - 2*r_e*V[0, 1]*t0[0, 2] - 2*r_e*V[0, 1] + r_e*V[0, 2] - 4*r_l**2*V[0, 10] + 2*r_l**2*V[0, 16]*t0[0, 2] + r_l**2*V[0, 22] - 0.0001*r_l*v_e**2*V[0, 16] + 2*r_l*v_e*V[0, 13]*t0[0, 2] - 2.8*r_l*v_e*V[0, 16]*t0[0, 0] - 2*r_l*v_e*V[0, 16]*t0[0, 1] - 2*r_l*v_e*V[0, 17] + r_l*v_e*V[0, 18] + r_l*v_e*V[0, 20] - 0.0002*r_l*v_l**2*V[0, 10] + 2*r_l*v_l*V[0, 11] + 2*r_l*v_l*V[0, 16]*t0[0, 1] + 2*r_l*v_l*V[0, 19]*t0[0, 2] - 2*r_l*v_l*V[0, 22] + r_l*v_l*V[0, 26] + 2*r_l*x_e*V[0, 14]*t0[0, 2] - 2*r_l*x_e*V[0, 16]*t0[0, 0] - 2*r_l*x_e*V[0, 18] + r_l*x_e*V[0, 21] + 2*r_l*x_l*V[0, 16]*t0[0, 0] + 2*r_l*x_l*V[0, 23]*t0[0, 2] - 2*r_l*x_l*V[0, 26] + r_l*x_l*V[0, 27] - 50*r_l*sin(v_l)*V[0, 10] + 2*r_l*V[0, 1]*t0[0, 2] - 2*r_l*V[0, 4] + r_l*V[0, 5] - 0.0001*v_e**3*V[0, 13] - 0.0001*v_e**2*v_l*V[0, 19] - 0.0001*v_e**2*x_e*V[0, 14] - 0.0001*v_e**2*x_l*V[0, 23] - 0.0001*v_e**2*V[0, 1] - 2.8*v_e**2*V[0, 13]*t0[0, 0] - 2*v_e**2*V[0, 13]*t0[0, 1] + v_e**2*V[0, 15] - 0.0001*v_e*v_l**2*V[0, 17] + 2*v_e*v_l*V[0, 13]*t0[0, 1] - 2.8*v_e*v_l*V[0, 19]*t0[0, 0] - 2*v_e*v_l*V[0, 19]*t0[0, 1] + v_e*v_l*V[0, 21] + v_e*v_l*V[0, 24] + 2*v_e*x_e*V[0, 9] - 2*v_e*x_e*V[0, 13]*t0[0, 0] - 2.8*v_e*x_e*V[0, 14]*t0[0, 0] - 2*v_e*x_e*V[0, 14]*t0[0, 1] + 2*v_e*x_l*V[0, 13]*t0[0, 0] - 2.8*v_e*x_l*V[0, 23]*t0[0, 0] - 2*v_e*x_l*V[0, 23]*t0[0, 1] + v_e*x_l*V[0, 25] - 25*v_e*sin(v_l)*V[0, 17] - 2.8*v_e*V[0, 1]*t0[0, 0] - 2*v_e*V[0, 1]*t0[0, 1] + v_e*V[0, 3] - 0.0001*v_l**3*V[0, 22] - 0.0001*v_l**2*x_e*V[0, 18] - 0.0001*v_l**2*x_l*V[0, 26] - 0.0001*v_l**2*V[0, 4] + 2*v_l**2*V[0, 19]*t0[0, 1] + v_l**2*V[0, 27] + 2*v_l*x_e*V[0, 14]*t0[0, 1] - 2*v_l*x_e*V[0, 19]*t0[0, 0] + v_l*x_e*V[0, 25] + 2*v_l*x_l*V[0, 12] + 2*v_l*x_l*V[0, 19]*t0[0, 0] + 2*v_l*x_l*V[0, 23]*t0[0, 1] - 25*v_l*sin(v_l)*V[0, 22] + 2*v_l*V[0, 1]*t0[0, 1] + v_l*V[0, 6] - 2*x_e**2*V[0, 14]*t0[0, 0] + 2*x_e*x_l*V[0, 14]*t0[0, 0] - 2*x_e*x_l*V[0, 23]*t0[0, 0] - 25*x_e*sin(v_l)*V[0, 18] - 2*x_e*V[0, 1]*t0[0, 0] + 2*x_l**2*V[0, 23]*t0[0, 0] - 25*x_l*sin(v_l)*V[0, 26] + 2*x_l*V[0, 1]*t0[0, 0] - 25*sin(v_l)*V[0, 4]
-		if lie < 0:
-			lieTest = False
-
 	return initTest, unsafeTest, lieTest
+
+
+def LyaLP(t0, timer, SVG_only=False):
+	# X = cp.Variable((6, 6), symmetric=True)
+	# Y = cp.Variable((28, 28), symmetric=True)
+	timer.start()
+	V = cp.Variable((1, 28))
+	# objc = cp.Variable()
+	lambda_1 = cp.Variable((1, 164))
+	lambda_2 = cp.Variable((1, 44))
+	lambda_3 = cp.Variable((1, 5))
+	theta = cp.Variable((1, 2))
+	objective = cp.Minimize(cp.norm(theta, 2))
+	t0 = cp.Parameter((1, 3))
+	
+	
+	constraints = []
+
+	# if SVG_only:
+	# 	constraints += [ objc == 0 ]
+
+	constraints += [theta >= 0]
+
+	constraints += [ lambda_1 >= 0 ]
+	constraints += [ lambda_2 >= 0 ]
+	constraints += [ lambda_3 >= 0 ]
+
+	#-------------------The Initial Set Conditions-------------------
+	constraints += [30.5*lambda_1[0, 0] - 30*lambda_1[0, 1] + 30*lambda_1[0, 2] - 20*lambda_1[0, 3] + 31*lambda_1[0, 4] - 30*lambda_1[0, 5] + 92*lambda_1[0, 6] - 90*lambda_1[0, 7] + 930.25*lambda_1[0, 8] + 900*lambda_1[0, 9] + 900*lambda_1[0, 10] + 400*lambda_1[0, 11] + 961*lambda_1[0, 12] + 900*lambda_1[0, 13] + 8464*lambda_1[0, 14] + 8100*lambda_1[0, 15] - 915.0*lambda_1[0, 16] + 915.0*lambda_1[0, 17] - 900*lambda_1[0, 18] - 610.0*lambda_1[0, 19] + 600*lambda_1[0, 20] - 600*lambda_1[0, 21] + 945.5*lambda_1[0, 22] - 930*lambda_1[0, 23] + 930*lambda_1[0, 24] - 620*lambda_1[0, 25] - 915.0*lambda_1[0, 26] + 900*lambda_1[0, 27] - 900*lambda_1[0, 28] + 600*lambda_1[0, 29] - 930*lambda_1[0, 30] + 2806.0*lambda_1[0, 31] - 2760*lambda_1[0, 32] + 2760*lambda_1[0, 33] - 1840*lambda_1[0, 34] + 2852*lambda_1[0, 35] - 2760*lambda_1[0, 36] - 2745.0*lambda_1[0, 37] + 2700*lambda_1[0, 38] - 2700*lambda_1[0, 39] + 1800*lambda_1[0, 40] - 2790*lambda_1[0, 41] + 2700*lambda_1[0, 42] - 8280*lambda_1[0, 43] == V[0, 0]]
+	constraints += [-lambda_1[0, 0] + lambda_1[0, 1] - 61.0*lambda_1[0, 8] - 60*lambda_1[0, 9] + 60.5*lambda_1[0, 16] - 30*lambda_1[0, 17] + 30*lambda_1[0, 18] + 20*lambda_1[0, 19] - 20*lambda_1[0, 20] - 31*lambda_1[0, 22] + 31*lambda_1[0, 23] + 30*lambda_1[0, 26] - 30*lambda_1[0, 27] - 92*lambda_1[0, 31] + 92*lambda_1[0, 32] + 90*lambda_1[0, 37] - 90*lambda_1[0, 38] == V[0, 2]]
+	constraints += [1.0*lambda_1[0, 8] + lambda_1[0, 9] - lambda_1[0, 16] == V[0, 8]]
+	constraints += [-lambda_1[0, 4] + lambda_1[0, 5] - 62*lambda_1[0, 12] - 60*lambda_1[0, 13] - 30.5*lambda_1[0, 22] + 30*lambda_1[0, 23] - 30*lambda_1[0, 24] + 20*lambda_1[0, 25] + 30.5*lambda_1[0, 26] - 30*lambda_1[0, 27] + 30*lambda_1[0, 28] - 20*lambda_1[0, 29] + 61*lambda_1[0, 30] - 92*lambda_1[0, 35] + 92*lambda_1[0, 36] + 90*lambda_1[0, 41] - 90*lambda_1[0, 42] == V[0, 3]]
+	constraints += [lambda_1[0, 22] - lambda_1[0, 23] - lambda_1[0, 26] + lambda_1[0, 27] == V[0, 15]]
+	constraints += [lambda_1[0, 12] + lambda_1[0, 13] - lambda_1[0, 30] == V[0, 9]]
+	constraints += [-lambda_1[0, 2] + lambda_1[0, 3] - 60*lambda_1[0, 10] - 40*lambda_1[0, 11] - 30.5*lambda_1[0, 17] + 30*lambda_1[0, 18] + 30.5*lambda_1[0, 19] - 30*lambda_1[0, 20] + 50*lambda_1[0, 21] - 31*lambda_1[0, 24] + 31*lambda_1[0, 25] + 30*lambda_1[0, 28] - 30*lambda_1[0, 29] - 92*lambda_1[0, 33] + 92*lambda_1[0, 34] + 90*lambda_1[0, 39] - 90*lambda_1[0, 40] == V[0, 5]]
+	constraints += [lambda_1[0, 17] - lambda_1[0, 18] - lambda_1[0, 19] + lambda_1[0, 20] == V[0, 20]]
+	constraints += [lambda_1[0, 24] - lambda_1[0, 25] - lambda_1[0, 28] + lambda_1[0, 29] == V[0, 21]]
+	constraints += [lambda_1[0, 10] + lambda_1[0, 11] - lambda_1[0, 21] == V[0, 11]]
+	constraints += [-lambda_1[0, 6] + lambda_1[0, 7] - 184*lambda_1[0, 14] - 180*lambda_1[0, 15] - 30.5*lambda_1[0, 31] + 30*lambda_1[0, 32] - 30*lambda_1[0, 33] + 20*lambda_1[0, 34] - 31*lambda_1[0, 35] + 30*lambda_1[0, 36] + 30.5*lambda_1[0, 37] - 30*lambda_1[0, 38] + 30*lambda_1[0, 39] - 20*lambda_1[0, 40] + 31*lambda_1[0, 41] - 30*lambda_1[0, 42] + 182*lambda_1[0, 43] == V[0, 6]]
+	constraints += [lambda_1[0, 31] - lambda_1[0, 32] - lambda_1[0, 37] + lambda_1[0, 38] == V[0, 24]]
+	constraints += [lambda_1[0, 35] - lambda_1[0, 36] - lambda_1[0, 41] + lambda_1[0, 42] == V[0, 25]]
+	constraints += [lambda_1[0, 33] - lambda_1[0, 34] - lambda_1[0, 39] + lambda_1[0, 40] == V[0, 27]]
+	constraints += [lambda_1[0, 14] + lambda_1[0, 15] - lambda_1[0, 43] == V[0, 12]]
+
+	#------------------The Lie Derivative conditions------------------
+	constraints += [100*lambda_2[0, 1] + 100*lambda_2[0, 3] + 50000*lambda_2[0, 6] + 50000*lambda_2[0, 7] + 10000*lambda_2[0, 9] + 10000*lambda_2[0, 11] + 2500000000*lambda_2[0, 14] + 2500000000*lambda_2[0, 15] + 1000000*lambda_2[0, 17] + 1000000*lambda_2[0, 19] + 125000000000000*lambda_2[0, 22] + 125000000000000*lambda_2[0, 23] + 10000*lambda_2[0, 28] + 5000000*lambda_2[0, 40] + 5000000*lambda_2[0, 42] + 5000000*lambda_2[0, 46] + 5000000*lambda_2[0, 48] + 2500000000*lambda_2[0, 51] + 1000000*lambda_2[0, 59] + 1000000*lambda_2[0, 62] + 500000000*lambda_2[0, 83] + 500000000*lambda_2[0, 85] + 250000000000*lambda_2[0, 89] + 250000000000*lambda_2[0, 91] + 500000000*lambda_2[0, 95] + 500000000*lambda_2[0, 97] + 125000000000000*lambda_2[0, 100] + 250000000000*lambda_2[0, 102] + 250000000000*lambda_2[0, 104] + 125000000000000*lambda_2[0, 107] + 500000000*lambda_2[0, 132] + 500000000*lambda_2[0, 147] + 250000000000*lambda_2[0, 159] + 250000000000*lambda_2[0, 161] == -0.2*V[0, 0]]
+	constraints += [lambda_2[0, 0] - lambda_2[0, 1] - 200*lambda_2[0, 9] - 30000*lambda_2[0, 17] + 100*lambda_2[0, 24] + 100*lambda_2[0, 27] - 100*lambda_2[0, 28] + 50000*lambda_2[0, 39] - 50000*lambda_2[0, 40] + 50000*lambda_2[0, 45] - 50000*lambda_2[0, 46] + 10000*lambda_2[0, 53] - 20000*lambda_2[0, 59] + 10000*lambda_2[0, 61] - 10000*lambda_2[0, 62] - 10000000*lambda_2[0, 83] + 2500000000*lambda_2[0, 88] - 2500000000*lambda_2[0, 89] - 10000000*lambda_2[0, 95] + 2500000000*lambda_2[0, 101] - 2500000000*lambda_2[0, 102] + 10000*lambda_2[0, 109] + 5000000*lambda_2[0, 128] + 5000000*lambda_2[0, 131] - 5000000*lambda_2[0, 132] + 5000000*lambda_2[0, 143] + 5000000*lambda_2[0, 146] - 5000000*lambda_2[0, 147] + 2500000000*lambda_2[0, 158] - 2500000000*lambda_2[0, 159] == -2.8*V[0, 1]*t0[0, 0] - 2*V[0, 1]*t0[0, 1] - 0.2*V[0, 2] + V[0, 3]]
+	constraints += [lambda_2[0, 8] + lambda_2[0, 9] + 300*lambda_2[0, 17] - lambda_2[0, 24] + 100*lambda_2[0, 52] - 200*lambda_2[0, 53] + 100*lambda_2[0, 58] + 100*lambda_2[0, 59] + 50000*lambda_2[0, 82] + 50000*lambda_2[0, 83] + 50000*lambda_2[0, 94] + 50000*lambda_2[0, 95] - 100*lambda_2[0, 109] - 50000*lambda_2[0, 128] - 50000*lambda_2[0, 143] == -0.0001*V[0, 1] - 0.2*V[0, 8] - 2.8*V[0, 13]*t0[0, 0] - 2*V[0, 13]*t0[0, 1] + V[0, 15]]
+	constraints += [lambda_2[0, 16] - lambda_2[0, 17] - lambda_2[0, 52] + lambda_2[0, 53] == -0.0001*V[0, 13]]
+	constraints += [lambda_2[0, 4] - lambda_2[0, 6] - 100000*lambda_2[0, 14] - 7500000000*lambda_2[0, 22] + 100*lambda_2[0, 31] + 100*lambda_2[0, 33] - 100*lambda_2[0, 40] - 100*lambda_2[0, 42] + 50000*lambda_2[0, 43] + 50000*lambda_2[0, 49] - 50000*lambda_2[0, 51] + 10000*lambda_2[0, 65] + 10000*lambda_2[0, 67] - 10000*lambda_2[0, 83] - 10000*lambda_2[0, 85] - 10000000*lambda_2[0, 89] - 10000000*lambda_2[0, 91] + 2500000000*lambda_2[0, 92] - 5000000000*lambda_2[0, 100] + 2500000000*lambda_2[0, 105] - 2500000000*lambda_2[0, 107] + 10000*lambda_2[0, 116] - 10000*lambda_2[0, 132] + 5000000*lambda_2[0, 135] + 5000000*lambda_2[0, 137] + 5000000*lambda_2[0, 150] + 5000000*lambda_2[0, 152] - 5000000*lambda_2[0, 159] - 5000000*lambda_2[0, 161] + 2500000000*lambda_2[0, 162] == -2*V[0, 1]*t0[0, 0] - 0.2*V[0, 3]]
+	constraints += [lambda_2[0, 30] - lambda_2[0, 31] - lambda_2[0, 39] + lambda_2[0, 40] - 200*lambda_2[0, 65] + 200*lambda_2[0, 83] - 100000*lambda_2[0, 88] + 100000*lambda_2[0, 89] + 100*lambda_2[0, 112] + 100*lambda_2[0, 115] - 100*lambda_2[0, 116] - 100*lambda_2[0, 128] - 100*lambda_2[0, 131] + 100*lambda_2[0, 132] + 50000*lambda_2[0, 134] - 50000*lambda_2[0, 135] + 50000*lambda_2[0, 149] - 50000*lambda_2[0, 150] - 50000*lambda_2[0, 158] + 50000*lambda_2[0, 159] == 2*V[0, 9] - 2*V[0, 13]*t0[0, 0] - 2.8*V[0, 14]*t0[0, 0] - 2*V[0, 14]*t0[0, 1] - 0.2*V[0, 15]]
+	constraints += [lambda_2[0, 64] + lambda_2[0, 65] - lambda_2[0, 82] - lambda_2[0, 83] - lambda_2[0, 112] + lambda_2[0, 128] == -0.0001*V[0, 14]]
+	constraints += [lambda_2[0, 12] + lambda_2[0, 14] + 150000*lambda_2[0, 22] - lambda_2[0, 43] + 100*lambda_2[0, 69] + 100*lambda_2[0, 71] + 50000*lambda_2[0, 86] + 100*lambda_2[0, 89] + 100*lambda_2[0, 91] - 100000*lambda_2[0, 92] + 50000*lambda_2[0, 98] + 50000*lambda_2[0, 100] - 100*lambda_2[0, 135] - 100*lambda_2[0, 137] - 50000*lambda_2[0, 162] == -0.2*V[0, 9] - 2*V[0, 14]*t0[0, 0]]
+	constraints += [lambda_2[0, 68] - lambda_2[0, 69] + lambda_2[0, 88] - lambda_2[0, 89] - lambda_2[0, 134] + lambda_2[0, 135] == 0]
+	constraints += [lambda_2[0, 20] - lambda_2[0, 22] - lambda_2[0, 86] + lambda_2[0, 92] == 0]
+	constraints += [lambda_2[0, 2] - lambda_2[0, 3] - 200*lambda_2[0, 11] - 30000*lambda_2[0, 19] + 100*lambda_2[0, 26] - 100*lambda_2[0, 28] + 100*lambda_2[0, 29] + 50000*lambda_2[0, 41] - 50000*lambda_2[0, 42] + 50000*lambda_2[0, 47] - 50000*lambda_2[0, 48] + 10000*lambda_2[0, 55] - 10000*lambda_2[0, 59] - 20000*lambda_2[0, 62] + 10000*lambda_2[0, 63] - 10000000*lambda_2[0, 85] + 2500000000*lambda_2[0, 90] - 2500000000*lambda_2[0, 91] - 10000000*lambda_2[0, 97] + 2500000000*lambda_2[0, 103] - 2500000000*lambda_2[0, 104] + 10000*lambda_2[0, 111] + 5000000*lambda_2[0, 130] - 5000000*lambda_2[0, 132] + 5000000*lambda_2[0, 133] + 5000000*lambda_2[0, 145] - 5000000*lambda_2[0, 147] + 5000000*lambda_2[0, 148] + 2500000000*lambda_2[0, 160] - 2500000000*lambda_2[0, 161] == -25*sin(v_l)*V[0, 22] + 2*V[0, 1]*t0[0, 1] - 0.2*V[0, 5] + V[0, 6]]
+	constraints += [lambda_2[0, 25] - lambda_2[0, 26] - lambda_2[0, 27] + lambda_2[0, 28] - 200*lambda_2[0, 55] + 200*lambda_2[0, 59] - 200*lambda_2[0, 61] + 200*lambda_2[0, 62] + 100*lambda_2[0, 108] - 100*lambda_2[0, 109] + 100*lambda_2[0, 110] - 100*lambda_2[0, 111] + 50000*lambda_2[0, 129] - 50000*lambda_2[0, 130] - 50000*lambda_2[0, 131] + 50000*lambda_2[0, 132] + 50000*lambda_2[0, 144] - 50000*lambda_2[0, 145] - 50000*lambda_2[0, 146] + 50000*lambda_2[0, 147] == 2*V[0, 13]*t0[0, 1] - 2.8*V[0, 19]*t0[0, 0] - 2*V[0, 19]*t0[0, 1] - 0.2*V[0, 20] + V[0, 21] + V[0, 24]]
+	constraints += [lambda_2[0, 54] + lambda_2[0, 55] - lambda_2[0, 58] - lambda_2[0, 59] - lambda_2[0, 108] + lambda_2[0, 109] == -0.0001*V[0, 19]]
+	constraints += [lambda_2[0, 32] - lambda_2[0, 33] - lambda_2[0, 41] + lambda_2[0, 42] - 200*lambda_2[0, 67] + 200*lambda_2[0, 85] - 100000*lambda_2[0, 90] + 100000*lambda_2[0, 91] + 100*lambda_2[0, 114] - 100*lambda_2[0, 116] + 100*lambda_2[0, 117] - 100*lambda_2[0, 130] + 100*lambda_2[0, 132] - 100*lambda_2[0, 133] + 50000*lambda_2[0, 136] - 50000*lambda_2[0, 137] + 50000*lambda_2[0, 151] - 50000*lambda_2[0, 152] - 50000*lambda_2[0, 160] + 50000*lambda_2[0, 161] == 2*V[0, 14]*t0[0, 1] - 2*V[0, 19]*t0[0, 0] - 0.2*V[0, 21] + V[0, 25]]
+	constraints += [lambda_2[0, 113] - lambda_2[0, 114] - lambda_2[0, 115] + lambda_2[0, 116] - lambda_2[0, 129] + lambda_2[0, 130] + lambda_2[0, 131] - lambda_2[0, 132] == 0]
+	constraints += [lambda_2[0, 70] - lambda_2[0, 71] + lambda_2[0, 90] - lambda_2[0, 91] - lambda_2[0, 136] + lambda_2[0, 137] == 0]
+	constraints += [lambda_2[0, 10] + lambda_2[0, 11] + 300*lambda_2[0, 19] - lambda_2[0, 29] + 100*lambda_2[0, 57] + 100*lambda_2[0, 60] + 100*lambda_2[0, 62] - 200*lambda_2[0, 63] + 50000*lambda_2[0, 84] + 50000*lambda_2[0, 85] + 50000*lambda_2[0, 96] + 50000*lambda_2[0, 97] - 100*lambda_2[0, 111] - 50000*lambda_2[0, 133] - 50000*lambda_2[0, 148] == -0.0001*V[0, 4] - 0.2*V[0, 11] + 2*V[0, 19]*t0[0, 1] + V[0, 27]]
+	constraints += [lambda_2[0, 56] - lambda_2[0, 57] + lambda_2[0, 61] - lambda_2[0, 62] - lambda_2[0, 110] + lambda_2[0, 111] == -0.0001*V[0, 17]]
+	constraints += [lambda_2[0, 66] + lambda_2[0, 67] - lambda_2[0, 84] - lambda_2[0, 85] - lambda_2[0, 117] + lambda_2[0, 133] == -0.0001*V[0, 18]]
+	constraints += [lambda_2[0, 18] - lambda_2[0, 19] - lambda_2[0, 60] + lambda_2[0, 63] == -0.0001*V[0, 22]]
+	constraints += [lambda_2[0, 5] - lambda_2[0, 7] - 100000*lambda_2[0, 15] - 7500000000*lambda_2[0, 23] + 100*lambda_2[0, 35] + 100*lambda_2[0, 37] + 50000*lambda_2[0, 44] - 100*lambda_2[0, 46] - 100*lambda_2[0, 48] + 50000*lambda_2[0, 50] - 50000*lambda_2[0, 51] + 10000*lambda_2[0, 73] + 10000*lambda_2[0, 75] + 2500000000*lambda_2[0, 93] - 10000*lambda_2[0, 95] - 10000*lambda_2[0, 97] - 2500000000*lambda_2[0, 100] - 10000000*lambda_2[0, 102] - 10000000*lambda_2[0, 104] + 2500000000*lambda_2[0, 106] - 5000000000*lambda_2[0, 107] + 10000*lambda_2[0, 122] + 5000000*lambda_2[0, 139] + 5000000*lambda_2[0, 141] - 10000*lambda_2[0, 147] + 5000000*lambda_2[0, 154] + 5000000*lambda_2[0, 156] - 5000000*lambda_2[0, 159] - 5000000*lambda_2[0, 161] + 2500000000*lambda_2[0, 163] == 2*V[0, 1]*t0[0, 0] - 0.2*V[0, 6]]
+	constraints += [lambda_2[0, 34] - lambda_2[0, 35] - lambda_2[0, 45] + lambda_2[0, 46] - 200*lambda_2[0, 73] + 200*lambda_2[0, 95] - 100000*lambda_2[0, 101] + 100000*lambda_2[0, 102] + 100*lambda_2[0, 118] + 100*lambda_2[0, 121] - 100*lambda_2[0, 122] + 50000*lambda_2[0, 138] - 50000*lambda_2[0, 139] - 100*lambda_2[0, 143] - 100*lambda_2[0, 146] + 100*lambda_2[0, 147] + 50000*lambda_2[0, 153] - 50000*lambda_2[0, 154] - 50000*lambda_2[0, 158] + 50000*lambda_2[0, 159] == 2*V[0, 13]*t0[0, 0] - 2.8*V[0, 23]*t0[0, 0] - 2*V[0, 23]*t0[0, 1] - 0.2*V[0, 24] + V[0, 25]]
+	constraints += [lambda_2[0, 72] + lambda_2[0, 73] - lambda_2[0, 94] - lambda_2[0, 95] - lambda_2[0, 118] + lambda_2[0, 143] == -0.0001*V[0, 23]]
+	constraints += [lambda_2[0, 38] - lambda_2[0, 44] - lambda_2[0, 49] + lambda_2[0, 51] - 100000*lambda_2[0, 93] + 100000*lambda_2[0, 100] - 100000*lambda_2[0, 105] + 100000*lambda_2[0, 107] + 100*lambda_2[0, 125] + 100*lambda_2[0, 127] - 100*lambda_2[0, 139] - 100*lambda_2[0, 141] + 50000*lambda_2[0, 142] - 100*lambda_2[0, 150] - 100*lambda_2[0, 152] + 50000*lambda_2[0, 157] + 100*lambda_2[0, 159] + 100*lambda_2[0, 161] - 50000*lambda_2[0, 162] - 50000*lambda_2[0, 163] == 2*V[0, 14]*t0[0, 0] - 2*V[0, 23]*t0[0, 0] - 0.2*V[0, 25]]
+	constraints += [lambda_2[0, 124] - lambda_2[0, 125] - lambda_2[0, 138] + lambda_2[0, 139] - lambda_2[0, 149] + lambda_2[0, 150] + lambda_2[0, 158] - lambda_2[0, 159] == 0]
+	constraints += [lambda_2[0, 76] + lambda_2[0, 93] - lambda_2[0, 98] - lambda_2[0, 100] - lambda_2[0, 142] + lambda_2[0, 162] == 0]
+	constraints += [lambda_2[0, 36] - lambda_2[0, 37] - lambda_2[0, 47] + lambda_2[0, 48] - 200*lambda_2[0, 75] + 200*lambda_2[0, 97] - 100000*lambda_2[0, 103] + 100000*lambda_2[0, 104] + 100*lambda_2[0, 120] - 100*lambda_2[0, 122] + 100*lambda_2[0, 123] + 50000*lambda_2[0, 140] - 50000*lambda_2[0, 141] - 100*lambda_2[0, 145] + 100*lambda_2[0, 147] - 100*lambda_2[0, 148] + 50000*lambda_2[0, 155] - 50000*lambda_2[0, 156] - 50000*lambda_2[0, 160] + 50000*lambda_2[0, 161] == 2*V[0, 12] + 2*V[0, 19]*t0[0, 0] + 2*V[0, 23]*t0[0, 1] - 0.2*V[0, 27]]
+	constraints += [lambda_2[0, 119] - lambda_2[0, 120] - lambda_2[0, 121] + lambda_2[0, 122] - lambda_2[0, 144] + lambda_2[0, 145] + lambda_2[0, 146] - lambda_2[0, 147] == 0]
+	constraints += [lambda_2[0, 126] - lambda_2[0, 127] - lambda_2[0, 140] + lambda_2[0, 141] - lambda_2[0, 151] + lambda_2[0, 152] + lambda_2[0, 160] - lambda_2[0, 161] == 0]
+	constraints += [lambda_2[0, 74] + lambda_2[0, 75] - lambda_2[0, 96] - lambda_2[0, 97] - lambda_2[0, 123] + lambda_2[0, 148] == -0.0001*V[0, 26]]
+	constraints += [lambda_2[0, 13] + lambda_2[0, 15] + 150000*lambda_2[0, 23] - lambda_2[0, 50] + 100*lambda_2[0, 78] + 100*lambda_2[0, 80] + 50000*lambda_2[0, 87] + 50000*lambda_2[0, 99] + 100*lambda_2[0, 102] + 100*lambda_2[0, 104] - 100000*lambda_2[0, 106] + 50000*lambda_2[0, 107] - 100*lambda_2[0, 154] - 100*lambda_2[0, 156] - 50000*lambda_2[0, 163] == -0.2*V[0, 12] + 2*V[0, 23]*t0[0, 0]]
+	constraints += [lambda_2[0, 77] - lambda_2[0, 78] + lambda_2[0, 101] - lambda_2[0, 102] - lambda_2[0, 153] + lambda_2[0, 154] == 0]
+	constraints += [lambda_2[0, 81] - lambda_2[0, 87] + lambda_2[0, 105] - lambda_2[0, 107] - lambda_2[0, 157] + lambda_2[0, 163] == 0]
+	constraints += [lambda_2[0, 79] - lambda_2[0, 80] + lambda_2[0, 103] - lambda_2[0, 104] - lambda_2[0, 155] + lambda_2[0, 156] == 0]
+	constraints += [lambda_2[0, 21] - lambda_2[0, 23] - lambda_2[0, 99] + lambda_2[0, 106] == 0]
+
+
+	#------------------The Unsafe conditions------------------
+	constraints += [lambda_3[0, 1] + lambda_3[0, 3] == -V[0, 0]]
+	constraints += [-0.14*lambda_3[0, 0] + 0.14*lambda_3[0, 1] + 0.28*lambda_3[0, 3] - 0.14*lambda_3[0, 4] == -V[0, 2]]
+	constraints += [0.0196*lambda_3[0, 2] + 0.0196*lambda_3[0, 3] - 0.0196*lambda_3[0, 4] == -V[0, 8]]
+	constraints += [-0.1*lambda_3[0, 0] + 0.1*lambda_3[0, 1] + 0.2*lambda_3[0, 3] - 0.1*lambda_3[0, 4] == -V[0, 3]]
+	constraints += [0.028*lambda_3[0, 2] + 0.028*lambda_3[0, 3] - 0.028*lambda_3[0, 4] == -V[0, 15]]
+	constraints += [0.01*lambda_3[0, 2] + 0.01*lambda_3[0, 3] - 0.01*lambda_3[0, 4] == -V[0, 9]]
+	constraints += [0.1*lambda_3[0, 0] - 0.1*lambda_3[0, 1] - 0.2*lambda_3[0, 3] + 0.1*lambda_3[0, 4] == -V[0, 6]]
+	constraints += [-0.028*lambda_3[0, 2] - 0.028*lambda_3[0, 3] + 0.028*lambda_3[0, 4] == -V[0, 24]]
+	constraints += [-0.02*lambda_3[0, 2] - 0.02*lambda_3[0, 3] + 0.02*lambda_3[0, 4] == -V[0, 25]]
+	constraints += [0.01*lambda_3[0, 2] + 0.01*lambda_3[0, 3] - 0.01*lambda_3[0, 4] == -V[0, 12]]
+
+	problem = cp.Problem(objective, constraints)
+	assert problem.is_dcp()
+	assert problem.is_dpp()
+
+	t0 = np.reshape(t0, (1, 3))
+	theta_t0 = torch.from_numpy(c0).float()
+	theta_t0.requires_grad = True
+
+	
+
+	layer = CvxpyLayer(problem, parameters=[t0], variables=[lambda_1, lambda_2, lambda_3, V, theta])
+	lambda1_star, lambda2_star, lambda3_star, V_star, theta_star = layer(theta_t0)
+
+	torch.norm(theta_star).backward()
+	# objc_star.backward()
+
+	V = V_star.detach().numpy()[0]
+	# m = m_star.detach().numpy()
+	# n = n_star.detach().numpy()
+	timer.stop()
+	initTest, unsafeTest, lieTest = BarrierConstraints(V, t0)
+	
+	return V, theta_star.detach().numpy(), theta_t0.grad.detach().numpy(), initTest, unsafeTest, lieTest
+
+
 
 
 if __name__ == '__main__':
@@ -316,16 +443,18 @@ if __name__ == '__main__':
 	# plt.legend()
 	# plt.savefig('quadtest.png')
 
-	BarrierConstraints()
+	def naive_SVG():
+		control_param = np.array([0.0]*3)
+		control_param = np.reshape(control_param, (1, 3))
+		vtheta, state = SVG(control_param)
+		for i in range(100):
+			vtheta, final_state = SVG(control_param)
+			print(vtheta.shape, vtheta)
+			control_param += 1e-7 * np.clip(vtheta, -1e7, 1e7)
+			# if i > 50:
+			# 	control_param += 1e-4 * np.clip(vtheta, -1e4, 1e4)
+		print(final_state, vtheta, control_param)
+		SVG(control_param, view=True)
 
-	# control_param = np.array([0.0]*3)
-	# control_param = np.reshape(control_param, (1, 3))
-	# vtheta, state = SVG(control_param)
-	# for i in range(100):
-	# 	vtheta, final_state = SVG(control_param)
-	# 	print(vtheta.shape, vtheta)
-	# 	control_param += 1e-7 * np.clip(vtheta, -1e7, 1e7)
-	# 	# if i > 50:
-	# 	# 	control_param += 1e-4 * np.clip(vtheta, -1e4, 1e4)
-	# print(final_state, vtheta, control_param)
-	# SVG(control_param, view=True)
+
+	BarrierConstraints()
