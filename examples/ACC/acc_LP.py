@@ -15,7 +15,7 @@ from timer import *
 
 class ACC:
 	deltaT = 0.1
-	max_iteration = 300 # 5 seconds simulation
+	max_iteration = 50 # 5 seconds simulation
 	mu = 0.0001
 
 	def __init__(self):
@@ -26,7 +26,9 @@ class ACC:
 		x_e = np.random.uniform(30,31)
 		v_e = np.random.uniform(30,30.5)
 		r_e = 0
-		self.state = np.array([x_l, v_l, r_l, x_e, v_e, r_e])
+		x = np.sin(v_l)
+		y = np.cos(v_l)
+		self.state = np.array([x_l, v_l, r_l, x_e, v_e, r_e, x, y])
 
 	def reset(self):
 		x_l = np.random.uniform(90,92)
@@ -35,24 +37,29 @@ class ACC:
 		x_e = np.random.uniform(30,31)
 		v_e = np.random.uniform(30,30.5)
 		r_e = 0
+		x = np.sin(v_l)
+		y = np.cos(v_l)
 		self.t = 0
-		self.state = np.array([x_l, v_l, r_l, x_e, v_e, r_e])
+		self.state = np.array([x_l, v_l, r_l, x_e, v_e, r_e, x, y])
 		return self.state
 
 	def step(self, a_e):
 		dt = self.deltaT
-		x_l, v_l, r_l, x_e, v_e, r_e = self.state
+		x_l, v_l, r_l, x_e, v_e, r_e, x, y = self.state
 
 		x_l_new = x_l + v_l*dt
 		v_l_new = v_l + r_l*dt
-		r_l_new = r_l + (-2*r_l-25*np.sin(v_l)-self.mu*v_l**2)*dt # directly write a_l = -5 into the dynamics
+		r_l_new = r_l + (-2*r_l-25*x-self.mu*v_l**2)*dt
 		x_e_new = x_e + v_e*dt
 		v_e_new = v_e + r_e*dt
-		r_e_new = r_e + (-2*r_e+2*a_e-self.mu*v_e**2)*dt 
-		self.state = np.array([x_l_new, v_l_new, r_l_new, x_e_new, v_e_new, r_e_new])
+		r_e_new = r_e + (-2*r_e+2*a_e-self.mu*v_e**2)*dt
+		x_new = x + y*r_l*dt
+		y_new = y - x*r_l*dt 
+		self.state = np.array([x_l_new, v_l_new, r_l_new, x_e_new, v_e_new, r_e_new, x_new, y_new])
 		self.t += 1
 		# similar to tracking or stablizing to origin point design
 		reward = -(x_l_new - x_e_new - 10 - 1.4 * v_e_new)**2 - (v_l_new - v_e_new)**2 - (r_l_new - r_e_new)**2 
+		# print(reward)
 		return self.state, reward, self.t == self.max_iteration
 
 
@@ -95,12 +102,12 @@ def SVG(control_param, view=False):
 		ax2.legend()
 		fig.savefig('test_sin.jpg')
 
-	vs_prime = np.array([0.0] * 6)
+	vs_prime = np.array([0.0] * 8)
 	vtheta_prime = np.array([[0.0] * 3])
 	gamma = 0.99
 
 	for i in range(len(state_tra)-1, -1, -1):
-		x_l, v_l, r_l, x_e, v_e, r_e = state_tra[i]
+		x_l, v_l, r_l, x_e, v_e, r_e, x, y = state_tra[i]
 		a_e = control_tra[i]
 
 
@@ -110,25 +117,29 @@ def SVG(control_param, view=False):
 			-2*(r_l - r_e), 
 			2*(x_l - x_e - 10 - 1.4 * v_e),
 			2.8*(x_l - x_e - 10 - 1.4 * v_e) + 2*(v_l - v_e),
-			2*(r_l - r_e)
+			2*(r_l - r_e),
+			0,
+			0
 			])
 
 		c1 = np.reshape(control_param, (1, 3))
 
 		pis = np.array([
-					   [c1[0,0], c1[0,1], c1[0,2], -c1[0,0], -1.4*c1[0,0]-c1[0,1], -c1[0,2]]
+					   [c1[0,0], c1[0,1], c1[0,2], -c1[0,0], -1.4*c1[0,0]-c1[0,1], -c1[0,2], 0, 0]
 						])
 		fs = np.array([
-			[1,dt,0,0,0,0],
-			[0,1,dt,0,0,0],
-			[0,-25*np.cos(v_l)*dt-2*env.mu*v_l*dt,1-2*dt,0,0,0],
-			[0,0,0,1,dt,0],
-			[0,0,0,0,1,dt],
-			[0,0,0,0,-2*env.mu*v_e*dt,1-2*dt]		
+			[1,dt,0,0,0,0,0,0],
+			[0,1,dt,0,0,0,0,0],
+			[0,-2*env.mu*v_l*dt,1-2*dt,0,0,0,-25*dt,0],
+			[0,0,0,1,dt,0,0,0],
+			[0,0,0,0,1,dt,0,0],
+			[0,0,0,0,-2*env.mu*v_e*dt,1-2*dt,0,0],
+			[0,0,y*dt,0,0,0,1,r_l*dt],
+			[0,0,-x*dt,0,0,0,-r_l*dt,1]		
 			])	
 
 		fa = np.array([
-			[0],[0],[0],[0],[0],[2*dt]
+			[0],[0],[0],[0],[0],[2*dt],[0],[0]
 			])
 		vs = rs + gamma * vs_prime.dot(fs + fa.dot(pis))
 		pitheta = np.array(
@@ -247,6 +258,7 @@ def BarrierConstraints():
 	file.close()
 
 
+
 def BarrierTest(Barrier_param, control_param):
 	initTest, unsafeTest, lieTest = True, True, True
 	assert Barrier_param.shape == (28, )
@@ -306,6 +318,7 @@ def BarrierTest(Barrier_param, control_param):
 			unsafeTest = False
 
 	return initTest, unsafeTest, lieTest
+
 
 
 def LyaLP(t0, timer, SVG_only=False):
@@ -426,7 +439,6 @@ def LyaLP(t0, timer, SVG_only=False):
 
 
 
-
 if __name__ == '__main__':
 	# env = Quadrotor()
 	# state, done = env.reset(), False
@@ -457,4 +469,5 @@ if __name__ == '__main__':
 		SVG(control_param, view=True)
 
 
-	BarrierConstraints()
+	# BarrierConstraints()
+	naive_SVG()
