@@ -475,14 +475,14 @@ def BarrierLP(c0, timer, SVG_only=False):
 	layer = CvxpyLayer(problem, parameters=[t0], variables=[lambda_1, lambda_2, lambda_3, V, objc])
 	lambda1_star, lambda2_star, lambda3_star, V_star, objc_star = layer(theta_t0)
 
-	torch.norm(objc_star).backward()
-	# objc_star.backward()
+	# torch.norm(objc_star).backward()
+	objc_star.backward()
 
 	V = V_star.detach().numpy()[0]
 	# m = m_star.detach().numpy()
 	# n = n_star.detach().numpy()
 	timer.stop()
-	initTest, unsafeTest, lieTest = BarrierTest(V, t0)
+	initTest, unsafeTest, lieTest = BarrierTest(V, c0)
 	
 	return V, objc_star.detach().numpy(), theta_t0.grad.detach().numpy(), initTest, unsafeTest, lieTest
 
@@ -508,6 +508,7 @@ if __name__ == '__main__':
 		
 		control_param = np.array([0.0]*3)
 		control_param = np.reshape(control_param, (1, 3))
+		vtheta, state = SVG(control_param)
 		for i in range(100):
 			BarGrad = np.array([0, 0, 0])
 			# Bslack, Vslack = 100, 100
