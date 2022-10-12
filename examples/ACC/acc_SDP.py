@@ -75,35 +75,24 @@ def SVG(control_param, view=False, V=None):
 
 	if view:
 		# print('trajectory of SVG controllrt: ', state_tra)
-		# print()
 		x_diff = [s[0] - s[3] for s in state_tra]
 		safety_margin = [10 + 1.4*s[4] for s in state_tra]
-		delta = [s[0] - s[3] - 1.4*s[4] - 10 for s in state_tra]
 		v_l = [s[1] for s in state_tra]
 		v_e = [s[4] for s in state_tra]
 		# x = [s[3] for s in state_tra]
 		fig = plt.figure()
-		ax1 = fig.add_subplot(3,1,1)
-		# ax1.plot(delta, label='$\Delta$')
-		# ax1.plot([0]*len(delta))
+		ax1 = fig.add_subplot(2,1,1)
 		ax1.plot(x_diff, label='$x_diff$')
 		ax1.plot(safety_margin, label='margin')
-		ax2 = fig.add_subplot(3,1,2)
+		ax2 = fig.add_subplot(2,1,2)
 		ax2.plot(v_l, label='v_l')
 		ax2.plot(v_e, label='v_e')
+		# plt.plot(z_diff, label='$\delta z$')
+		# plt.plot(x, label='ego')
 		ax1.legend()
 		ax2.legend()
-		if V is not None:
-			BarrierList = []
-			for i in range(len(state_tra)):
-				a, b, c, d, e, f = state_tra[i]
-				h, k = np.sin(b), np.cos(b)
-				barrier_value = a**2*V[0, 16] + a*b*V[0, 44] + a*c*V[0, 43] + a*d*V[0, 42] + a*e*V[0, 41] + a*f*V[0, 40] + a*h*V[0, 39] + a*k*V[0, 38] + a*V[0, 8] + b**2*V[0, 15] + b*c*V[0, 37] + b*d*V[0, 36] + b*e*V[0, 35] + b*f*V[0, 34] + b*h*V[0, 33] + b*k*V[0, 32] + b*V[0, 7] + c**2*V[0, 14] + c*d*V[0, 31] + c*e*V[0, 30] + c*f*V[0, 29] + c*h*V[0, 28] + c*k*V[0, 27] + c*V[0, 6] + d**2*V[0, 13] + d*e*V[0, 26] + d*f*V[0, 25] + d*h*V[0, 24] + d*k*V[0, 23] + d*V[0, 5] + e**2*V[0, 12] + e*f*V[0, 22] + e*h*V[0, 21] + e*k*V[0, 20] + e*V[0, 4] + f**2*V[0, 11] + f*h*V[0, 19] + f*k*V[0, 18] + f*V[0, 3] + h**2*V[0, 10] + h*k*V[0, 17] + h*V[0, 2] + k**2*V[0, 9] + k*V[0, 1] + V[0, 0]
-				BarrierList.append(barrier_value)
-			ax3 = fig.add_subplot(3, 1, 3)
-			ax3.plot(BarrierList, label='B(s)')
-			ax3.legend()
-		fig.savefig('test_sin.jpg')
+		fig.savefig('test.jpg')
+
 
 	vs_prime = np.array([0.0] * 6)
 	vtheta_prime = np.array([[0.0] * 3])
@@ -547,7 +536,7 @@ def BarrierTest(V, control_param, l):
 		h = np.sin(b)
 		k = np.cos(b)
 		init = -a**2*V[0, 16] - a*b*V[0, 44] - a*c*V[0, 43] - a*d*V[0, 42] - a*e*V[0, 41] - a*f*V[0, 40] - a*h*V[0, 39] - a*k*V[0, 38] - a*V[0, 8] - b**2*V[0, 15] - b*c*V[0, 37] - b*d*V[0, 36] - b*e*V[0, 35] - b*f*V[0, 34] - b*h*V[0, 33] - b*k*V[0, 32] - b*V[0, 7] - c**2*V[0, 14] - c*d*V[0, 31] - c*e*V[0, 30] - c*f*V[0, 29] - c*h*V[0, 28] - c*k*V[0, 27] - c*V[0, 6] - d**2*V[0, 13] - d*e*V[0, 26] - d*f*V[0, 25] - d*h*V[0, 24] - d*k*V[0, 23] - d*V[0, 5] - e**2*V[0, 12] - e*f*V[0, 22] - e*h*V[0, 21] - e*k*V[0, 20] - e*V[0, 4] - f**2*V[0, 11] - f*h*V[0, 19] - f*k*V[0, 18] - f*V[0, 3] - h**2*V[0, 10] - h*k*V[0, 17] - h*V[0, 2] - k**2*V[0, 9] - k*V[0, 1] - V[0, 0]	
-		if init >= 0:
+		if init < 0:
 			InitCnt += 1
 			InitTest = False
 
@@ -618,10 +607,10 @@ def BarrierConstraints():
 
 	V = MatrixSymbol('V', 1, len(monomial_list))
 	
-	lhs_init = -V * monomial_list - 0.0001*Matrix([1 - 	(a - 91)**2 - ((b - 30) / 0.5)**2 - (c / 0.001)**2 - ((d - 30.5) / 0.5)**2 - ((e - 30.25) / 0.25)**2 - (f / 0.001)**2]) - Matrix([0.1])
-	# lhs_init = -V * monomial_list
+	# lhs_init = -V * monomial_list - 0.0001*Matrix([1 - 	(a - 91)**2 - ((b - 30) / 0.5)**2 - (c / 0.001)**2 - ((d - 30.5) / 0.5)**2 - ((e - 30.25) / 0.25)**2 - (f / 0.001)**2]) - Matrix([0.1])
+	lhs_init = -V * monomial_list
 	lhs_init = lhs_init[0, 0].expand()
-	# print(lhs_init)
+	print(lhs_init)
 	# assert False
 	rhs_init = ele.T*P*ele
 	rhs_init = rhs_init[0, 0].expand()
@@ -707,28 +696,41 @@ if __name__ == '__main__':
 	# BarrierSDP(control_param)
 
 
+	# control_param = np.array([0.0]*3)
+	# control_param = np.reshape(control_param, (1, 3))
+	# vtheta, state = SVG(control_param)
+	# weight = np.linspace(0, 500, 250)
+	# for i in range(100):
+	# 	vtheta, final_state = SVG(control_param)
+		
+	# 	try:
+	# 		theta_grad, slack, V = BarrierSDP(control_param, l)
+	# 		initTest, unsafeTest, BlieTest = BarrierTest(V, control_param, l)
+	# 		print(i, control_param, theta_grad, slack)
+	# 		print('')
+	# 		if initTest and unsafeTest and BlieTest and slack <= 1e-4:
+	# 				print('Successfully learn a controller with its barrier certificate and Lyapunov function')
+	# 				print('Controller: ', control_param)
+	# 				print('Valid Barrier is: ', V)
+	# 				break
+	# 		control_param -= 10*weight[i]*theta_grad
+	# 	except Exception as e:
+	# 		print(e)
+
+	# 	control_param += 1e-6 * np.clip(vtheta, -1e6, 1e6)
+	# print(final_state, vtheta, control_param)
+	# SVG(control_param, view=True, V=V)
+
 	control_param = np.array([0.0]*3)
 	control_param = np.reshape(control_param, (1, 3))
 	vtheta, state = SVG(control_param)
-	weight = np.linspace(0, 500, 250)
 	for i in range(100):
 		vtheta, final_state = SVG(control_param)
-		
-		try:
-			theta_grad, slack, V = BarrierSDP(control_param, l)
-			initTest, unsafeTest, BlieTest = BarrierTest(V, control_param, l)
-			print(i, control_param, theta_grad, slack)
-			print('')
-			if initTest and unsafeTest and BlieTest and slack <= 1e-4:
-					print('Successfully learn a controller with its barrier certificate and Lyapunov function')
-					print('Controller: ', control_param)
-					print('Valid Barrier is: ', V)
-					break
-			control_param -= weight[i]*theta_grad
-		except Exception as e:
-			print(e)
-
-		control_param += 1e-6 * np.clip(vtheta, -1e6, 1e6)
+		print(vtheta.shape, vtheta)
+		control_param += 1e-7 * np.clip(vtheta, -1e7, 1e7)
+			# if i > 50:
+			# 	control_param += 1e-4 * np.clip(vtheta, -1e4, 1e4)
 	print(final_state, vtheta, control_param)
-	SVG(control_param, view=True, V=V)
+	SVG(control_param, view=True)
+
 	# BarrierSDP(control_param)
