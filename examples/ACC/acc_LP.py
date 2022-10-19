@@ -181,10 +181,10 @@ def BarrierConstraints():
 	X = [x_l, v_l, r_l, x_e, v_e, r_e, x, y]
 	# print("setting up")
 	# Generate the possible handelman product to the power defined
-	init_poly_list = Matrix(possible_handelman_generation(2, initial_set))
+	init_poly_list = Matrix(possible_handelman_generation(3, initial_set))
 	# print("generating poly_list")
 	# incorporate the interval with handelman basis
-	monomial = monomial_generation(2, X)
+	monomial = monomial_generation(3, X)
 	# monomial.remove(1)
 	monomial_list = Matrix(monomial)
 	# print("generating monomial terms")
@@ -200,9 +200,9 @@ def BarrierConstraints():
 	rhs_init = lambda_poly_init * init_poly_list
 	# print("Get done the right hand side mul")
 	rhs_init = rhs_init[0, 0].expand()
-	file = open("barrier.txt","w")
+	file = open("barrier_deg3.txt","w")
 	file.write("#-------------------The Initial Set Conditions-------------------\n")
-	generateConstraints(rhs_init, lhs_init, file, degree=2)
+	generateConstraints(rhs_init, lhs_init, file, degree=3)
 		# f.close()
 	# theta = MatrixSymbol('theta',1 ,2)
 	u0Base = Matrix([[x_l - x_e - 1.4 * v_e, v_l - v_e, r_l - r_e]])
@@ -226,7 +226,7 @@ def BarrierConstraints():
 	lhs_der = lhs_der[0,0].expand()
 
 	lie_poly_list = [500-x_l, 500-x_e, 40-v_l, 40-v_e, 10-r_l, 10-r_e, 1-x, 1-y]
-	lie_poly = Matrix(possible_handelman_generation(3, lie_poly_list))
+	lie_poly = Matrix(possible_handelman_generation(4, lie_poly_list))
 	lambda_poly_der = MatrixSymbol('lambda_2', 1, len(lie_poly))
 	print("the length of the lambda_2 is", len(lie_poly))
 	rhs_der = lambda_poly_der * lie_poly
@@ -235,11 +235,11 @@ def BarrierConstraints():
 	# with open('cons.txt', 'a+') as f:
 	file.write("\n")
 	file.write("#------------------The Lie Derivative conditions------------------\n")
-	generateConstraints(rhs_der, lhs_der, file, degree=3)
+	generateConstraints(rhs_der, lhs_der, file, degree=4)
 	file.write("\n")
 
 	unsafe_poly_list = [x_e+10+1.4*v_e-x_l, v_l-40, v_e-40, r_l-10, r_e-10, x-1, y-1]
-	unsafe_poly = Matrix(possible_handelman_generation(2, unsafe_poly_list))
+	unsafe_poly = Matrix(possible_handelman_generation(3, unsafe_poly_list))
 	lambda_poly_unsafe = MatrixSymbol('lambda_3', 1, len(unsafe_poly))
 	print("the length of the lambda_3 is", len(unsafe_poly))
 
@@ -251,7 +251,7 @@ def BarrierConstraints():
 
 	file.write("\n")
 	file.write("#------------------The Unsafe conditions------------------\n")
-	generateConstraints(rhs_unsafe, lhs_unsafe, file, degree=2)
+	generateConstraints(rhs_unsafe, lhs_unsafe, file, degree=3)
 	file.write("\n")
 
 
@@ -879,6 +879,6 @@ if __name__ == '__main__':
 		SVG(control_param, view=True)
 
 
-	# BarrierConstraints()
-	Barrier_SVG()
+	BarrierConstraints()
+	# Barrier_SVG()
 	# naive_SVG()
