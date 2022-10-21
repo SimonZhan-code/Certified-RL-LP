@@ -931,8 +931,8 @@ def plot(control_param, V, B, figname, N=10, SVG=False):
 
 
 def LyapunovConsGenerate():
+
 	def generateConstraints(exp1, exp2, file, degree):
-		constraints = []
 		for i in range(degree+1):
 			for j in range(degree+1):
 				for k in range(degree+1):
@@ -993,7 +993,7 @@ def LyapunovConsGenerate():
 
 def BarrierConsGenerate():
 	### X0
-	m, n, p, q, l, k, g = symbols('m, n, p, q, l, k, g')
+	y, v_y, phi_e, r, l, k, g = symbols('y, v_y, phi_e, r, l, k, g')
 	Bbase = Matrix([1, m, n, p, q, m*n, m*p, m*q, n*p, n*q, p*q, m**2, n**2, p**2, q**2, m**4, n**4, p**4, q**4, m**6, n**6, p**6, q**6])
 	# Bbase = Matrix([1, m, m**2])
 	ele = Matrix([1, m, n, p, q])
