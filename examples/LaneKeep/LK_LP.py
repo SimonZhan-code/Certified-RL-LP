@@ -296,8 +296,8 @@ def BarrierLP(control_param, l, k, g, SVGOnly=False):
 	control_param = np.reshape(control_param, (1, 4))
 	theta_t = torch.from_numpy(control_param).float()
 	theta_t.requires_grad = True
-	layer = CvxpyLayer(problem, parameters=[t], variables=[X, Y, Z, M, N, B, objc, a, e])
-	X_star, Y_star, Z_star, M_star, N_star, B_star, objc_star, _, _ = layer(theta_t)
+	layer = CvxpyLayer(problem, parameters=[t], variables=[lambda_1, lambda_2, lambda_3, B, objc])
+	lambda_1_star, lambda_2_star, lambda_3_star, B_star, objc_star = layer(theta_t)
 	
 	objc_star.backward()
 	B = B_star.detach().numpy()[0]
@@ -1154,8 +1154,9 @@ if __name__ == '__main__':
 			Bslack, Vslack = 100, 100
 			vtheta, final_state, f, g = SVG(control_param, f*0.02, 1-g*0.02)
 			try: 
-				B, BarGrad, Bslack, initTest, unsafeTest, BlieTest = BarrierSDP(control_param, l=-1, k=f, g=g)
-				V, LyaGrad, Vslack, stateTest,  VlieTest = LyaSDP(control_param, f, g)
+				B, BarGrad, Bslack, initTest, unsafeTest, BlieTest = BarrierLP(control_param, l=-1, k=f, g=g)
+				print("--------------------------------")
+				V, LyaGrad, Vslack, stateTest,  VlieTest = LyaLP(control_param, f, g)
 				print(initTest, unsafeTest, BlieTest, stateTest,  VlieTest)
 				if initTest and unsafeTest and BlieTest and stateTest and VlieTest and abs(final_state[0])<0.05 and abs(final_state[2])<0.05 and abs(final_state[1]) < 0.1 and abs(final_state[3]) < 0.1:
 					print('Successfully learn a controller with its barrier certificate and Lyapunov function')
@@ -1198,8 +1199,8 @@ if __name__ == '__main__':
 	# SVGOnly()
 	# print('')
 	# print('Our approach starts here')
-	# ours()
+	ours()
 	# LyapunovConsGenerate()
-	BarrierConsGenerate()
+	# BarrierConsGenerate()
 	
 	
