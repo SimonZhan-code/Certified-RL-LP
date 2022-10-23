@@ -987,10 +987,10 @@ def BarrierConsGenerate():
 	initial_set = [y-0.2, 0.6-y, v_y-1.8, 2.2-v_y, phi_e-0.3, 0.7-phi_e, r+0.2, 0.2-r]
 	# print("setting up")
 	# Generate the possible handelman product to the power defined
-	init_poly_list = Matrix(possible_handelman_generation(2, initial_set))
+	init_poly_list = Matrix(possible_handelman_generation(3, initial_set))
 	# print("generating poly_list")
 	# incorporate the interval with handelman basis
-	monomial = monomial_generation(2, X)
+	monomial = monomial_generation(3, X)
 	# monomial.remove(1)
 	monomial_list = Matrix(monomial)
 	# print("generating monomial terms")
@@ -1006,9 +1006,9 @@ def BarrierConsGenerate():
 	rhs_init = lambda_poly_init * init_poly_list
 	# print("Get done the right hand side mul")
 	rhs_init = rhs_init[0, 0].expand()
-	file = open("barrier_deg2.txt","w")
+	file = open("barrier_deg3.txt","w")
 	file.write("#-------------------The Initial Set Conditions-------------------\n")
-	generateConstraints(rhs_init, lhs_init, file, degree=2)
+	generateConstraints(rhs_init, lhs_init, file, degree=3)
 		# f.close()
 	# theta = MatrixSymbol('theta',1 ,2)
 	u0Base = Matrix([[y, v_y, phi_e, r]])
@@ -1026,7 +1026,7 @@ def BarrierConsGenerate():
 
 	# lie_poly_list = [1/9*(y**2+v_y**2+phi_e**2+r**2), 1-1/9*(y**2+v_y**2+phi_e**2+r**2)]
 	lie_poly_list = [y+3, v_y+3, phi_e+3, r+3, 3-y, 3-v_y, 3-phi_e, 3-r]
-	lie_poly = Matrix(possible_handelman_generation(2, lie_poly_list))
+	lie_poly = Matrix(possible_handelman_generation(3, lie_poly_list))
 	lambda_poly_der = MatrixSymbol('lambda_2', 1, len(lie_poly))
 	print("the length of the lambda_2 is", len(lie_poly))
 	rhs_der = lambda_poly_der * lie_poly
@@ -1035,11 +1035,11 @@ def BarrierConsGenerate():
 	# with open('cons.txt', 'a+') as f:
 	file.write("\n")
 	file.write("#------------------The Lie Derivative conditions------------------\n")
-	generateConstraints(rhs_der, lhs_der, file, degree=2)
+	generateConstraints(rhs_der, lhs_der, file, degree=3)
 	file.write("\n")
 
 	unsafe_poly_list = [y-1, 3-y, v_y-1, 3-v_y, phi_e+1, 1-phi_e, r, 2-r]
-	unsafe_poly = Matrix(possible_handelman_generation(2, unsafe_poly_list))
+	unsafe_poly = Matrix(possible_handelman_generation(3, unsafe_poly_list))
 	lambda_poly_unsafe = MatrixSymbol('lambda_3', 1, len(unsafe_poly))
 	print("the length of the lambda_3 is", len(unsafe_poly))
 
@@ -1051,7 +1051,7 @@ def BarrierConsGenerate():
 
 	file.write("\n")
 	file.write("#------------------The Unsafe conditions------------------\n")
-	generateConstraints(rhs_unsafe, lhs_unsafe, file, degree=2)
+	generateConstraints(rhs_unsafe, lhs_unsafe, file, degree=3)
 	file.write("\n")
 
 
@@ -1095,7 +1095,7 @@ if __name__ == '__main__':
 				print("The final state is: ", final_state)
 				print("============================================\n")
 				print("\n")
-				if initTest and unsafeTest and BlieTest and stateTest and VlieTest and LA.norm(final_state) <= 0.1:
+				if initTest and unsafeTest and BlieTest and stateTest and VlieTest and LA.norm(final_state) <= 0.05:
 					print('Successfully learn a controller with its barrier certificate and Lyapunov function')
 					print('Controller: ', control_param)
 					print('Valid Barrier is: ', B)
@@ -1104,8 +1104,8 @@ if __name__ == '__main__':
 					break
 			except Exception as e:
 				print(e)
-			control_param += 0.1 * np.clip(vtheta[0], -2e2, 2e2)
-			control_param -= 1e5*np.clip(BarGrad, -1, 1)
+			control_param += 1e-2*np.clip(vtheta[0], -2e2, 2e2)
+			control_param -= 1e3*np.clip(BarGrad, -1, 1)
 			# control_param -= 0.1*np.sign(BarGrad)
 			control_param -= 2*np.clip(LyaGrad, -1, 1)
 			# print(final_state, BarGrad, Bslack, LyaGrad, Vslack)
