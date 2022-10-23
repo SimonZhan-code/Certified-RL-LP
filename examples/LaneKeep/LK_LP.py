@@ -150,7 +150,7 @@ def BarrierLP(control_param, l, k, g, SVGOnly=False):
 	constraints += [lambda_1[0, 35] - lambda_1[0, 36] - lambda_1[0, 41] + lambda_1[0, 42] >= B[0, 14]- objc]
 	constraints += [lambda_1[0, 14] + lambda_1[0, 15] - lambda_1[0, 43] <= B[0, 8]+ objc]
 	constraints += [lambda_1[0, 14] + lambda_1[0, 15] - lambda_1[0, 43] >= B[0, 8]- objc]
-
+	# print("first section of constraints")
 	#------------------The Lie Derivative conditions------------------
 	constraints += [3*lambda_2[0, 0] + 3*lambda_2[0, 1] + 3*lambda_2[0, 2] + 3*lambda_2[0, 3] + 3*lambda_2[0, 4] + 3*lambda_2[0, 5] + 3*lambda_2[0, 6] + 3*lambda_2[0, 7] + 9*lambda_2[0, 8] + 9*lambda_2[0, 9] + 9*lambda_2[0, 10] + 9*lambda_2[0, 11] + 9*lambda_2[0, 12] + 9*lambda_2[0, 13] + 9*lambda_2[0, 14] + 9*lambda_2[0, 15] + 9*lambda_2[0, 16] + 9*lambda_2[0, 17] + 9*lambda_2[0, 18] + 9*lambda_2[0, 19] + 9*lambda_2[0, 20] + 9*lambda_2[0, 21] + 9*lambda_2[0, 22] + 9*lambda_2[0, 23] + 9*lambda_2[0, 24] + 9*lambda_2[0, 25] + 9*lambda_2[0, 26] + 9*lambda_2[0, 27] + 9*lambda_2[0, 28] + 9*lambda_2[0, 29] + 9*lambda_2[0, 30] + 9*lambda_2[0, 31] + 9*lambda_2[0, 32] + 9*lambda_2[0, 33] + 9*lambda_2[0, 34] + 9*lambda_2[0, 35] + 9*lambda_2[0, 36] + 9*lambda_2[0, 37] + 9*lambda_2[0, 38] + 9*lambda_2[0, 39] + 9*lambda_2[0, 40] + 9*lambda_2[0, 41] + 9*lambda_2[0, 42] + 9*lambda_2[0, 43] <= -l*B[0, 0] - 1.0e-5+ objc]
 	constraints += [3*lambda_2[0, 0] + 3*lambda_2[0, 1] + 3*lambda_2[0, 2] + 3*lambda_2[0, 3] + 3*lambda_2[0, 4] + 3*lambda_2[0, 5] + 3*lambda_2[0, 6] + 3*lambda_2[0, 7] + 9*lambda_2[0, 8] + 9*lambda_2[0, 9] + 9*lambda_2[0, 10] + 9*lambda_2[0, 11] + 9*lambda_2[0, 12] + 9*lambda_2[0, 13] + 9*lambda_2[0, 14] + 9*lambda_2[0, 15] + 9*lambda_2[0, 16] + 9*lambda_2[0, 17] + 9*lambda_2[0, 18] + 9*lambda_2[0, 19] + 9*lambda_2[0, 20] + 9*lambda_2[0, 21] + 9*lambda_2[0, 22] + 9*lambda_2[0, 23] + 9*lambda_2[0, 24] + 9*lambda_2[0, 25] + 9*lambda_2[0, 26] + 9*lambda_2[0, 27] + 9*lambda_2[0, 28] + 9*lambda_2[0, 29] + 9*lambda_2[0, 30] + 9*lambda_2[0, 31] + 9*lambda_2[0, 32] + 9*lambda_2[0, 33] + 9*lambda_2[0, 34] + 9*lambda_2[0, 35] + 9*lambda_2[0, 36] + 9*lambda_2[0, 37] + 9*lambda_2[0, 38] + 9*lambda_2[0, 39] + 9*lambda_2[0, 40] + 9*lambda_2[0, 41] + 9*lambda_2[0, 42] + 9*lambda_2[0, 43] >= -l*B[0, 0] - 1.0e-5- objc]
@@ -182,7 +182,7 @@ def BarrierLP(control_param, l, k, g, SVGOnly=False):
 	constraints += [lambda_2[0, 21] - lambda_2[0, 34] - lambda_2[0, 39] + lambda_2[0, 43] >= -l*B[0, 14] + 80*B[0, 7]*t[0, 0] + 2*B[0, 8] + 16.3*B[0, 10]*t[0, 0] + 16.3*B[0, 12]*t[0, 1] + 0.925*B[0, 12] + 40*B[0, 14]*t[0, 1] - 6.5*B[0, 14]- objc]
 	constraints += [lambda_2[0, 11] + lambda_2[0, 15] - lambda_2[0, 40] <= -l*B[0, 8] + 16.3*B[0, 12]*t[0, 0] + 40*B[0, 14]*t[0, 0] - 1.0e-5+ objc]
 	constraints += [lambda_2[0, 11] + lambda_2[0, 15] - lambda_2[0, 40] >= -l*B[0, 8] + 16.3*B[0, 12]*t[0, 0] + 40*B[0, 14]*t[0, 0] - 1.0e-5- objc]
-
+	# print("second section of constraints")
 
 	#------------------The Unsafe conditions------------------
 	constraints += [2*lambda_3[0, 0] + lambda_3[0, 2] + lambda_3[0, 3] + 3*lambda_3[0, 4] - lambda_3[0, 5] + 3*lambda_3[0, 6] - lambda_3[0, 7] + 4*lambda_3[0, 8] + lambda_3[0, 10] + lambda_3[0, 11] + 9*lambda_3[0, 12] + lambda_3[0, 13] + 9*lambda_3[0, 14] + lambda_3[0, 15] + 2*lambda_3[0, 17] + 2*lambda_3[0, 19] + lambda_3[0, 21] + 6*lambda_3[0, 22] + 3*lambda_3[0, 24] + 3*lambda_3[0, 25] - 2*lambda_3[0, 26] - lambda_3[0, 28] - lambda_3[0, 29] - 3*lambda_3[0, 30] + 6*lambda_3[0, 31] + 3*lambda_3[0, 33] + 3*lambda_3[0, 34] + 9*lambda_3[0, 35] - 3*lambda_3[0, 36] - 2*lambda_3[0, 37] - lambda_3[0, 39] - lambda_3[0, 40] - 3*lambda_3[0, 41] + lambda_3[0, 42] - 3*lambda_3[0, 43] <= -B[0, 0] - 5.0e-6+ objc]
@@ -217,17 +217,35 @@ def BarrierLP(control_param, l, k, g, SVGOnly=False):
 	constraints += [lambda_3[0, 14] + lambda_3[0, 15] - lambda_3[0, 43] >= -B[0, 8] - 5.0e-6- objc]
 
 	constraints += [objc>=0]
+	# constraints += [cp.norm(B[0,], 1)>=0.0015]
+	# constraints += [cp.abs(B[0, 0]) >= 0.00001]
+	# constraints += [cp.abs(B[0, 1]) >= 0.00001]
+	# constraints += [cp.abs(B[0, 2]) >= 0.00001]
+	# constraints += [cp.abs(B[0, 3]) >= 0.00001]
+	# constraints += [cp.abs(B[0, 4]) >= 0.00001]
+	# constraints += [cp.abs(B[0, 5]) >= 0.00001]
+	# constraints += [cp.abs(B[0, 6]) >= 0.00001]
+	# constraints += [cp.abs(B[0, 7]) >= 0.00001]
+	# constraints += [cp.abs(B[0, 8]) >= 0.00001]
+	# constraints += [cp.abs(B[0, 9]) >= 0.00001]
+	# constraints += [cp.abs(B[0, 10]) >= 0.00001]
+	# constraints += [cp.abs(B[0, 11]) >= 0.00001]
+	# constraints += [cp.abs(B[0, 12]) >= 0.00001]
+	# constraints += [cp.abs(B[0, 13]) >= 0.00001]
+	# constraints += [cp.abs(B[0, 14]) >= 0.00001]
+	# print("Third section of constraints")
+
 
 	problem = cp.Problem(objective, constraints)
 	assert problem.is_dcp()
 	assert problem.is_dpp()
-
+	# print("form the problem")
 	control_param = np.reshape(control_param, (1, 4))
 	theta_t = torch.from_numpy(control_param).float()
 	theta_t.requires_grad = True
 	layer = CvxpyLayer(problem, parameters=[t], variables=[lambda_1, lambda_2, lambda_3, B, objc])
 	lambda_1_star, lambda_2_star, lambda_3_star, B_star, objc_star = layer(theta_t)
-	
+	# print("solve the problem")
 	objc_star.backward()
 	B = B_star.detach().numpy()[0]
 	initTest, unsafeTest, lieTest = BarrierTest(B, control_param[0], l, k, g)
@@ -1086,10 +1104,12 @@ if __name__ == '__main__':
 				print("The iteration number: ", i)
 				print("initTest: ", initTest, "unsafeTest: ", unsafeTest, "BlieTest: ", BlieTest)
 				print("The Barrier gradient is: ", BarGrad, "The Barrier slack variable is: ", Bslack)
+				print("THe barrier funtion is:", B)
 				V, LyaGrad, Vslack, stateTest,  VlieTest = LyaLP(control_param, f, g)
 				# print(initTest, unsafeTest, BlieTest, stateTest,  VlieTest)
 				print("Lya_iniTest: ", stateTest, "LieTest: ", VlieTest)
 				print("The Lyapunov gradient is: ", LyaGrad, "The Lyapunov slack variable is: ", Vslack)
+				print("The Lyapunov funtion is:", V)
 				print("The vtheta is:", vtheta[0])
 				print("The control parameter is: ", control_param)
 				print("The final state is: ", final_state)
