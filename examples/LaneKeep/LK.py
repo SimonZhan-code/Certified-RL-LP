@@ -1082,7 +1082,7 @@ if __name__ == '__main__':
 			try: 
 				B, BarGrad, Bslack, initTest, unsafeTest, BlieTest = BarrierSDP(control_param, l=-1, k=f, g=g)
 				V, LyaGrad, Vslack, stateTest,  VlieTest = LyaSDP(control_param, f, g)
-				print(initTest, unsafeTest, BlieTest, stateTest,  VlieTest)
+				print(initTest, unsafeTest, BlieTest, stateTest,  VlieTest, vtheta)
 				if initTest and unsafeTest and BlieTest and stateTest and VlieTest and abs(final_state[0])<0.05 and abs(final_state[2])<0.05 and abs(final_state[1]) < 0.1 and abs(final_state[3]) < 0.1:
 					print('Successfully learn a controller with its barrier certificate and Lyapunov function')
 					print('Controller: ', control_param)
@@ -1120,9 +1120,9 @@ if __name__ == '__main__':
 		print(control_param)
 		# plot(control_param, V=0, B=0, figname='Tra_LK.pdf', SVG=True)
 	
-	print('baseline starts here')
-	SVGOnly()
-	print('')
+	# print('baseline starts here')
+	# SVGOnly()
+	# print('')
 	print('Our approach starts here')
 	ours()
 	

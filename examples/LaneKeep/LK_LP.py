@@ -150,28 +150,28 @@ def BarrierLP(control_param, l, k, g, SVGOnly=False):
 	constraints += [lambda_1[0, 35] - lambda_1[0, 36] - lambda_1[0, 41] + lambda_1[0, 42] >= B[0, 14]- objc]
 	constraints += [lambda_1[0, 14] + lambda_1[0, 15] - lambda_1[0, 43] <= B[0, 8]+ objc]
 	constraints += [lambda_1[0, 14] + lambda_1[0, 15] - lambda_1[0, 43] >= B[0, 8]- objc]
-	# print("first section of constraints")
+
 	#------------------The Lie Derivative conditions------------------
-	constraints += [3*lambda_2[0, 0] + 3*lambda_2[0, 1] + 3*lambda_2[0, 2] + 3*lambda_2[0, 3] + 3*lambda_2[0, 4] + 3*lambda_2[0, 5] + 3*lambda_2[0, 6] + 3*lambda_2[0, 7] + 9*lambda_2[0, 8] + 9*lambda_2[0, 9] + 9*lambda_2[0, 10] + 9*lambda_2[0, 11] + 9*lambda_2[0, 12] + 9*lambda_2[0, 13] + 9*lambda_2[0, 14] + 9*lambda_2[0, 15] + 9*lambda_2[0, 16] + 9*lambda_2[0, 17] + 9*lambda_2[0, 18] + 9*lambda_2[0, 19] + 9*lambda_2[0, 20] + 9*lambda_2[0, 21] + 9*lambda_2[0, 22] + 9*lambda_2[0, 23] + 9*lambda_2[0, 24] + 9*lambda_2[0, 25] + 9*lambda_2[0, 26] + 9*lambda_2[0, 27] + 9*lambda_2[0, 28] + 9*lambda_2[0, 29] + 9*lambda_2[0, 30] + 9*lambda_2[0, 31] + 9*lambda_2[0, 32] + 9*lambda_2[0, 33] + 9*lambda_2[0, 34] + 9*lambda_2[0, 35] + 9*lambda_2[0, 36] + 9*lambda_2[0, 37] + 9*lambda_2[0, 38] + 9*lambda_2[0, 39] + 9*lambda_2[0, 40] + 9*lambda_2[0, 41] + 9*lambda_2[0, 42] + 9*lambda_2[0, 43] <= -l*B[0, 0] - 1.0e-5+ objc]
-	constraints += [3*lambda_2[0, 0] + 3*lambda_2[0, 1] + 3*lambda_2[0, 2] + 3*lambda_2[0, 3] + 3*lambda_2[0, 4] + 3*lambda_2[0, 5] + 3*lambda_2[0, 6] + 3*lambda_2[0, 7] + 9*lambda_2[0, 8] + 9*lambda_2[0, 9] + 9*lambda_2[0, 10] + 9*lambda_2[0, 11] + 9*lambda_2[0, 12] + 9*lambda_2[0, 13] + 9*lambda_2[0, 14] + 9*lambda_2[0, 15] + 9*lambda_2[0, 16] + 9*lambda_2[0, 17] + 9*lambda_2[0, 18] + 9*lambda_2[0, 19] + 9*lambda_2[0, 20] + 9*lambda_2[0, 21] + 9*lambda_2[0, 22] + 9*lambda_2[0, 23] + 9*lambda_2[0, 24] + 9*lambda_2[0, 25] + 9*lambda_2[0, 26] + 9*lambda_2[0, 27] + 9*lambda_2[0, 28] + 9*lambda_2[0, 29] + 9*lambda_2[0, 30] + 9*lambda_2[0, 31] + 9*lambda_2[0, 32] + 9*lambda_2[0, 33] + 9*lambda_2[0, 34] + 9*lambda_2[0, 35] + 9*lambda_2[0, 36] + 9*lambda_2[0, 37] + 9*lambda_2[0, 38] + 9*lambda_2[0, 39] + 9*lambda_2[0, 40] + 9*lambda_2[0, 41] + 9*lambda_2[0, 42] + 9*lambda_2[0, 43] >= -l*B[0, 0] - 1.0e-5- objc]
+	constraints += [3*lambda_2[0, 0] + 3*lambda_2[0, 1] + 3*lambda_2[0, 2] + 3*lambda_2[0, 3] + 3*lambda_2[0, 4] + 3*lambda_2[0, 5] + 3*lambda_2[0, 6] + 3*lambda_2[0, 7] + 9*lambda_2[0, 8] + 9*lambda_2[0, 9] + 9*lambda_2[0, 10] + 9*lambda_2[0, 11] + 9*lambda_2[0, 12] + 9*lambda_2[0, 13] + 9*lambda_2[0, 14] + 9*lambda_2[0, 15] + 9*lambda_2[0, 16] + 9*lambda_2[0, 17] + 9*lambda_2[0, 18] + 9*lambda_2[0, 19] + 9*lambda_2[0, 20] + 9*lambda_2[0, 21] + 9*lambda_2[0, 22] + 9*lambda_2[0, 23] + 9*lambda_2[0, 24] + 9*lambda_2[0, 25] + 9*lambda_2[0, 26] + 9*lambda_2[0, 27] + 9*lambda_2[0, 28] + 9*lambda_2[0, 29] + 9*lambda_2[0, 30] + 9*lambda_2[0, 31] + 9*lambda_2[0, 32] + 9*lambda_2[0, 33] + 9*lambda_2[0, 34] + 9*lambda_2[0, 35] + 9*lambda_2[0, 36] + 9*lambda_2[0, 37] + 9*lambda_2[0, 38] + 9*lambda_2[0, 39] + 9*lambda_2[0, 40] + 9*lambda_2[0, 41] + 9*lambda_2[0, 42] + 9*lambda_2[0, 43] <= -l*B[0, 0]+ objc]
+	constraints += [3*lambda_2[0, 0] + 3*lambda_2[0, 1] + 3*lambda_2[0, 2] + 3*lambda_2[0, 3] + 3*lambda_2[0, 4] + 3*lambda_2[0, 5] + 3*lambda_2[0, 6] + 3*lambda_2[0, 7] + 9*lambda_2[0, 8] + 9*lambda_2[0, 9] + 9*lambda_2[0, 10] + 9*lambda_2[0, 11] + 9*lambda_2[0, 12] + 9*lambda_2[0, 13] + 9*lambda_2[0, 14] + 9*lambda_2[0, 15] + 9*lambda_2[0, 16] + 9*lambda_2[0, 17] + 9*lambda_2[0, 18] + 9*lambda_2[0, 19] + 9*lambda_2[0, 20] + 9*lambda_2[0, 21] + 9*lambda_2[0, 22] + 9*lambda_2[0, 23] + 9*lambda_2[0, 24] + 9*lambda_2[0, 25] + 9*lambda_2[0, 26] + 9*lambda_2[0, 27] + 9*lambda_2[0, 28] + 9*lambda_2[0, 29] + 9*lambda_2[0, 30] + 9*lambda_2[0, 31] + 9*lambda_2[0, 32] + 9*lambda_2[0, 33] + 9*lambda_2[0, 34] + 9*lambda_2[0, 35] + 9*lambda_2[0, 36] + 9*lambda_2[0, 37] + 9*lambda_2[0, 38] + 9*lambda_2[0, 39] + 9*lambda_2[0, 40] + 9*lambda_2[0, 41] + 9*lambda_2[0, 42] + 9*lambda_2[0, 43] >= -l*B[0, 0]- objc]
 	constraints += [-lambda_2[0, 0] + lambda_2[0, 4] - 6*lambda_2[0, 8] + 6*lambda_2[0, 12] - 3*lambda_2[0, 16] - 3*lambda_2[0, 17] - 3*lambda_2[0, 19] + 3*lambda_2[0, 23] + 3*lambda_2[0, 24] + 3*lambda_2[0, 25] - 3*lambda_2[0, 26] + 3*lambda_2[0, 30] - 3*lambda_2[0, 31] + 3*lambda_2[0, 35] - 3*lambda_2[0, 37] + 3*lambda_2[0, 41] <= g*B[0, 1] + k*B[0, 3] - l*B[0, 1] + 16.3*B[0, 1]*t[0, 3] + B[0, 2] + 40*B[0, 3]*t[0, 3]+ objc]
 	constraints += [-lambda_2[0, 0] + lambda_2[0, 4] - 6*lambda_2[0, 8] + 6*lambda_2[0, 12] - 3*lambda_2[0, 16] - 3*lambda_2[0, 17] - 3*lambda_2[0, 19] + 3*lambda_2[0, 23] + 3*lambda_2[0, 24] + 3*lambda_2[0, 25] - 3*lambda_2[0, 26] + 3*lambda_2[0, 30] - 3*lambda_2[0, 31] + 3*lambda_2[0, 35] - 3*lambda_2[0, 37] + 3*lambda_2[0, 41] >= g*B[0, 1] + k*B[0, 3] - l*B[0, 1] + 16.3*B[0, 1]*t[0, 3] + B[0, 2] + 40*B[0, 3]*t[0, 3]- objc]
-	constraints += [lambda_2[0, 8] + lambda_2[0, 12] - lambda_2[0, 22] <= 2*g*B[0, 5] + k*B[0, 10] - l*B[0, 5] + 32.6*B[0, 5]*t[0, 3] + B[0, 9] + 40*B[0, 10]*t[0, 3] - 1.0e-5+ objc]
-	constraints += [lambda_2[0, 8] + lambda_2[0, 12] - lambda_2[0, 22] >= 2*g*B[0, 5] + k*B[0, 10] - l*B[0, 5] + 32.6*B[0, 5]*t[0, 3] + B[0, 9] + 40*B[0, 10]*t[0, 3] - 1.0e-5- objc]
+	constraints += [lambda_2[0, 8] + lambda_2[0, 12] - lambda_2[0, 22] <= 2*g*B[0, 5] + k*B[0, 10] - l*B[0, 5] + 32.6*B[0, 5]*t[0, 3] + B[0, 9] + 40*B[0, 10]*t[0, 3] - 1+ objc]
+	constraints += [lambda_2[0, 8] + lambda_2[0, 12] - lambda_2[0, 22] >= 2*g*B[0, 5] + k*B[0, 10] - l*B[0, 5] + 32.6*B[0, 5]*t[0, 3] + B[0, 9] + 40*B[0, 10]*t[0, 3] - 1- objc]
 	constraints += [-lambda_2[0, 1] + lambda_2[0, 5] - 6*lambda_2[0, 9] + 6*lambda_2[0, 13] - 3*lambda_2[0, 16] - 3*lambda_2[0, 18] - 3*lambda_2[0, 20] - 3*lambda_2[0, 23] + 3*lambda_2[0, 26] + 3*lambda_2[0, 28] + 3*lambda_2[0, 29] + 3*lambda_2[0, 30] - 3*lambda_2[0, 32] + 3*lambda_2[0, 36] - 3*lambda_2[0, 38] + 3*lambda_2[0, 42] <= -l*B[0, 2] + 16.3*B[0, 1]*t[0, 2] + 40*B[0, 3]*t[0, 2] + 13.4*B[0, 4]+ objc]
 	constraints += [-lambda_2[0, 1] + lambda_2[0, 5] - 6*lambda_2[0, 9] + 6*lambda_2[0, 13] - 3*lambda_2[0, 16] - 3*lambda_2[0, 18] - 3*lambda_2[0, 20] - 3*lambda_2[0, 23] + 3*lambda_2[0, 26] + 3*lambda_2[0, 28] + 3*lambda_2[0, 29] + 3*lambda_2[0, 30] - 3*lambda_2[0, 32] + 3*lambda_2[0, 36] - 3*lambda_2[0, 38] + 3*lambda_2[0, 42] >= -l*B[0, 2] + 16.3*B[0, 1]*t[0, 2] + 40*B[0, 3]*t[0, 2] + 13.4*B[0, 4]- objc]
 	constraints += [lambda_2[0, 16] - lambda_2[0, 23] - lambda_2[0, 26] + lambda_2[0, 30] <= g*B[0, 9] + k*B[0, 11] - l*B[0, 9] + 32.6*B[0, 5]*t[0, 2] + 2*B[0, 6] + 16.3*B[0, 9]*t[0, 3] + 40*B[0, 10]*t[0, 2] + 40*B[0, 11]*t[0, 3] + 13.4*B[0, 12]+ objc]
 	constraints += [lambda_2[0, 16] - lambda_2[0, 23] - lambda_2[0, 26] + lambda_2[0, 30] >= g*B[0, 9] + k*B[0, 11] - l*B[0, 9] + 32.6*B[0, 5]*t[0, 2] + 2*B[0, 6] + 16.3*B[0, 9]*t[0, 3] + 40*B[0, 10]*t[0, 2] + 40*B[0, 11]*t[0, 3] + 13.4*B[0, 12]- objc]
-	constraints += [lambda_2[0, 9] + lambda_2[0, 13] - lambda_2[0, 27] <= -l*B[0, 6] + 16.3*B[0, 9]*t[0, 2] + 40*B[0, 11]*t[0, 2] + 13.4*B[0, 13] - 1.0e-5+ objc]
-	constraints += [lambda_2[0, 9] + lambda_2[0, 13] - lambda_2[0, 27] >= -l*B[0, 6] + 16.3*B[0, 9]*t[0, 2] + 40*B[0, 11]*t[0, 2] + 13.4*B[0, 13] - 1.0e-5- objc]
+	constraints += [lambda_2[0, 9] + lambda_2[0, 13] - lambda_2[0, 27] <= -l*B[0, 6] + 16.3*B[0, 9]*t[0, 2] + 40*B[0, 11]*t[0, 2] + 13.4*B[0, 13] - 1+ objc]
+	constraints += [lambda_2[0, 9] + lambda_2[0, 13] - lambda_2[0, 27] >= -l*B[0, 6] + 16.3*B[0, 9]*t[0, 2] + 40*B[0, 11]*t[0, 2] + 13.4*B[0, 13] - 1- objc]
 	constraints += [-lambda_2[0, 2] + lambda_2[0, 6] - 6*lambda_2[0, 10] + 6*lambda_2[0, 14] - 3*lambda_2[0, 17] - 3*lambda_2[0, 18] - 3*lambda_2[0, 21] - 3*lambda_2[0, 24] - 3*lambda_2[0, 28] + 3*lambda_2[0, 31] + 3*lambda_2[0, 32] + 3*lambda_2[0, 34] + 3*lambda_2[0, 35] + 3*lambda_2[0, 36] - 3*lambda_2[0, 39] + 3*lambda_2[0, 43] <= -l*B[0, 3] + 16.3*B[0, 1]*t[0, 1] + 0.925*B[0, 1] + 40*B[0, 3]*t[0, 1] - 6.5*B[0, 3] + B[0, 4]+ objc]
 	constraints += [-lambda_2[0, 2] + lambda_2[0, 6] - 6*lambda_2[0, 10] + 6*lambda_2[0, 14] - 3*lambda_2[0, 17] - 3*lambda_2[0, 18] - 3*lambda_2[0, 21] - 3*lambda_2[0, 24] - 3*lambda_2[0, 28] + 3*lambda_2[0, 31] + 3*lambda_2[0, 32] + 3*lambda_2[0, 34] + 3*lambda_2[0, 35] + 3*lambda_2[0, 36] - 3*lambda_2[0, 39] + 3*lambda_2[0, 43] >= -l*B[0, 3] + 16.3*B[0, 1]*t[0, 1] + 0.925*B[0, 1] + 40*B[0, 3]*t[0, 1] - 6.5*B[0, 3] + B[0, 4]- objc]
 	constraints += [lambda_2[0, 17] - lambda_2[0, 24] - lambda_2[0, 31] + lambda_2[0, 35] <= g*B[0, 10] + 2*k*B[0, 7] - l*B[0, 10] + 32.6*B[0, 5]*t[0, 1] + 1.85*B[0, 5] + 80*B[0, 7]*t[0, 3] + 40*B[0, 10]*t[0, 1] + 16.3*B[0, 10]*t[0, 3] - 6.5*B[0, 10] + B[0, 11] + B[0, 12]+ objc]
 	constraints += [lambda_2[0, 17] - lambda_2[0, 24] - lambda_2[0, 31] + lambda_2[0, 35] >= g*B[0, 10] + 2*k*B[0, 7] - l*B[0, 10] + 32.6*B[0, 5]*t[0, 1] + 1.85*B[0, 5] + 80*B[0, 7]*t[0, 3] + 40*B[0, 10]*t[0, 1] + 16.3*B[0, 10]*t[0, 3] - 6.5*B[0, 10] + B[0, 11] + B[0, 12]- objc]
 	constraints += [lambda_2[0, 18] - lambda_2[0, 28] - lambda_2[0, 32] + lambda_2[0, 36] <= -l*B[0, 11] + 80*B[0, 7]*t[0, 2] + 16.3*B[0, 9]*t[0, 1] + 0.925*B[0, 9] + 16.3*B[0, 10]*t[0, 2] + 40*B[0, 11]*t[0, 1] - 6.5*B[0, 11] + B[0, 13] + 13.4*B[0, 14]+ objc]
 	constraints += [lambda_2[0, 18] - lambda_2[0, 28] - lambda_2[0, 32] + lambda_2[0, 36] >= -l*B[0, 11] + 80*B[0, 7]*t[0, 2] + 16.3*B[0, 9]*t[0, 1] + 0.925*B[0, 9] + 16.3*B[0, 10]*t[0, 2] + 40*B[0, 11]*t[0, 1] - 6.5*B[0, 11] + B[0, 13] + 13.4*B[0, 14]- objc]
-	constraints += [lambda_2[0, 10] + lambda_2[0, 14] - lambda_2[0, 33] <= -l*B[0, 7] + 80*B[0, 7]*t[0, 1] - 13.0*B[0, 7] + 16.3*B[0, 10]*t[0, 1] + 0.925*B[0, 10] + B[0, 14] - 1.0e-5+ objc]
-	constraints += [lambda_2[0, 10] + lambda_2[0, 14] - lambda_2[0, 33] >= -l*B[0, 7] + 80*B[0, 7]*t[0, 1] - 13.0*B[0, 7] + 16.3*B[0, 10]*t[0, 1] + 0.925*B[0, 10] + B[0, 14] - 1.0e-5- objc]
+	constraints += [lambda_2[0, 10] + lambda_2[0, 14] - lambda_2[0, 33] <= -l*B[0, 7] + 80*B[0, 7]*t[0, 1] - 13.0*B[0, 7] + 16.3*B[0, 10]*t[0, 1] + 0.925*B[0, 10] + B[0, 14] - 1+ objc]
+	constraints += [lambda_2[0, 10] + lambda_2[0, 14] - lambda_2[0, 33] >= -l*B[0, 7] + 80*B[0, 7]*t[0, 1] - 13.0*B[0, 7] + 16.3*B[0, 10]*t[0, 1] + 0.925*B[0, 10] + B[0, 14] - 1- objc]
 	constraints += [-lambda_2[0, 3] + lambda_2[0, 7] - 6*lambda_2[0, 11] + 6*lambda_2[0, 15] - 3*lambda_2[0, 19] - 3*lambda_2[0, 20] - 3*lambda_2[0, 21] - 3*lambda_2[0, 25] - 3*lambda_2[0, 29] - 3*lambda_2[0, 34] + 3*lambda_2[0, 37] + 3*lambda_2[0, 38] + 3*lambda_2[0, 39] + 3*lambda_2[0, 41] + 3*lambda_2[0, 42] + 3*lambda_2[0, 43] <= -l*B[0, 4] + 16.3*B[0, 1]*t[0, 0] + 40*B[0, 3]*t[0, 0]+ objc]
 	constraints += [-lambda_2[0, 3] + lambda_2[0, 7] - 6*lambda_2[0, 11] + 6*lambda_2[0, 15] - 3*lambda_2[0, 19] - 3*lambda_2[0, 20] - 3*lambda_2[0, 21] - 3*lambda_2[0, 25] - 3*lambda_2[0, 29] - 3*lambda_2[0, 34] + 3*lambda_2[0, 37] + 3*lambda_2[0, 38] + 3*lambda_2[0, 39] + 3*lambda_2[0, 41] + 3*lambda_2[0, 42] + 3*lambda_2[0, 43] >= -l*B[0, 4] + 16.3*B[0, 1]*t[0, 0] + 40*B[0, 3]*t[0, 0]- objc]
 	constraints += [lambda_2[0, 19] - lambda_2[0, 25] - lambda_2[0, 37] + lambda_2[0, 41] <= g*B[0, 12] + k*B[0, 14] - l*B[0, 12] + 32.6*B[0, 5]*t[0, 0] + 40*B[0, 10]*t[0, 0] + 16.3*B[0, 12]*t[0, 3] + B[0, 13] + 40*B[0, 14]*t[0, 3]+ objc]
@@ -180,31 +180,31 @@ def BarrierLP(control_param, l, k, g, SVGOnly=False):
 	constraints += [lambda_2[0, 20] - lambda_2[0, 29] - lambda_2[0, 38] + lambda_2[0, 42] >= -l*B[0, 13] + 26.8*B[0, 8] + 16.3*B[0, 9]*t[0, 0] + 40*B[0, 11]*t[0, 0] + 16.3*B[0, 12]*t[0, 2] + 40*B[0, 14]*t[0, 2]- objc]
 	constraints += [lambda_2[0, 21] - lambda_2[0, 34] - lambda_2[0, 39] + lambda_2[0, 43] <= -l*B[0, 14] + 80*B[0, 7]*t[0, 0] + 2*B[0, 8] + 16.3*B[0, 10]*t[0, 0] + 16.3*B[0, 12]*t[0, 1] + 0.925*B[0, 12] + 40*B[0, 14]*t[0, 1] - 6.5*B[0, 14]+ objc]
 	constraints += [lambda_2[0, 21] - lambda_2[0, 34] - lambda_2[0, 39] + lambda_2[0, 43] >= -l*B[0, 14] + 80*B[0, 7]*t[0, 0] + 2*B[0, 8] + 16.3*B[0, 10]*t[0, 0] + 16.3*B[0, 12]*t[0, 1] + 0.925*B[0, 12] + 40*B[0, 14]*t[0, 1] - 6.5*B[0, 14]- objc]
-	constraints += [lambda_2[0, 11] + lambda_2[0, 15] - lambda_2[0, 40] <= -l*B[0, 8] + 16.3*B[0, 12]*t[0, 0] + 40*B[0, 14]*t[0, 0] - 1.0e-5+ objc]
-	constraints += [lambda_2[0, 11] + lambda_2[0, 15] - lambda_2[0, 40] >= -l*B[0, 8] + 16.3*B[0, 12]*t[0, 0] + 40*B[0, 14]*t[0, 0] - 1.0e-5- objc]
-	# print("second section of constraints")
+	constraints += [lambda_2[0, 11] + lambda_2[0, 15] - lambda_2[0, 40] <= -l*B[0, 8] + 16.3*B[0, 12]*t[0, 0] + 40*B[0, 14]*t[0, 0] - 1+ objc]
+	constraints += [lambda_2[0, 11] + lambda_2[0, 15] - lambda_2[0, 40] >= -l*B[0, 8] + 16.3*B[0, 12]*t[0, 0] + 40*B[0, 14]*t[0, 0] - 1- objc]
+
 
 	#------------------The Unsafe conditions------------------
-	constraints += [2*lambda_3[0, 0] + lambda_3[0, 2] + lambda_3[0, 3] + 3*lambda_3[0, 4] - lambda_3[0, 5] + 3*lambda_3[0, 6] - lambda_3[0, 7] + 4*lambda_3[0, 8] + lambda_3[0, 10] + lambda_3[0, 11] + 9*lambda_3[0, 12] + lambda_3[0, 13] + 9*lambda_3[0, 14] + lambda_3[0, 15] + 2*lambda_3[0, 17] + 2*lambda_3[0, 19] + lambda_3[0, 21] + 6*lambda_3[0, 22] + 3*lambda_3[0, 24] + 3*lambda_3[0, 25] - 2*lambda_3[0, 26] - lambda_3[0, 28] - lambda_3[0, 29] - 3*lambda_3[0, 30] + 6*lambda_3[0, 31] + 3*lambda_3[0, 33] + 3*lambda_3[0, 34] + 9*lambda_3[0, 35] - 3*lambda_3[0, 36] - 2*lambda_3[0, 37] - lambda_3[0, 39] - lambda_3[0, 40] - 3*lambda_3[0, 41] + lambda_3[0, 42] - 3*lambda_3[0, 43] <= -B[0, 0] - 5.0e-6+ objc]
-	constraints += [2*lambda_3[0, 0] + lambda_3[0, 2] + lambda_3[0, 3] + 3*lambda_3[0, 4] - lambda_3[0, 5] + 3*lambda_3[0, 6] - lambda_3[0, 7] + 4*lambda_3[0, 8] + lambda_3[0, 10] + lambda_3[0, 11] + 9*lambda_3[0, 12] + lambda_3[0, 13] + 9*lambda_3[0, 14] + lambda_3[0, 15] + 2*lambda_3[0, 17] + 2*lambda_3[0, 19] + lambda_3[0, 21] + 6*lambda_3[0, 22] + 3*lambda_3[0, 24] + 3*lambda_3[0, 25] - 2*lambda_3[0, 26] - lambda_3[0, 28] - lambda_3[0, 29] - 3*lambda_3[0, 30] + 6*lambda_3[0, 31] + 3*lambda_3[0, 33] + 3*lambda_3[0, 34] + 9*lambda_3[0, 35] - 3*lambda_3[0, 36] - 2*lambda_3[0, 37] - lambda_3[0, 39] - lambda_3[0, 40] - 3*lambda_3[0, 41] + lambda_3[0, 42] - 3*lambda_3[0, 43] >= -B[0, 0] - 5.0e-6- objc]
+	constraints += [2*lambda_3[0, 0] + lambda_3[0, 2] + lambda_3[0, 3] + 3*lambda_3[0, 4] - lambda_3[0, 5] + 3*lambda_3[0, 6] - lambda_3[0, 7] + 4*lambda_3[0, 8] + lambda_3[0, 10] + lambda_3[0, 11] + 9*lambda_3[0, 12] + lambda_3[0, 13] + 9*lambda_3[0, 14] + lambda_3[0, 15] + 2*lambda_3[0, 17] + 2*lambda_3[0, 19] + lambda_3[0, 21] + 6*lambda_3[0, 22] + 3*lambda_3[0, 24] + 3*lambda_3[0, 25] - 2*lambda_3[0, 26] - lambda_3[0, 28] - lambda_3[0, 29] - 3*lambda_3[0, 30] + 6*lambda_3[0, 31] + 3*lambda_3[0, 33] + 3*lambda_3[0, 34] + 9*lambda_3[0, 35] - 3*lambda_3[0, 36] - 2*lambda_3[0, 37] - lambda_3[0, 39] - lambda_3[0, 40] - 3*lambda_3[0, 41] + lambda_3[0, 42] - 3*lambda_3[0, 43] <= -B[0, 0]+ objc]
+	constraints += [2*lambda_3[0, 0] + lambda_3[0, 2] + lambda_3[0, 3] + 3*lambda_3[0, 4] - lambda_3[0, 5] + 3*lambda_3[0, 6] - lambda_3[0, 7] + 4*lambda_3[0, 8] + lambda_3[0, 10] + lambda_3[0, 11] + 9*lambda_3[0, 12] + lambda_3[0, 13] + 9*lambda_3[0, 14] + lambda_3[0, 15] + 2*lambda_3[0, 17] + 2*lambda_3[0, 19] + lambda_3[0, 21] + 6*lambda_3[0, 22] + 3*lambda_3[0, 24] + 3*lambda_3[0, 25] - 2*lambda_3[0, 26] - lambda_3[0, 28] - lambda_3[0, 29] - 3*lambda_3[0, 30] + 6*lambda_3[0, 31] + 3*lambda_3[0, 33] + 3*lambda_3[0, 34] + 9*lambda_3[0, 35] - 3*lambda_3[0, 36] - 2*lambda_3[0, 37] - lambda_3[0, 39] - lambda_3[0, 40] - 3*lambda_3[0, 41] + lambda_3[0, 42] - 3*lambda_3[0, 43] >= -B[0, 0]- objc]
 	constraints += [-lambda_3[0, 0] + lambda_3[0, 1] - 4*lambda_3[0, 8] + 2*lambda_3[0, 16] - lambda_3[0, 17] + lambda_3[0, 18] - lambda_3[0, 19] + lambda_3[0, 20] - 3*lambda_3[0, 22] + 3*lambda_3[0, 23] + lambda_3[0, 26] - lambda_3[0, 27] - 3*lambda_3[0, 31] + 3*lambda_3[0, 32] + lambda_3[0, 37] - lambda_3[0, 38] <= -B[0, 1]+ objc]
 	constraints += [-lambda_3[0, 0] + lambda_3[0, 1] - 4*lambda_3[0, 8] + 2*lambda_3[0, 16] - lambda_3[0, 17] + lambda_3[0, 18] - lambda_3[0, 19] + lambda_3[0, 20] - 3*lambda_3[0, 22] + 3*lambda_3[0, 23] + lambda_3[0, 26] - lambda_3[0, 27] - 3*lambda_3[0, 31] + 3*lambda_3[0, 32] + lambda_3[0, 37] - lambda_3[0, 38] >= -B[0, 1]- objc]
-	constraints += [lambda_3[0, 8] + lambda_3[0, 9] - lambda_3[0, 16] <= -B[0, 5] - 5.0e-6+ objc]
-	constraints += [lambda_3[0, 8] + lambda_3[0, 9] - lambda_3[0, 16] >= -B[0, 5] - 5.0e-6- objc]
+	constraints += [lambda_3[0, 8] + lambda_3[0, 9] - lambda_3[0, 16] <= -B[0, 5] - 1+ objc]
+	constraints += [lambda_3[0, 8] + lambda_3[0, 9] - lambda_3[0, 16] >= -B[0, 5] - 1- objc]
 	constraints += [-lambda_3[0, 2] + lambda_3[0, 3] - 2*lambda_3[0, 10] + 2*lambda_3[0, 11] - 2*lambda_3[0, 17] + 2*lambda_3[0, 19] - 3*lambda_3[0, 24] + 3*lambda_3[0, 25] + lambda_3[0, 28] - lambda_3[0, 29] - 3*lambda_3[0, 33] + 3*lambda_3[0, 34] + lambda_3[0, 39] - lambda_3[0, 40] <= -B[0, 2]+ objc]
 	constraints += [-lambda_3[0, 2] + lambda_3[0, 3] - 2*lambda_3[0, 10] + 2*lambda_3[0, 11] - 2*lambda_3[0, 17] + 2*lambda_3[0, 19] - 3*lambda_3[0, 24] + 3*lambda_3[0, 25] + lambda_3[0, 28] - lambda_3[0, 29] - 3*lambda_3[0, 33] + 3*lambda_3[0, 34] + lambda_3[0, 39] - lambda_3[0, 40] >= -B[0, 2]- objc]
 	constraints += [lambda_3[0, 17] - lambda_3[0, 18] - lambda_3[0, 19] + lambda_3[0, 20] <= -B[0, 9]+ objc]
 	constraints += [lambda_3[0, 17] - lambda_3[0, 18] - lambda_3[0, 19] + lambda_3[0, 20] >= -B[0, 9]- objc]
-	constraints += [lambda_3[0, 10] + lambda_3[0, 11] - lambda_3[0, 21] <= -B[0, 6] - 5.0e-6+ objc]
-	constraints += [lambda_3[0, 10] + lambda_3[0, 11] - lambda_3[0, 21] >= -B[0, 6] - 5.0e-6- objc]
+	constraints += [lambda_3[0, 10] + lambda_3[0, 11] - lambda_3[0, 21] <= -B[0, 6] - 1+ objc]
+	constraints += [lambda_3[0, 10] + lambda_3[0, 11] - lambda_3[0, 21] >= -B[0, 6] - 1- objc]
 	constraints += [-lambda_3[0, 4] + lambda_3[0, 5] - 6*lambda_3[0, 12] - 2*lambda_3[0, 13] - 2*lambda_3[0, 22] - lambda_3[0, 24] - lambda_3[0, 25] + 2*lambda_3[0, 26] + lambda_3[0, 28] + lambda_3[0, 29] + 4*lambda_3[0, 30] - 3*lambda_3[0, 35] + 3*lambda_3[0, 36] + lambda_3[0, 41] - lambda_3[0, 42] <= -B[0, 3]+ objc]
 	constraints += [-lambda_3[0, 4] + lambda_3[0, 5] - 6*lambda_3[0, 12] - 2*lambda_3[0, 13] - 2*lambda_3[0, 22] - lambda_3[0, 24] - lambda_3[0, 25] + 2*lambda_3[0, 26] + lambda_3[0, 28] + lambda_3[0, 29] + 4*lambda_3[0, 30] - 3*lambda_3[0, 35] + 3*lambda_3[0, 36] + lambda_3[0, 41] - lambda_3[0, 42] >= -B[0, 3]- objc]
 	constraints += [lambda_3[0, 22] - lambda_3[0, 23] - lambda_3[0, 26] + lambda_3[0, 27] <= -B[0, 10]+ objc]
 	constraints += [lambda_3[0, 22] - lambda_3[0, 23] - lambda_3[0, 26] + lambda_3[0, 27] >= -B[0, 10]- objc]
 	constraints += [lambda_3[0, 24] - lambda_3[0, 25] - lambda_3[0, 28] + lambda_3[0, 29] <= -B[0, 11]+ objc]
 	constraints += [lambda_3[0, 24] - lambda_3[0, 25] - lambda_3[0, 28] + lambda_3[0, 29] >= -B[0, 11]- objc]
-	constraints += [lambda_3[0, 12] + lambda_3[0, 13] - lambda_3[0, 30] <= -B[0, 7] - 5.0e-6+ objc]
-	constraints += [lambda_3[0, 12] + lambda_3[0, 13] - lambda_3[0, 30] >= -B[0, 7] - 5.0e-6- objc]
+	constraints += [lambda_3[0, 12] + lambda_3[0, 13] - lambda_3[0, 30] <= -B[0, 7] - 1+ objc]
+	constraints += [lambda_3[0, 12] + lambda_3[0, 13] - lambda_3[0, 30] >= -B[0, 7] - 1- objc]
 	constraints += [-lambda_3[0, 6] + lambda_3[0, 7] - 6*lambda_3[0, 14] - 2*lambda_3[0, 15] - 2*lambda_3[0, 31] - lambda_3[0, 33] - lambda_3[0, 34] - 3*lambda_3[0, 35] + lambda_3[0, 36] + 2*lambda_3[0, 37] + lambda_3[0, 39] + lambda_3[0, 40] + 3*lambda_3[0, 41] - lambda_3[0, 42] + 4*lambda_3[0, 43] <= -B[0, 4]+ objc]
 	constraints += [-lambda_3[0, 6] + lambda_3[0, 7] - 6*lambda_3[0, 14] - 2*lambda_3[0, 15] - 2*lambda_3[0, 31] - lambda_3[0, 33] - lambda_3[0, 34] - 3*lambda_3[0, 35] + lambda_3[0, 36] + 2*lambda_3[0, 37] + lambda_3[0, 39] + lambda_3[0, 40] + 3*lambda_3[0, 41] - lambda_3[0, 42] + 4*lambda_3[0, 43] >= -B[0, 4]- objc]
 	constraints += [lambda_3[0, 31] - lambda_3[0, 32] - lambda_3[0, 37] + lambda_3[0, 38] <= -B[0, 12]+ objc]
@@ -213,8 +213,8 @@ def BarrierLP(control_param, l, k, g, SVGOnly=False):
 	constraints += [lambda_3[0, 33] - lambda_3[0, 34] - lambda_3[0, 39] + lambda_3[0, 40] >= -B[0, 13]- objc]
 	constraints += [lambda_3[0, 35] - lambda_3[0, 36] - lambda_3[0, 41] + lambda_3[0, 42] <= -B[0, 14]+ objc]
 	constraints += [lambda_3[0, 35] - lambda_3[0, 36] - lambda_3[0, 41] + lambda_3[0, 42] >= -B[0, 14]- objc]
-	constraints += [lambda_3[0, 14] + lambda_3[0, 15] - lambda_3[0, 43] <= -B[0, 8] - 5.0e-6+ objc]
-	constraints += [lambda_3[0, 14] + lambda_3[0, 15] - lambda_3[0, 43] >= -B[0, 8] - 5.0e-6- objc]
+	constraints += [lambda_3[0, 14] + lambda_3[0, 15] - lambda_3[0, 43] <= -B[0, 8] - 1+ objc]
+	constraints += [lambda_3[0, 14] + lambda_3[0, 15] - lambda_3[0, 43] >= -B[0, 8] - 1- objc]
 
 	constraints += [objc>=0]
 	# constraints += [cp.norm(B[0,], 1)>=0.0015]
@@ -1005,10 +1005,10 @@ def BarrierConsGenerate():
 	initial_set = [y-0.2, 0.6-y, v_y-1.8, 2.2-v_y, phi_e-0.3, 0.7-phi_e, r+0.2, 0.2-r]
 	# print("setting up")
 	# Generate the possible handelman product to the power defined
-	init_poly_list = Matrix(possible_handelman_generation(4, initial_set))
+	init_poly_list = Matrix(possible_handelman_generation(2, initial_set))
 	# print("generating poly_list")
 	# incorporate the interval with handelman basis
-	monomial = monomial_generation(4, X)
+	monomial = monomial_generation(2, X)
 	# monomial.remove(1)
 	monomial_list = Matrix(monomial)
 	# print("generating monomial terms")
@@ -1024,9 +1024,9 @@ def BarrierConsGenerate():
 	rhs_init = lambda_poly_init * init_poly_list
 	# print("Get done the right hand side mul")
 	rhs_init = rhs_init[0, 0].expand()
-	file = open("barrier_deg4.txt","w")
+	file = open("barrier_deg2.txt","w")
 	file.write("#-------------------The Initial Set Conditions-------------------\n")
-	generateConstraints(rhs_init, lhs_init, file, degree=4)
+	generateConstraints(rhs_init, lhs_init, file, degree=2)
 		# f.close()
 	# theta = MatrixSymbol('theta',1 ,2)
 	u0Base = Matrix([[y, v_y, phi_e, r]])
@@ -1039,12 +1039,12 @@ def BarrierConsGenerate():
 	dynamics = Amatrix*Matrix([[y], [v_y], [phi_e], [r]]) + Bmatrix*a_e
 	monomial_der = GetDerivative(dynamics, monomial, X)
 
-	lhs_der = B * monomial_der - l*B*monomial_list - Matrix([0.00001*(1+y**2+v_y**2+phi_e**2+r**2)])
+	lhs_der = B * monomial_der - l*B*monomial_list - Matrix([y**2+v_y**2+phi_e**2+r**2])
 	lhs_der = lhs_der[0,0].expand()
 
 	# lie_poly_list = [1/9*(y**2+v_y**2+phi_e**2+r**2), 1-1/9*(y**2+v_y**2+phi_e**2+r**2)]
 	lie_poly_list = [y+3, v_y+3, phi_e+3, r+3, 3-y, 3-v_y, 3-phi_e, 3-r]
-	lie_poly = Matrix(possible_handelman_generation(4, lie_poly_list))
+	lie_poly = Matrix(possible_handelman_generation(2, lie_poly_list))
 	lambda_poly_der = MatrixSymbol('lambda_2', 1, len(lie_poly))
 	print("the length of the lambda_2 is", len(lie_poly))
 	rhs_der = lambda_poly_der * lie_poly
@@ -1053,32 +1053,33 @@ def BarrierConsGenerate():
 	# with open('cons.txt', 'a+') as f:
 	file.write("\n")
 	file.write("#------------------The Lie Derivative conditions------------------\n")
-	generateConstraints(rhs_der, lhs_der, file, degree=4)
+	generateConstraints(rhs_der, lhs_der, file, degree=2)
 	file.write("\n")
 
 	unsafe_poly_list = [y-1, 3-y, v_y-1, 3-v_y, phi_e+1, 1-phi_e, r, 2-r]
-	unsafe_poly = Matrix(possible_handelman_generation(4, unsafe_poly_list))
+	unsafe_poly = Matrix(possible_handelman_generation(2, unsafe_poly_list))
 	lambda_poly_unsafe = MatrixSymbol('lambda_3', 1, len(unsafe_poly))
 	print("the length of the lambda_3 is", len(unsafe_poly))
 
 	rhs_unsafe = lambda_poly_unsafe * unsafe_poly
 	rhs_unsafe = rhs_unsafe[0,0].expand()
 
-	lhs_unsafe = -B*monomial_list - Matrix([0.000005*(y**2+v_y**2+phi_e**2+r**2)])
+	lhs_unsafe = -B*monomial_list - Matrix([y**2+v_y**2+phi_e**2+r**2])
+	# lhs_unsafe = -B * monomial_list
 	lhs_unsafe = lhs_unsafe[0,0].expand()
 
 	file.write("\n")
 	file.write("#------------------The Unsafe conditions------------------\n")
-	generateConstraints(rhs_unsafe, lhs_unsafe, file, degree=4)
+	generateConstraints(rhs_unsafe, lhs_unsafe, file, degree=2)
 	file.write("\n")
 
 
 	file.write("#------------------Monomial and Polynomial Terms------------------\n")
 	file.write("polynomial terms:"+str(monomial)+"\n")
 	file.write("number of polynomial terms:"+str(len(monomial_list))+"\n")
-	file.write("the length of the lambda_1 is"+str(len(init_poly_list))+"\n")
-	file.write("the length of the lambda_2 is"+str(len(lie_poly))+"\n")
-	file.write("the length of the lambda_3 is"+str(len(unsafe_poly))+"\n")
+	file.write("the length of the lambda_1 is "+str(len(init_poly_list))+"\n")
+	file.write("the length of the lambda_2 is "+str(len(lie_poly))+"\n")
+	file.write("the length of the lambda_3 is "+str(len(unsafe_poly))+"\n")
 	# file.write(str(len(monomial))+"\n")
 	file.write("\n")
 	file.write("#------------------Lie Derivative test------------------\n")
@@ -1125,7 +1126,7 @@ if __name__ == '__main__':
 			except Exception as e:
 				print(e)
 			control_param += 1e-2*np.clip(vtheta[0], -2e2, 2e2)
-			control_param -= 1e4*np.clip(BarGrad, -1, 1)
+			control_param -= np.clip(BarGrad, -1, 1)
 			# control_param -= 0.1*np.sign(BarGrad)
 			control_param -= 2*np.clip(LyaGrad, -1, 1)
 			# print(final_state, BarGrad, Bslack, LyaGrad, Vslack)
