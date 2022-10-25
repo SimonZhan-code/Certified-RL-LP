@@ -7,7 +7,7 @@ from cvxpylayers.torch.cvxpylayer import CvxpyLayer
 import matplotlib.pyplot as plt
 from sympy import MatrixSymbol, Matrix
 from sympy import *
-
+from numpy import linalg as LA
 import matplotlib.patches as mpatches
 SVG_patch = mpatches.Patch(color='#ff7f0e', label='SVG w/ CMDP')
 Ours_patch = mpatches.Patch(color='#2ca02c', label='Ours')
@@ -1074,7 +1074,9 @@ if __name__ == '__main__':
 	def ours():
 		f = np.random.uniform(low=-15, high=-5)
 		g = np.random.uniform(low=-1, high=-10)
-		control_param = np.array([0, 0, 0, 0], dtype='float64')
+		# control_param = np.array([0, 0, 0, 0], dtype='float64')
+		control_param = np.array([-0.8, -0.3, -4.0, -0.4], dtype='float64')
+
 		for i in range(100):
 			BarGrad, LyaGrad = np.array([0, 0, 0, 0]), np.array([0, 0, 0, 0])
 			Bslack, Vslack = 100, 100
@@ -1083,7 +1085,8 @@ if __name__ == '__main__':
 				B, BarGrad, Bslack, initTest, unsafeTest, BlieTest = BarrierSDP(control_param, l=-1, k=f, g=g)
 				V, LyaGrad, Vslack, stateTest,  VlieTest = LyaSDP(control_param, f, g)
 				print(initTest, unsafeTest, BlieTest, stateTest,  VlieTest, vtheta)
-				if initTest and unsafeTest and BlieTest and stateTest and VlieTest and abs(final_state[0])<0.05 and abs(final_state[2])<0.05 and abs(final_state[1]) < 0.1 and abs(final_state[3]) < 0.1:
+				print("the final state is:", final_state)
+				if initTest and unsafeTest and BlieTest and stateTest and VlieTest and LA.norm(final_state) <= 0.01:
 					print('Successfully learn a controller with its barrier certificate and Lyapunov function')
 					print('Controller: ', control_param)
 					print('Valid Barrier is: ', B)
@@ -1096,7 +1099,7 @@ if __name__ == '__main__':
 			control_param -= np.clip(BarGrad, -1, 1)
 			# control_param -= 0.1*np.sign(BarGrad)
 			control_param -= 2*np.clip(LyaGrad, -1, 1)
-			print(final_state, BarGrad, Bslack, LyaGrad, Vslack)
+			# print(final_state, BarGrad, Bslack, LyaGrad, Vslack)
 
 	def SVGOnly():
 		f = np.random.uniform(low=-15, high=-5)
