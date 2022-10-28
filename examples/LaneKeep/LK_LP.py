@@ -1471,7 +1471,7 @@ def plot(control_param, V, B, figname, N=10, SVG=False):
 			y, v_y, phi_e, r = state[0], state[1], state[2], state[3]
 			if i >= 5:
 				LyapunovValue.append(V.dot(np.array([1, r, phi_e, v_y, y, r**2, phi_e**2, v_y**2, y**2, phi_e*r, r*v_y, phi_e*v_y, r*y, phi_e*y, v_y*y])))
-				BarrierValue.append(-B.dot(np.array([1, y, v_y, phi_e, r, y*v_y, y*phi_e, y*r, v_y*phi_e, v_y*r, phi_e*r, y**2, v_y**2, phi_e**2, r**2, y**4, v_y**4, phi_e**4, r**4])))
+				BarrierValue.append(-B.dot(np.array([1, y, v_y, phi_e, r, v_y*y, phi_e*y, r*y, phi_e*v_y, r*v_y, phi_e*r, y**2, v_y**2, phi_e**2, r**2, y**4, v_y**4, phi_e**4, r**4, y**6, v_y**6, phi_e**6, r**6])))
 			# print(state,  LyapunovValue[-1], BarrierValue[-1])
 				u = control_param.dot(np.array([y, v_y, phi_e, r]))
 			else:
@@ -1627,10 +1627,10 @@ def BarrierConsGenerate():
 	initial_set = [y-0.3, v_y-1.9, phi_e-0.4, r+0.1]
 	# print("setting up")
 	# Generate the possible handelman product to the power defined
-	init_poly_list = Matrix(possible_handelman_generation(6, initial_set))
+	init_poly_list = Matrix(possible_handelman_generation(4, initial_set))
 	# print("generating poly_list")
 	# incorporate the interval with handelman basis
-	monomial = [1, y, v_y, phi_e, r, y*v_y, y*phi_e, y*r, v_y*phi_e, v_y*r, phi_e*r, y**2, v_y**2, phi_e**2, r**2, y**4, v_y**4, phi_e**4, r**4, y**6, v_y**6, phi_e**6, r**6]
+	monomial = [1, y, v_y, phi_e, r, y*v_y, y*phi_e, y*r, v_y*phi_e, v_y*r, phi_e*r, y**2, v_y**2, phi_e**2, r**2, y**4, v_y**4, phi_e**4, r**4]
 	# monomial.remove(1)
 	monomial_list = Matrix(monomial)
 	# print("generating monomial terms")
@@ -1646,9 +1646,9 @@ def BarrierConsGenerate():
 	rhs_init = lambda_poly_init * init_poly_list
 	# print("Get done the right hand side mul")
 	rhs_init = rhs_init[0, 0].expand()
-	file = open("barrier_deg6.txt","w")
+	file = open("barrier_deg4.txt","w")
 	file.write("#-------------------The Initial Set Conditions-------------------\n")
-	generateConstraints(rhs_init, lhs_init, file, degree=6)
+	generateConstraints(rhs_init, lhs_init, file, degree=4)
 		# f.close()
 	# theta = MatrixSymbol('theta',1 ,2)
 	u0Base = Matrix([[y, v_y, phi_e, r]])
@@ -1666,7 +1666,7 @@ def BarrierConsGenerate():
 
 	# lie_poly_list = [1/9*(y**2+v_y**2+phi_e**2+r**2), 1-1/9*(y**2+v_y**2+phi_e**2+r**2)]
 	lie_poly_list = [y+3, v_y+3, phi_e+3, r+3]
-	lie_poly = Matrix(possible_handelman_generation(6, lie_poly_list))
+	lie_poly = Matrix(possible_handelman_generation(4, lie_poly_list))
 	lambda_poly_der = MatrixSymbol('lambda_2', 1, len(lie_poly))
 	print("the length of the lambda_2 is", len(lie_poly))
 	rhs_der = lambda_poly_der * lie_poly
@@ -1675,11 +1675,11 @@ def BarrierConsGenerate():
 	# with open('cons.txt', 'a+') as f:
 	file.write("\n")
 	file.write("#------------------The Lie Derivative conditions------------------\n")
-	generateConstraints(rhs_der, lhs_der, file, degree=6)
+	generateConstraints(rhs_der, lhs_der, file, degree=4)
 	file.write("\n")
 
 	unsafe_poly_list = [y-1, v_y-1, phi_e+1, r]
-	unsafe_poly = Matrix(possible_handelman_generation(6, unsafe_poly_list))
+	unsafe_poly = Matrix(possible_handelman_generation(4, unsafe_poly_list))
 	lambda_poly_unsafe = MatrixSymbol('lambda_3', 1, len(unsafe_poly))
 	print("the length of the lambda_3 is", len(unsafe_poly))
 
@@ -1692,7 +1692,7 @@ def BarrierConsGenerate():
 
 	file.write("\n")
 	file.write("#------------------The Unsafe conditions------------------\n")
-	generateConstraints(rhs_unsafe, lhs_unsafe, file, degree=6)
+	generateConstraints(rhs_unsafe, lhs_unsafe, file, degree=4)
 	file.write("\n")
 
 
@@ -1724,7 +1724,7 @@ if __name__ == '__main__':
 			Bslack, Vslack = 100, 100
 			vtheta, final_state, f, g = SVG(control_param, f*0.02, 1-g*0.02)
 			try: 
-				B, BarGrad, Bslack, initTest, unsafeTest, BlieTest, init, unsafe, lie = BarrierLP(control_param, l=-100, k=f, g=g)
+				B, BarGrad, Bslack, initTest, unsafeTest, BlieTest, init, unsafe, lie = BarrierLP(control_param, l=-10, k=f, g=g)
 				print("The iteration number: ", i)
 				print("initTest: ", initTest, init, "unsafeTest: ", unsafeTest, unsafe, "BlieTest: ", BlieTest, lie)
 				print("The Barrier gradient is: ", BarGrad, "The Barrier slack variable is: ", Bslack)
@@ -1739,7 +1739,7 @@ if __name__ == '__main__':
 				print("The final state is: ", final_state)
 				print("============================================\n")
 				print("\n")
-				if initTest and unsafeTest and BlieTest and stateTest and VlieTest and LA.norm(final_state) <= 0.1:
+				if initTest and unsafeTest and BlieTest and stateTest and VlieTest and LA.norm(final_state) <= 0.2:
 					print('Successfully learn a controller with its barrier certificate and Lyapunov function')
 					print('Controller: ', control_param)
 					print('Valid Barrier is: ', B)
@@ -1749,7 +1749,7 @@ if __name__ == '__main__':
 			except Exception as e:
 				print(e)
 			control_param += 1e-2*np.clip(vtheta[0], -2e2, 2e2)
-			control_param -= np.clip(BarGrad, -1, 1)
+			control_param -= 1000*np.clip(BarGrad, -1e-3, 1e-3)
 			# control_param -= 0.1*np.sign(BarGrad)
 			control_param -= np.clip(LyaGrad, -1, 1)
 			# print(final_state, BarGrad, Bslack, LyaGrad, Vslack)
